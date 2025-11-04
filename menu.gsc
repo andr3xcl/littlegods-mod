@@ -30,6 +30,7 @@
 #include scripts\zm\sqllocal;
 #include scripts\zm\topround;
 #include scripts\zm\playsound;
+#include scripts\zm\legacy_mods_performance;
 
 
 init()
@@ -53,6 +54,7 @@ init()
     level thread init_font_positions();
     level thread init_font_animations();
     level thread init_menu_sounds();
+    level thread init_legacy_mods_performance();
     
     // Inicializar funciones adicionales (God Mode, etc.)
     level thread init_functions();
@@ -98,6 +100,13 @@ init_menu_sounds()
 {
     // Llamar a la función init del archivo playsound.gsc
     scripts\zm\playsound::init();
+}
+
+// Función para llamar al init de legacy_mods_performance.gsc
+init_legacy_mods_performance()
+{
+    // Llamar a la función init del archivo legacy_mods_performance.gsc
+    scripts\zm\legacy_mods_performance::init();
 }
 
 // Función para llamar al init de funciones.gsc
@@ -434,7 +443,7 @@ open_main_menu()
 
     // Reproducir sonido de apertura del menú
     scripts\zm\playsound::play_menu_open_sound(self);
-
+    
     // Crear menú principal con el título según el idioma
     title = (self.langLEN == 0) ? "MENÚ DE MODS" : "MODS MENU";
     menu = create_menu(title, self);
@@ -444,6 +453,7 @@ open_main_menu()
     borders_active = (self.edge_animation_style_index > 0);
     healthbar_active = self.healthbar_enabled;
     healthbarzombie_active = self.healthbarzombie_enabled;
+    legacy_mods_active = are_legacy_mods_active();
     
     // Añadir opciones al menú con textos según el idioma
     if (self.langLEN == 0) // Español
@@ -466,7 +476,7 @@ open_main_menu()
         else
             add_menu_item(menu, "Desbloquear Developer", ::request_developer_password);
         settings_item = add_menu_item(menu, "Configuración", ::open_settings_menu);
-        if ((healthbar_active || healthbarzombie_active) && self.edge_animation_style_index == 0)
+        if ((healthbar_active || healthbarzombie_active || legacy_mods_active) && self.edge_animation_style_index == 0)
         {
             // Añadir una indicación visual de que los bordes no están disponibles
             settings_item.item.color = (1, 0.65, 0.2); // Naranja para advertencia
@@ -481,7 +491,7 @@ open_main_menu()
 
 
         add_menu_item(menu, "Map", ::open_map_menu);
-
+        
 
         // Statistics option
         add_menu_item(menu, "Stats", ::open_stats_menu);
@@ -494,7 +504,7 @@ open_main_menu()
 
                 // Nueva opción para configuración (bordes en rojo si no disponible)
         settings_item = add_menu_item(menu, "Settings", ::open_settings_menu);
-        if ((healthbar_active || healthbarzombie_active) && self.edge_animation_style_index == 0)
+        if ((healthbar_active || healthbarzombie_active || legacy_mods_active) && self.edge_animation_style_index == 0)
         {
             // Añadir una indicación visual de que los bordes no están disponibles
             settings_item.item.color = (1, 0.65, 0.2); // Naranja para advertencia
@@ -620,6 +630,7 @@ open_healthbar_menu()
     // Verificar si los bordes del menú o la barra zombie están activos
     borders_active = (self.edge_animation_style_index > 0);
     zombie_bar_active = self.healthbarzombie_enabled;
+    legacy_mods_active = are_legacy_mods_active();
     
     // Añadir opciones al menú con textos según el idioma
     status = self.healthbar_enabled ? "ON" : "OFF";
@@ -629,7 +640,7 @@ open_healthbar_menu()
         status_item = add_menu_item(menu, "Estado: " + status, ::toggle_healthbar);
         
         // Si los bordes o la barra zombie están activos y la barra no está habilitada, mostrar en rojo
-        if ((borders_active && !self.healthbar_enabled) || (zombie_bar_active && !self.healthbar_enabled))
+        if ((borders_active && !self.healthbar_enabled) || (zombie_bar_active && !self.healthbar_enabled) || (legacy_mods_active && !self.healthbar_enabled))
         {
             status_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
         }
@@ -653,7 +664,7 @@ open_healthbar_menu()
         status_item = add_menu_item(menu, "Status: " + status, ::toggle_healthbar);
         
         // Si los bordes o la barra zombie están activos y la barra no está habilitada, mostrar en rojo
-        if ((borders_active && !self.healthbar_enabled) || (zombie_bar_active && !self.healthbar_enabled))
+        if ((borders_active && !self.healthbar_enabled) || (zombie_bar_active && !self.healthbar_enabled) || (legacy_mods_active && !self.healthbar_enabled))
         {
             status_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
         }
@@ -688,7 +699,8 @@ open_healthbar_menu()
             if (i == menu.selected)
                 menu.items[i].item.color = (1, 1, 1); // Blanco brillante para el texto seleccionado
             else if ((borders_active && !self.healthbar_enabled && i == 0) || 
-                    (zombie_bar_active && !self.healthbar_enabled && i == 0)) // La opción de estado es la primera
+                    (zombie_bar_active && !self.healthbar_enabled && i == 0) ||
+                    (legacy_mods_active && !self.healthbar_enabled && i == 0)) // La opción de estado es la primera
                 menu.items[i].item.color = (1, 0.2, 0.2); // Mantener rojo si no está seleccionada
             else
                 menu.items[i].item.color = menu.inactive_color;
@@ -718,6 +730,7 @@ open_healthbarzombie_menu()
     // Verificar si los bordes del menú o la barra de vida están activos
     borders_active = (self.edge_animation_style_index > 0);
     healthbar_active = self.healthbar_enabled;
+    legacy_mods_active = are_legacy_mods_active();
     
     // Inicializar valores por defecto si no existen
     if (!isDefined(self.healthbarzombie_enabled))
@@ -751,7 +764,7 @@ open_healthbarzombie_menu()
         status_item = add_menu_item(menu, "Estado: " + status, ::toggle_healthbarzombie);
         
         // Si los bordes o la barra de vida están activos y la barra zombie no está habilitada, mostrar en rojo
-        if ((borders_active && !self.healthbarzombie_enabled) || (healthbar_active && !self.healthbarzombie_enabled))
+        if ((borders_active && !self.healthbarzombie_enabled) || (healthbar_active && !self.healthbarzombie_enabled) || (legacy_mods_active && !self.healthbarzombie_enabled))
         {
             status_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
         }
@@ -780,7 +793,7 @@ open_healthbarzombie_menu()
         status_item = add_menu_item(menu, "Status: " + status, ::toggle_healthbarzombie);
         
         // Si los bordes o la barra de vida están activos y la barra zombie no está habilitada, mostrar en rojo
-        if ((borders_active && !self.healthbarzombie_enabled) || (healthbar_active && !self.healthbarzombie_enabled))
+        if ((borders_active && !self.healthbarzombie_enabled) || (healthbar_active && !self.healthbarzombie_enabled) || (legacy_mods_active && !self.healthbarzombie_enabled))
         {
             status_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
         }
@@ -856,7 +869,8 @@ open_healthbarzombie_menu()
             if (i == menu.selected)
                 menu.items[i].item.color = (1, 1, 1); // Blanco brillante para el texto seleccionado
             else if ((borders_active && !self.healthbarzombie_enabled && i == 0) ||
-                    (healthbar_active && !self.healthbarzombie_enabled && i == 0)) // La opción de estado es la primera
+                    (healthbar_active && !self.healthbarzombie_enabled && i == 0) ||
+                    (legacy_mods_active && !self.healthbarzombie_enabled && i == 0)) // La opción de estado es la primera
                 menu.items[i].item.color = (1, 0.2, 0.2); // Mantener rojo si no está seleccionada
             else
                 menu.items[i].item.color = menu.inactive_color;
@@ -1268,6 +1282,7 @@ show_menu(menu)
         borders_active = (menu.user.edge_animation_style_index > 0);
         healthbar_active = menu.user.healthbar_enabled;
         healthbarzombie_active = menu.user.healthbarzombie_enabled;
+        legacy_mods_active = are_legacy_mods_active();
         
         // Verificar si está intentando activar una barra de salud mientras los bordes están activos
         if ((menu.items[menu.selected].func == ::toggle_healthbar && !menu.user.healthbar_enabled && borders_active) ||
@@ -1276,7 +1291,7 @@ show_menu(menu)
             is_option_blocked = true;
         }
         // Verificar si está intentando activar bordes mientras una barra de salud está activa
-        else if (menu.items[menu.selected].func == ::cycle_edge_animation_style && menu.user.edge_animation_style_index == 0 && (healthbar_active || healthbarzombie_active))
+        else if (menu.items[menu.selected].func == ::cycle_edge_animation_style && menu.user.edge_animation_style_index == 0 && (healthbar_active || healthbarzombie_active || legacy_mods_active))
         {
             is_option_blocked = true;
         }
@@ -1778,6 +1793,7 @@ menu_control(menu)
         borders_active = (menu.user.edge_animation_style_index > 0);
         healthbar_active = menu.user.healthbar_enabled;
         healthbarzombie_active = menu.user.healthbarzombie_enabled;
+        legacy_mods_active = are_legacy_mods_active();
         
         // Verificar si la opción actual está bloqueada
         if (isDefined(menu.items[menu.selected].func))
@@ -1789,7 +1805,7 @@ menu_control(menu)
                 is_option_blocked = true;
             }
             // Verificar si está intentando activar bordes mientras una barra de salud está activa
-            else if (menu.items[menu.selected].func == ::cycle_edge_animation_style && menu.user.edge_animation_style_index == 0 && (healthbar_active || healthbarzombie_active))
+            else if (menu.items[menu.selected].func == ::cycle_edge_animation_style && menu.user.edge_animation_style_index == 0 && (healthbar_active || healthbarzombie_active || legacy_mods_active))
             {
                 is_option_blocked = true;
             }
@@ -2128,6 +2144,25 @@ toggle_healthbar()
         wait 0.1;
         return;
     }
+
+    // Verificar si hay mods legacy activos
+    if (!self.healthbar_enabled && are_legacy_mods_active())
+    {
+        // Mostrar mensaje según el idioma
+        if (self.langLEN == 0)
+        {
+            self iPrintlnBold("^1No se puede activar la barra de vida");
+            self iPrintlnBold("^1Desactiva los mods de rendimiento primero");
+            self playsound("menu_error");
+        }
+        else
+        {
+            self iPrintlnBold("^1Cannot enable health bar");
+            self iPrintlnBold("^1Disable performance mods first");
+            self playsound("menu_error");
+        }
+        return;
+    }
     
     // Verificar si hay bordes activos
     if (!self.healthbar_enabled && self.edge_animation_style_index > 0)
@@ -2373,6 +2408,25 @@ toggle_healthbarzombie()
     if (isDefined(self.is_toggling_healthbarzombie))
     {
         wait 0.1;
+        return;
+    }
+
+    // Verificar si hay mods legacy activos
+    if (!self.healthbarzombie_enabled && are_legacy_mods_active())
+    {
+        // Mostrar mensaje según el idioma
+        if (self.langLEN == 0)
+        {
+            self iPrintlnBold("^1No se puede activar la barra zombie");
+            self iPrintlnBold("^1Desactiva los mods de rendimiento primero");
+            self playsound("menu_error");
+        }
+        else
+        {
+            self iPrintlnBold("^1Cannot enable zombie bar");
+            self iPrintlnBold("^1Disable performance mods first");
+            self playsound("menu_error");
+        }
         return;
     }
     
@@ -3014,7 +3068,7 @@ open_settings_menu()
         // Nueva opción para cambiar animación de fuente
         fontAnimName = scripts\zm\style_font_animation::get_font_animation_name(self.font_animation_index, self.langLEN);
         add_menu_item(menu, "Animación Fuente: " + fontAnimName, ::cycle_font_animation);
-
+        
         // Opción para cambiar nivel de transparencia
         transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
         add_menu_item(menu, transparencyName, ::cycle_transparency);
@@ -3070,7 +3124,7 @@ open_settings_menu()
         // Nueva opción para cambiar animación de fuente
         fontAnimName = scripts\zm\style_font_animation::get_font_animation_name(self.font_animation_index, self.langLEN);
         add_menu_item(menu, "Font Animation: " + fontAnimName, ::cycle_font_animation);
-
+        
         // Opción para cambiar nivel de transparencia
         transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
         add_menu_item(menu, transparencyName, ::cycle_transparency);
@@ -3687,6 +3741,7 @@ open_sound_settings_menu()
 
         // Volver al menú de configuración
         add_menu_item(menu, "Volver", ::open_settings_menu);
+        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
     else // Inglés
     {
@@ -3711,6 +3766,7 @@ open_sound_settings_menu()
 
         // Volver al menú de configuración
         add_menu_item(menu, "Back", ::open_settings_menu);
+        add_menu_item(menu, "Close Menu", ::close_all_menus);
     }
      // Mostrar menú y controlar la navegación
     show_menu(menu);
@@ -3906,6 +3962,1098 @@ cycle_menu_select_sound()
     self.is_cycling_select_sound = undefined;
 }
 
+// Función para verificar si hay mods legacy activados
+are_legacy_mods_active()
+{
+    return (level.player_health_display.enabled || level.zombie_health_display.enabled || level.zombie_counter_display.enabled);
+}
+
+// Nueva función para abrir el menú de mods de rendimiento
+open_performance_mods_menu()
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
+
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "MODS Heredado" : "LEGACY MODS";
+    menu = create_menu(title, self);
+    menu.parent_menu = "littlegods";
+
+    // Verificar restricciones
+    borders_active = (self.edge_animation_style_index > 0);
+    healthbar_active = self.healthbar_enabled;
+    healthbarzombie_active = self.healthbarzombie_enabled;
+    legacy_mods_active = are_legacy_mods_active();
+
+    if (self.langLEN == 0) // Español
+    {
+        // Menú de configuración para vida del jugador
+        player_health_item = add_menu_item(menu, "Vida Jugador", ::open_player_health_config_menu);
+        if ((borders_active && !level.player_health_display.enabled) ||
+            (healthbar_active && !level.player_health_display.enabled) ||
+            (healthbarzombie_active && !level.player_health_display.enabled))
+        {
+            player_health_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
+        }
+
+        // Menú de configuración para vida del zombie
+        zombie_health_item = add_menu_item(menu, "Vida Zombie", ::open_zombie_health_config_menu);
+        if ((borders_active && !level.zombie_health_display.enabled) ||
+            (healthbar_active && !level.zombie_health_display.enabled) ||
+            (healthbarzombie_active && !level.zombie_health_display.enabled))
+        {
+            zombie_health_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
+        }
+
+        // Menú de configuración para contador de zombies
+        zombie_counter_item = add_menu_item(menu, "Contador Zombies", ::open_zombie_counter_config_menu);
+        if ((borders_active && !level.zombie_counter_display.enabled) ||
+            (healthbar_active && !level.zombie_counter_display.enabled) ||
+            (healthbarzombie_active && !level.zombie_counter_display.enabled))
+        {
+            zombie_counter_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
+        }
+
+        // Modo de visualización (solo en menú principal)
+        mode_text = (level.legacy_display_mode == "littlegods") ? "LITTLEGODS" : "CLASSIC";
+        add_menu_item(menu, "Modo: " + mode_text, ::cycle_legacy_display_mode);
+
+        add_menu_item(menu, "Volver", ::open_mods_littlegods_menu);
+    }
+    else // Inglés
+    {
+        // Menú de configuración para vida del jugador
+        player_health_item = add_menu_item(menu, "Player Health", ::open_player_health_config_menu);
+        if ((borders_active && !level.player_health_display.enabled) ||
+            (healthbar_active && !level.player_health_display.enabled) ||
+            (healthbarzombie_active && !level.player_health_display.enabled))
+        {
+            player_health_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
+        }
+
+        // Menú de configuración para vida del zombie
+        zombie_health_item = add_menu_item(menu, "Zombie Health", ::open_zombie_health_config_menu);
+        if ((borders_active && !level.zombie_health_display.enabled) ||
+            (healthbar_active && !level.zombie_health_display.enabled) ||
+            (healthbarzombie_active && !level.zombie_health_display.enabled))
+        {
+            zombie_health_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
+        }
+
+        // Menú de configuración para contador de zombies
+        zombie_counter_item = add_menu_item(menu, "Zombie Counter", ::open_zombie_counter_config_menu);
+        if ((borders_active && !level.zombie_counter_display.enabled) ||
+            (healthbar_active && !level.zombie_counter_display.enabled) ||
+            (healthbarzombie_active && !level.zombie_counter_display.enabled))
+        {
+            zombie_counter_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
+        }
+
+        // Modo de visualización (solo en menú principal)
+        mode_text = (level.legacy_display_mode == "littlegods") ? "LITTLEGODS" : "CLASSIC";
+        add_menu_item(menu, "Mode: " + mode_text, ::cycle_legacy_display_mode);
+
+        add_menu_item(menu, "Back", ::open_mods_littlegods_menu);
+    }
+
+    show_menu(menu);
+    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
+    
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
+    {
+        menu.active_color = self.menu_current.active_color;
+        menu.selection_bar.color = menu.active_color;
+        menu.items[menu.selected].item.color = (1, 1, 1);
+    }
+    
+    self thread menu_control(menu);
+}
+
+// Funciones de toggle para los displays
+toggle_player_health_display()
+{
+    // Verificar restricciones antes de activar
+    borders_active = (self.edge_animation_style_index > 0);
+    healthbar_active = self.healthbar_enabled;
+    healthbarzombie_active = self.healthbarzombie_enabled;
+
+    if (!level.player_health_display.enabled && (borders_active || healthbar_active || healthbarzombie_active))
+    {
+        // No se puede activar, mostrar mensaje
+        if (self.langLEN == 0)
+            self iPrintLnBold("^1No se puede activar mientras las barras de vida o bordes están activos");
+        else
+            self iPrintLnBold("^1Cannot activate while health bars or borders are active");
+        return;
+    }
+
+    scripts\zm\legacy_mods_performance::toggle_player_health_display(self);
+
+    // Si estamos en el menú de configuración, actualizar visibilidad en tiempo real
+    if (isDefined(self.menu_current) && (self.menu_current.title == "VIDA JUGADOR" || self.menu_current.title == "PLAYER HEALTH"))
+    {
+        // Actualizar el texto del estado
+        if (isDefined(self.menu_current.items[0]) && isDefined(self.menu_current.items[0].item))
+        {
+            status = level.player_health_display.enabled ? "ON" : "OFF";
+            self.menu_current.items[0].item setText("Estado: " + status);
+        }
+        // Actualizar visibilidad de opciones
+        update_config_menu_visibility(self.menu_current);
+    }
+    else
+    {
+        // Abrir menú de configuración si no estamos en él
+        wait 0.1;
+        if (isDefined(self.menu_current))
+        {
+            self notify("destroy_current_menu");
+            self thread open_player_health_config_menu();
+        }
+    }
+}
+
+toggle_zombie_health_display()
+{
+    // Verificar restricciones antes de activar
+    borders_active = (self.edge_animation_style_index > 0);
+    healthbar_active = self.healthbar_enabled;
+    healthbarzombie_active = self.healthbarzombie_enabled;
+
+    if (!level.zombie_health_display.enabled && (borders_active || healthbar_active || healthbarzombie_active))
+    {
+        // No se puede activar, mostrar mensaje
+        if (self.langLEN == 0)
+            self iPrintLnBold("^1No se puede activar mientras las barras de vida o bordes están activos");
+        else
+            self iPrintLnBold("^1Cannot activate while health bars or borders are active");
+        return;
+    }
+
+    scripts\zm\legacy_mods_performance::toggle_zombie_health_display(self);
+
+    // Si estamos en el menú de configuración, actualizar visibilidad en tiempo real
+    if (isDefined(self.menu_current) && (self.menu_current.title == "VIDA ZOMBIE" || self.menu_current.title == "ZOMBIE HEALTH"))
+    {
+        // Actualizar el texto del estado
+        if (isDefined(self.menu_current.items[0]) && isDefined(self.menu_current.items[0].item))
+        {
+            status = level.zombie_health_display.enabled ? "ON" : "OFF";
+            self.menu_current.items[0].item setText("Estado: " + status);
+        }
+        // Actualizar visibilidad de opciones
+        update_config_menu_visibility(self.menu_current);
+    }
+    else
+    {
+        // Abrir menú de configuración si no estamos en él
+        wait 0.1;
+        if (isDefined(self.menu_current))
+        {
+            self notify("destroy_current_menu");
+            self thread open_zombie_health_config_menu();
+        }
+    }
+}
+
+toggle_zombie_counter_display()
+{
+    // Verificar restricciones antes de activar
+    borders_active = (self.edge_animation_style_index > 0);
+    healthbar_active = self.healthbar_enabled;
+    healthbarzombie_active = self.healthbarzombie_enabled;
+
+    if (!level.zombie_counter_display.enabled && (borders_active || healthbar_active || healthbarzombie_active))
+    {
+        // No se puede activar, mostrar mensaje
+        if (self.langLEN == 0)
+            self iPrintLnBold("^1No se puede activar mientras las barras de vida o bordes están activos");
+        else
+            self iPrintLnBold("^1Cannot activate while health bars or borders are active");
+        return;
+    }
+
+    scripts\zm\legacy_mods_performance::toggle_zombie_counter_display(self);
+
+    // Si estamos en el menú de configuración, actualizar visibilidad en tiempo real
+    if (isDefined(self.menu_current) && (self.menu_current.title == "CONTADOR ZOMBIES" || self.menu_current.title == "ZOMBIE COUNTER"))
+    {
+        // Actualizar el texto del estado
+        if (isDefined(self.menu_current.items[0]) && isDefined(self.menu_current.items[0].item))
+        {
+            status = level.zombie_counter_display.enabled ? "ON" : "OFF";
+            self.menu_current.items[0].item setText("Estado: " + status);
+        }
+        // Actualizar visibilidad de opciones
+        update_config_menu_visibility(self.menu_current);
+    }
+    else
+    {
+        // Abrir menú de configuración si no estamos en él
+        wait 0.1;
+        if (isDefined(self.menu_current))
+        {
+            self notify("destroy_current_menu");
+            self thread open_zombie_counter_config_menu();
+        }
+    }
+}
+
+// ========================================
+// MENÚS DE CONFIGURACIÓN PARA MODS LEGACY
+// ========================================
+
+// Menú de configuración para vida del jugador
+open_player_health_config_menu()
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
+
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "VIDA JUGADOR" : "PLAYER HEALTH";
+    menu = create_menu(title, self);
+    menu.parent_menu = "performance_mods";
+
+    if (self.langLEN == 0) // Español
+    {
+        // Estado del mod
+        status = level.player_health_display.enabled ? "ON" : "OFF";
+        add_menu_item(menu, "Estado: " + status, ::toggle_player_health_display);
+
+        // Posición (visible solo cuando está activado y en modo Littlegods) - Solo TOP LEFT y TOP RIGHT
+        if (level.player_health_display.x == 10 && level.player_health_display.y == 50)
+            pos_text = "ARRIBA IZQUIERDA";
+        else if (level.player_health_display.x == 630 && level.player_health_display.y == 50)
+            pos_text = "ARRIBA DERECHA";
+        else
+            pos_text = "ARRIBA IZQUIERDA"; // Default to TOP LEFT
+        pos_item = add_menu_item(menu, "Posición: " + pos_text, ::cycle_player_health_position);
+        pos_item.item.alpha = (level.player_health_display.enabled && level.legacy_display_mode == "littlegods") ? 1 : 0;
+
+        // Color (visible solo cuando está activado)
+        if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 1)
+            color_text = "BLANCO";
+        else if (level.player_health_display.color[0] == 0 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 0)
+            color_text = "VERDE";
+        else if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 0 && level.player_health_display.color[2] == 0)
+            color_text = "ROJO";
+        else if (level.player_health_display.color[0] == 0 && level.player_health_display.color[1] == 0 && level.player_health_display.color[2] == 1)
+            color_text = "AZUL";
+        else if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 0)
+            color_text = "AMARILLO";
+        else
+            color_text = "PERSONALIZADO";
+        color_item = add_menu_item(menu, "Color: " + color_text, ::cycle_player_health_color);
+        color_item.item.alpha = level.player_health_display.enabled ? 1 : 0;
+
+        // Transparencia (visible solo cuando está activado)
+        if (level.player_health_display.alpha == 0.5)
+            alpha_text = "50%";
+        else if (level.player_health_display.alpha == 0.75)
+            alpha_text = "75%";
+        else if (level.player_health_display.alpha == 1.0)
+            alpha_text = "100%";
+        else
+            alpha_text = "PERSONALIZADO";
+        alpha_item = add_menu_item(menu, "Transparencia: " + alpha_text, ::cycle_player_health_alpha);
+        alpha_item.item.alpha = level.player_health_display.enabled ? 1 : 0;
+
+        // Degradado de colores (visible solo cuando está activado)
+        gradient_status = level.player_health_display.color_gradient_enabled ? "ON" : "OFF";
+        gradient_item = add_menu_item(menu, "Degradado Colores: " + gradient_status, ::toggle_player_health_gradient);
+        gradient_item.item.alpha = level.player_health_display.enabled ? 1 : 0;
+
+        add_menu_item(menu, "Volver", ::open_performance_mods_menu);
+        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
+    }
+    else // Inglés
+    {
+        // Estado del mod
+        status = level.player_health_display.enabled ? "ON" : "OFF";
+        add_menu_item(menu, "Status: " + status, ::toggle_player_health_display);
+
+        // Posición (visible solo cuando está activado y en modo Littlegods) - Solo TOP LEFT y TOP RIGHT
+        if (level.player_health_display.x == 10 && level.player_health_display.y == 50)
+            pos_text = "TOP LEFT";
+        else if (level.player_health_display.x == 630 && level.player_health_display.y == 50)
+            pos_text = "TOP RIGHT";
+        else
+            pos_text = "TOP LEFT"; // Default to TOP LEFT
+        pos_item = add_menu_item(menu, "Position: " + pos_text, ::cycle_player_health_position);
+        pos_item.item.alpha = (level.player_health_display.enabled && level.legacy_display_mode == "littlegods") ? 1 : 0;
+
+        // Color (visible solo cuando está activado)
+        if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 1)
+            color_text = "WHITE";
+        else if (level.player_health_display.color[0] == 0 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 0)
+            color_text = "GREEN";
+        else if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 0 && level.player_health_display.color[2] == 0)
+            color_text = "RED";
+        else if (level.player_health_display.color[0] == 0 && level.player_health_display.color[1] == 0 && level.player_health_display.color[2] == 1)
+            color_text = "BLUE";
+        else if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 0)
+            color_text = "YELLOW";
+        else
+            color_text = "CUSTOM";
+        color_item = add_menu_item(menu, "Color: " + color_text, ::cycle_player_health_color);
+        color_item.item.alpha = level.player_health_display.enabled ? 1 : 0;
+
+        // Transparencia (visible solo cuando está activado)
+        if (level.player_health_display.alpha == 0.5)
+            alpha_text = "50%";
+        else if (level.player_health_display.alpha == 0.75)
+            alpha_text = "75%";
+        else if (level.player_health_display.alpha == 1.0)
+            alpha_text = "100%";
+        else
+            alpha_text = "CUSTOM";
+        alpha_item = add_menu_item(menu, "Transparency: " + alpha_text, ::cycle_player_health_alpha);
+        alpha_item.item.alpha = level.player_health_display.enabled ? 1 : 0;
+
+        // Color Gradient (visible solo cuando está activado)
+        gradient_status = level.player_health_display.color_gradient_enabled ? "ON" : "OFF";
+        gradient_item = add_menu_item(menu, "Color Gradient: " + gradient_status, ::toggle_player_health_gradient);
+        gradient_item.item.alpha = level.player_health_display.enabled ? 1 : 0;
+
+        add_menu_item(menu, "Back", ::open_performance_mods_menu);
+        add_menu_item(menu, "Close Menu", ::close_all_menus);
+    }
+
+    show_menu(menu);
+    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
+
+    if (isDefined(menu.user.font_animation_index) && menu.user.font_animation_index > 0) {
+        scripts\zm\style_font_animation::apply_font_animation(menu, menu.user.font_animation_index);
+    }
+
+    self thread menu_control(menu);
+}
+
+// Menú de configuración para vida del zombie
+open_zombie_health_config_menu()
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
+
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "VIDA ZOMBIE" : "ZOMBIE HEALTH";
+    menu = create_menu(title, self);
+    menu.parent_menu = "performance_mods";
+
+    if (self.langLEN == 0) // Español
+    {
+        // Estado del mod
+        status = level.zombie_health_display.enabled ? "ON" : "OFF";
+        add_menu_item(menu, "Estado: " + status, ::toggle_zombie_health_display);
+
+        // Posición (visible solo cuando está activado y en modo Littlegods) - Solo TOP LEFT y TOP RIGHT
+        if (level.zombie_health_display.x == 10 && level.zombie_health_display.y == 60)
+            pos_text = "ARRIBA IZQUIERDA";
+        else if (level.zombie_health_display.x == 630 && level.zombie_health_display.y == 60)
+            pos_text = "ARRIBA DERECHA";
+        else
+            pos_text = "ARRIBA IZQUIERDA"; // Default to TOP LEFT
+        pos_item = add_menu_item(menu, "Posición: " + pos_text, ::cycle_zombie_health_position);
+        pos_item.item.alpha = (level.zombie_health_display.enabled && level.legacy_display_mode == "littlegods") ? 1 : 0;
+
+        // Color (visible solo cuando está activado)
+        if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 1)
+            color_text = "BLANCO";
+        else if (level.zombie_health_display.color[0] == 0 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 0)
+            color_text = "VERDE";
+        else if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 0 && level.zombie_health_display.color[2] == 0)
+            color_text = "ROJO";
+        else if (level.zombie_health_display.color[0] == 0 && level.zombie_health_display.color[1] == 0 && level.zombie_health_display.color[2] == 1)
+            color_text = "AZUL";
+        else if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 0)
+            color_text = "AMARILLO";
+        else
+            color_text = "PERSONALIZADO";
+        color_item = add_menu_item(menu, "Color: " + color_text, ::cycle_zombie_health_color);
+        color_item.item.alpha = level.zombie_health_display.enabled ? 1 : 0;
+
+        // Transparencia (visible solo cuando está activado)
+        if (level.zombie_health_display.alpha == 0.5)
+            alpha_text = "50%";
+        else if (level.zombie_health_display.alpha == 0.75)
+            alpha_text = "75%";
+        else if (level.zombie_health_display.alpha == 1.0)
+            alpha_text = "100%";
+        else
+            alpha_text = "PERSONALIZADO";
+        alpha_item = add_menu_item(menu, "Transparencia: " + alpha_text, ::cycle_zombie_health_alpha);
+        alpha_item.item.alpha = level.zombie_health_display.enabled ? 1 : 0;
+
+        // Degradado de colores (visible solo cuando está activado)
+        gradient_status = level.zombie_health_display.color_gradient_enabled ? "ON" : "OFF";
+        gradient_item = add_menu_item(menu, "Degradado Colores: " + gradient_status, ::toggle_zombie_health_gradient);
+        gradient_item.item.alpha = level.zombie_health_display.enabled ? 1 : 0;
+
+        add_menu_item(menu, "Volver", ::open_performance_mods_menu);
+        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
+    }
+    else // Inglés
+    {
+        // Estado del mod
+        status = level.zombie_health_display.enabled ? "ON" : "OFF";
+        add_menu_item(menu, "Status: " + status, ::toggle_zombie_health_display);
+
+        // Posición (visible solo cuando está activado y en modo Littlegods) - Solo TOP LEFT y TOP RIGHT
+        if (level.zombie_health_display.x == 10 && level.zombie_health_display.y == 60)
+            pos_text = "TOP LEFT";
+        else if (level.zombie_health_display.x == 630 && level.zombie_health_display.y == 60)
+            pos_text = "TOP RIGHT";
+        else
+            pos_text = "TOP LEFT"; // Default to TOP LEFT
+        pos_item = add_menu_item(menu, "Position: " + pos_text, ::cycle_zombie_health_position);
+        pos_item.item.alpha = (level.zombie_health_display.enabled && level.legacy_display_mode == "littlegods") ? 1 : 0;
+
+        // Color (visible solo cuando está activado)
+        if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 1)
+            color_text = "WHITE";
+        else if (level.zombie_health_display.color[0] == 0 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 0)
+            color_text = "GREEN";
+        else if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 0 && level.zombie_health_display.color[2] == 0)
+            color_text = "RED";
+        else if (level.zombie_health_display.color[0] == 0 && level.zombie_health_display.color[1] == 0 && level.zombie_health_display.color[2] == 1)
+            color_text = "BLUE";
+        else if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 0)
+            color_text = "YELLOW";
+        else
+            color_text = "CUSTOM";
+        color_item = add_menu_item(menu, "Color: " + color_text, ::cycle_zombie_health_color);
+        color_item.item.alpha = level.zombie_health_display.enabled ? 1 : 0;
+
+        // Transparencia (visible solo cuando está activado)
+        if (level.zombie_health_display.alpha == 0.5)
+            alpha_text = "50%";
+        else if (level.zombie_health_display.alpha == 0.75)
+            alpha_text = "75%";
+        else if (level.zombie_health_display.alpha == 1.0)
+            alpha_text = "100%";
+        else
+            alpha_text = "CUSTOM";
+        alpha_item = add_menu_item(menu, "Transparency: " + alpha_text, ::cycle_zombie_health_alpha);
+        alpha_item.item.alpha = level.zombie_health_display.enabled ? 1 : 0;
+
+        // Color Gradient (visible solo cuando está activado)
+        gradient_status = level.zombie_health_display.color_gradient_enabled ? "ON" : "OFF";
+        gradient_item = add_menu_item(menu, "Color Gradient: " + gradient_status, ::toggle_zombie_health_gradient);
+        gradient_item.item.alpha = level.zombie_health_display.enabled ? 1 : 0;
+
+        add_menu_item(menu, "Back", ::open_performance_mods_menu);
+        add_menu_item(menu, "Close Menu", ::close_all_menus);
+    }
+
+    show_menu(menu);
+    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
+
+    if (isDefined(menu.user.font_animation_index) && menu.user.font_animation_index > 0) {
+        scripts\zm\style_font_animation::apply_font_animation(menu, menu.user.font_animation_index);
+    }
+
+    self thread menu_control(menu);
+}
+
+// Menú de configuración para contador de zombies
+open_zombie_counter_config_menu()
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
+
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "CONTADOR ZOMBIES" : "ZOMBIE COUNTER";
+    menu = create_menu(title, self);
+    menu.parent_menu = "performance_mods";
+
+    if (self.langLEN == 0) // Español
+    {
+        // Estado del mod
+        status = level.zombie_counter_display.enabled ? "ON" : "OFF";
+        add_menu_item(menu, "Estado: " + status, ::toggle_zombie_counter_display);
+
+        // Posición (visible solo cuando está activado y en modo Littlegods) - Solo TOP LEFT y TOP RIGHT
+        if (level.zombie_counter_display.x == 10 && level.zombie_counter_display.y == 70)
+            pos_text = "ARRIBA IZQUIERDA";
+        else if (level.zombie_counter_display.x == 630 && level.zombie_counter_display.y == 70)
+            pos_text = "ARRIBA DERECHA";
+        else
+            pos_text = "ARRIBA IZQUIERDA"; // Default to TOP LEFT
+        pos_item = add_menu_item(menu, "Posición: " + pos_text, ::cycle_zombie_counter_position);
+        pos_item.item.alpha = (level.zombie_counter_display.enabled && level.legacy_display_mode == "littlegods") ? 1 : 0;
+
+        // Color (visible solo cuando está activado)
+        if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 1)
+            color_text = "BLANCO";
+        else if (level.zombie_counter_display.color[0] == 0 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 0)
+            color_text = "VERDE";
+        else if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 0 && level.zombie_counter_display.color[2] == 0)
+            color_text = "ROJO";
+        else if (level.zombie_counter_display.color[0] == 0 && level.zombie_counter_display.color[1] == 0 && level.zombie_counter_display.color[2] == 1)
+            color_text = "AZUL";
+        else if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 0)
+            color_text = "AMARILLO";
+        else
+            color_text = "PERSONALIZADO";
+        color_item = add_menu_item(menu, "Color: " + color_text, ::cycle_zombie_counter_color);
+        color_item.item.alpha = level.zombie_counter_display.enabled ? 1 : 0;
+
+        // Transparencia (visible solo cuando está activado)
+        if (level.zombie_counter_display.alpha == 0.5)
+            alpha_text = "50%";
+        else if (level.zombie_counter_display.alpha == 0.75)
+            alpha_text = "75%";
+        else if (level.zombie_counter_display.alpha == 1.0)
+            alpha_text = "100%";
+        else
+            alpha_text = "PERSONALIZADO";
+        alpha_item = add_menu_item(menu, "Transparencia: " + alpha_text, ::cycle_zombie_counter_alpha);
+        alpha_item.item.alpha = level.zombie_counter_display.enabled ? 1 : 0;
+
+        add_menu_item(menu, "Volver", ::open_performance_mods_menu);
+        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
+    }
+    else // Inglés
+    {
+        // Estado del mod
+        status = level.zombie_counter_display.enabled ? "ON" : "OFF";
+        add_menu_item(menu, "Status: " + status, ::toggle_zombie_counter_display);
+
+        // Posición (visible solo cuando está activado y en modo Littlegods) - Solo TOP LEFT y TOP RIGHT
+        if (level.zombie_counter_display.x == 10 && level.zombie_counter_display.y == 70)
+            pos_text = "TOP LEFT";
+        else if (level.zombie_counter_display.x == 630 && level.zombie_counter_display.y == 70)
+            pos_text = "TOP RIGHT";
+        else
+            pos_text = "TOP LEFT"; // Default to TOP LEFT
+        pos_item = add_menu_item(menu, "Position: " + pos_text, ::cycle_zombie_counter_position);
+        pos_item.item.alpha = (level.zombie_counter_display.enabled && level.legacy_display_mode == "littlegods") ? 1 : 0;
+
+        // Color (visible solo cuando está activado)
+        if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 1)
+            color_text = "WHITE";
+        else if (level.zombie_counter_display.color[0] == 0 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 0)
+            color_text = "GREEN";
+        else if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 0 && level.zombie_counter_display.color[2] == 0)
+            color_text = "RED";
+        else if (level.zombie_counter_display.color[0] == 0 && level.zombie_counter_display.color[1] == 0 && level.zombie_counter_display.color[2] == 1)
+            color_text = "BLUE";
+        else if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 0)
+            color_text = "YELLOW";
+        else
+            color_text = "CUSTOM";
+        color_item = add_menu_item(menu, "Color: " + color_text, ::cycle_zombie_counter_color);
+        color_item.item.alpha = level.zombie_counter_display.enabled ? 1 : 0;
+
+        // Transparencia (visible solo cuando está activado)
+        if (level.zombie_counter_display.alpha == 0.5)
+            alpha_text = "50%";
+        else if (level.zombie_counter_display.alpha == 0.75)
+            alpha_text = "75%";
+        else if (level.zombie_counter_display.alpha == 1.0)
+            alpha_text = "100%";
+        else
+            alpha_text = "CUSTOM";
+        alpha_item = add_menu_item(menu, "Transparency: " + alpha_text, ::cycle_zombie_counter_alpha);
+        alpha_item.item.alpha = level.zombie_counter_display.enabled ? 1 : 0;
+
+        add_menu_item(menu, "Back", ::open_performance_mods_menu);
+        add_menu_item(menu, "Close Menu", ::close_all_menus);
+    }
+
+    show_menu(menu);
+    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
+
+    if (isDefined(menu.user.font_animation_index) && menu.user.font_animation_index > 0) {
+        scripts\zm\style_font_animation::apply_font_animation(menu, menu.user.font_animation_index);
+    }
+
+    self thread menu_control(menu);
+}
+
+// ========================================
+// FUNCIONES AUXILIARES PARA MENÚS
+// ========================================
+
+// Función para actualizar la visibilidad de opciones de configuración
+update_config_menu_visibility(menu)
+{
+    if (!isDefined(menu) || !isDefined(menu.items))
+        return;
+
+    // Para menús de configuración legacy, las opciones de configuración son del índice 1 al 3
+    // (índice 0 = Estado, índice 1 = Posición, índices 2-3 = otras opciones, índices 4-5 = Volver/Cerrar)
+    for(i = 1; i <= 3; i++)
+    {
+        if (isDefined(menu.items[i]) && isDefined(menu.items[i].item))
+        {
+            // Es una opción de configuración, actualizar visibilidad
+            if (menu.title == "VIDA JUGADOR" || menu.title == "PLAYER HEALTH")
+            {
+                // La posición (índice 1) tiene lógica especial: solo visible si está activado Y en modo littlegods
+                if (i == 1)
+                    menu.items[i].item.alpha = (level.player_health_display.enabled && level.legacy_display_mode == "littlegods") ? 1 : 0;
+                else
+                    menu.items[i].item.alpha = level.player_health_display.enabled ? 1 : 0;
+            }
+            else if (menu.title == "VIDA ZOMBIE" || menu.title == "ZOMBIE HEALTH")
+            {
+                // La posición (índice 1) tiene lógica especial: solo visible si está activado Y en modo littlegods
+                if (i == 1)
+                    menu.items[i].item.alpha = (level.zombie_health_display.enabled && level.legacy_display_mode == "littlegods") ? 1 : 0;
+                else
+                    menu.items[i].item.alpha = level.zombie_health_display.enabled ? 1 : 0;
+            }
+            else if (menu.title == "CONTADOR ZOMBIES" || menu.title == "ZOMBIE COUNTER")
+            {
+                // La posición (índice 1) tiene lógica especial: solo visible si está activado Y en modo littlegods
+                if (i == 1)
+                    menu.items[i].item.alpha = (level.zombie_counter_display.enabled && level.legacy_display_mode == "littlegods") ? 1 : 0;
+                else
+                    menu.items[i].item.alpha = level.zombie_counter_display.enabled ? 1 : 0;
+            }
+        }
+    }
+}
+
+// ========================================
+// FUNCIONES DE CICLADO PARA CONFIGURACIÓN
+// ========================================
+
+cycle_legacy_display_mode()
+{
+    // Cambiar entre "littlegods" y "classic"
+    if (level.legacy_display_mode == "littlegods")
+    {
+        scripts\zm\legacy_mods_performance::switch_legacy_display_mode("classic");
+    }
+    else
+    {
+        scripts\zm\legacy_mods_performance::switch_legacy_display_mode("littlegods");
+    }
+
+    // Actualizar menú principal en tiempo real (índice 3, después de los 3 submenús)
+    if (isDefined(self.menu_current))
+    {
+        mode_text = (level.legacy_display_mode == "littlegods") ? "LITTLEGODS" : "CLASSIC";
+
+        // Solo actualizar si estamos en el menú principal de Performance Mods
+        if (self.menu_current.title == "MODS DE RENDIMIENTO" || self.menu_current.title == "PERFORMANCE MODS")
+        {
+            // El modo está en el índice 3 (después de los 3 submenús)
+            if (isDefined(self.menu_current.items[3]) && isDefined(self.menu_current.items[3].item))
+            {
+                mode_label = (self.langLEN == 0) ? "Modo: " : "Mode: ";
+                self.menu_current.items[3].item setText(mode_label + mode_text);
+            }
+        }
+    }
+}
+
+cycle_player_health_position()
+{
+    // Solo permitir cambio de posición en modo Littlegods
+    if (level.legacy_display_mode != "littlegods")
+        return;
+
+    // Ciclar solo entre TOP LEFT y TOP RIGHT
+    if (level.player_health_display.x == 10 && level.player_health_display.y == 50) // TOP LEFT
+    {
+        level.player_health_display.x = 630;
+        level.player_health_display.y = 50; // TOP RIGHT
+    }
+    else // TOP RIGHT o cualquier otra posición
+    {
+        level.player_health_display.x = 10;
+        level.player_health_display.y = 50; // TOP LEFT
+    }
+
+    // Actualizar displays existentes usando la función de modo
+    foreach(player in level.players)
+    {
+        scripts\zm\legacy_mods_performance::update_player_health_position(player);
+    }
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[1]) && isDefined(self.menu_current.items[1].item))
+    {
+        // Determinar el texto de posición actual (solo TOP LEFT y TOP RIGHT)
+        if (level.player_health_display.x == 10 && level.player_health_display.y == 50)
+            pos_text = (self.langLEN == 0) ? "ARRIBA IZQUIERDA" : "TOP LEFT";
+        else if (level.player_health_display.x == 630 && level.player_health_display.y == 50)
+            pos_text = (self.langLEN == 0) ? "ARRIBA DERECHA" : "TOP RIGHT";
+        else
+            pos_text = (self.langLEN == 0) ? "ARRIBA IZQUIERDA" : "TOP LEFT"; // Default to TOP LEFT
+
+        // Actualizar el texto del elemento del menú (ahora en índice 1)
+        pos_label = (self.langLEN == 0) ? "Posición: " : "Position: ";
+        self.menu_current.items[1].item setText(pos_label + pos_text);
+    }
+}
+
+
+cycle_player_health_color()
+{
+    // Ciclar colores predefinidos
+    if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 1) // WHITE
+        level.player_health_display.color = (0, 1, 0); // GREEN
+    else if (level.player_health_display.color[0] == 0 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 0) // GREEN
+        level.player_health_display.color = (1, 0, 0); // RED
+    else if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 0 && level.player_health_display.color[2] == 0) // RED
+        level.player_health_display.color = (0, 0, 1); // BLUE
+    else if (level.player_health_display.color[0] == 0 && level.player_health_display.color[1] == 0 && level.player_health_display.color[2] == 1) // BLUE
+        level.player_health_display.color = (1, 1, 0); // YELLOW
+    else // YELLOW o personalizado
+        level.player_health_display.color = (1, 1, 1); // WHITE
+
+    // Actualizar displays existentes
+    foreach(player in level.players)
+    {
+        if (isDefined(player.player_health_hud))
+        {
+            player.player_health_hud.color = level.player_health_display.color;
+        }
+        if (isDefined(player.player_health_value))
+        {
+            player.player_health_value.color = level.player_health_display.color;
+        }
+    }
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[2]) && isDefined(self.menu_current.items[2].item))
+    {
+        // Determinar el texto de color actual
+        if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 1)
+            color_text = (self.langLEN == 0) ? "BLANCO" : "WHITE";
+        else if (level.player_health_display.color[0] == 0 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 0)
+            color_text = (self.langLEN == 0) ? "VERDE" : "GREEN";
+        else if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 0 && level.player_health_display.color[2] == 0)
+            color_text = (self.langLEN == 0) ? "ROJO" : "RED";
+        else if (level.player_health_display.color[0] == 0 && level.player_health_display.color[1] == 0 && level.player_health_display.color[2] == 1)
+            color_text = (self.langLEN == 0) ? "AZUL" : "BLUE";
+        else if (level.player_health_display.color[0] == 1 && level.player_health_display.color[1] == 1 && level.player_health_display.color[2] == 0)
+            color_text = (self.langLEN == 0) ? "AMARILLO" : "YELLOW";
+        else
+            color_text = (self.langLEN == 0) ? "PERSONALIZADO" : "CUSTOM";
+
+        // Actualizar el texto del elemento del menú
+        self.menu_current.items[2].item setText("Color: " + color_text);
+    }
+}
+
+cycle_player_health_alpha()
+{
+    // Ciclar niveles de transparencia
+    if (level.player_health_display.alpha == 0.5)
+        level.player_health_display.alpha = 0.75;
+    else if (level.player_health_display.alpha == 0.75)
+        level.player_health_display.alpha = 1.0;
+    else // 1.0 o personalizado
+        level.player_health_display.alpha = 0.5;
+
+    // Actualizar displays existentes
+    foreach(player in level.players)
+    {
+        if (isDefined(player.player_health_hud))
+        {
+            player.player_health_hud.alpha = level.player_health_display.alpha;
+        }
+        if (isDefined(player.player_health_value))
+        {
+            player.player_health_value.alpha = level.player_health_display.alpha;
+        }
+    }
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[3]) && isDefined(self.menu_current.items[3].item))
+    {
+        // Determinar el texto de transparencia actual
+        if (level.player_health_display.alpha == 0.5)
+            alpha_text = "50%";
+        else if (level.player_health_display.alpha == 0.75)
+            alpha_text = "75%";
+        else if (level.player_health_display.alpha == 1.0)
+            alpha_text = "100%";
+        else
+            alpha_text = (self.langLEN == 0) ? "PERSONALIZADO" : "CUSTOM";
+
+        // Actualizar el texto del elemento del menú
+        self.menu_current.items[3].item setText("Transparencia: " + alpha_text);
+    }
+}
+
+cycle_zombie_health_position()
+{
+    // Solo permitir cambio de posición en modo Littlegods
+    if (level.legacy_display_mode != "littlegods")
+        return;
+
+    // Ciclar solo entre TOP LEFT y TOP RIGHT
+    if (level.zombie_health_display.x == 10 && level.zombie_health_display.y == 60) // TOP LEFT
+    {
+        level.zombie_health_display.x = 630;
+        level.zombie_health_display.y = 60; // TOP RIGHT
+    }
+    else // TOP RIGHT o cualquier otra posición
+    {
+        level.zombie_health_display.x = 10;
+        level.zombie_health_display.y = 60; // TOP LEFT
+    }
+
+    // Actualizar displays existentes usando la función de modo
+    foreach(player in level.players)
+    {
+        scripts\zm\legacy_mods_performance::update_zombie_health_position(player);
+    }
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[1]) && isDefined(self.menu_current.items[1].item))
+    {
+        // Determinar el texto de posición actual (solo TOP LEFT y TOP RIGHT)
+        if (level.zombie_health_display.x == 10 && level.zombie_health_display.y == 60)
+            pos_text = (self.langLEN == 0) ? "ARRIBA IZQUIERDA" : "TOP LEFT";
+        else if (level.zombie_health_display.x == 630 && level.zombie_health_display.y == 60)
+            pos_text = (self.langLEN == 0) ? "ARRIBA DERECHA" : "TOP RIGHT";
+        else
+            pos_text = (self.langLEN == 0) ? "ARRIBA IZQUIERDA" : "TOP LEFT"; // Default to TOP LEFT
+
+        // Actualizar el texto del elemento del menú (ahora en índice 1)
+        pos_label = (self.langLEN == 0) ? "Posición: " : "Position: ";
+        self.menu_current.items[1].item setText(pos_label + pos_text);
+    }
+}
+
+
+cycle_zombie_health_color()
+{
+    // Ciclar colores predefinidos
+    if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 1) // WHITE
+        level.zombie_health_display.color = (0, 1, 0); // GREEN
+    else if (level.zombie_health_display.color[0] == 0 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 0) // GREEN
+        level.zombie_health_display.color = (1, 0, 0); // RED
+    else if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 0 && level.zombie_health_display.color[2] == 0) // RED
+        level.zombie_health_display.color = (0, 0, 1); // BLUE
+    else if (level.zombie_health_display.color[0] == 0 && level.zombie_health_display.color[1] == 0 && level.zombie_health_display.color[2] == 1) // BLUE
+        level.zombie_health_display.color = (1, 1, 0); // YELLOW
+    else // YELLOW o personalizado
+        level.zombie_health_display.color = (1, 1, 1); // WHITE
+
+    // Actualizar displays existentes
+    foreach(player in level.players)
+    {
+        if (isDefined(player.zombie_health_hud))
+        {
+            player.zombie_health_hud.color = level.zombie_health_display.color;
+        }
+        if (isDefined(player.zombie_health_value))
+        {
+            player.zombie_health_value.color = level.zombie_health_display.color;
+        }
+    }
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[2]) && isDefined(self.menu_current.items[2].item))
+    {
+        // Determinar el texto de color actual
+        if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 1)
+            color_text = (self.langLEN == 0) ? "BLANCO" : "WHITE";
+        else if (level.zombie_health_display.color[0] == 0 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 0)
+            color_text = (self.langLEN == 0) ? "VERDE" : "GREEN";
+        else if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 0 && level.zombie_health_display.color[2] == 0)
+            color_text = (self.langLEN == 0) ? "ROJO" : "RED";
+        else if (level.zombie_health_display.color[0] == 0 && level.zombie_health_display.color[1] == 0 && level.zombie_health_display.color[2] == 1)
+            color_text = (self.langLEN == 0) ? "AZUL" : "BLUE";
+        else if (level.zombie_health_display.color[0] == 1 && level.zombie_health_display.color[1] == 1 && level.zombie_health_display.color[2] == 0)
+            color_text = (self.langLEN == 0) ? "AMARILLO" : "YELLOW";
+        else
+            color_text = (self.langLEN == 0) ? "PERSONALIZADO" : "CUSTOM";
+
+        // Actualizar el texto del elemento del menú
+        self.menu_current.items[2].item setText("Color: " + color_text);
+    }
+}
+
+cycle_zombie_health_alpha()
+{
+    // Ciclar niveles de transparencia
+    if (level.zombie_health_display.alpha == 0.5)
+        level.zombie_health_display.alpha = 0.75;
+    else if (level.zombie_health_display.alpha == 0.75)
+        level.zombie_health_display.alpha = 1.0;
+    else // 1.0 o personalizado
+        level.zombie_health_display.alpha = 0.5;
+
+    // Actualizar displays existentes
+    foreach(player in level.players)
+    {
+        if (isDefined(player.zombie_health_hud))
+        {
+            player.zombie_health_hud.alpha = level.zombie_health_display.alpha;
+        }
+        if (isDefined(player.zombie_health_value))
+        {
+            player.zombie_health_value.alpha = level.zombie_health_display.alpha;
+        }
+    }
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[3]) && isDefined(self.menu_current.items[3].item))
+    {
+        // Determinar el texto de transparencia actual
+        if (level.zombie_health_display.alpha == 0.5)
+            alpha_text = "50%";
+        else if (level.zombie_health_display.alpha == 0.75)
+            alpha_text = "75%";
+        else if (level.zombie_health_display.alpha == 1.0)
+            alpha_text = "100%";
+        else
+            alpha_text = (self.langLEN == 0) ? "PERSONALIZADO" : "CUSTOM";
+
+        // Actualizar el texto del elemento del menú
+        self.menu_current.items[3].item setText("Transparencia: " + alpha_text);
+    }
+}
+
+cycle_zombie_counter_position()
+{
+    // Solo permitir cambio de posición en modo Littlegods
+    if (level.legacy_display_mode != "littlegods")
+        return;
+
+    // Ciclar solo entre TOP LEFT y TOP RIGHT
+    if (level.zombie_counter_display.x == 10 && level.zombie_counter_display.y == 70) // TOP LEFT
+    {
+        level.zombie_counter_display.x = 630;
+        level.zombie_counter_display.y = 70; // TOP RIGHT
+    }
+    else // TOP RIGHT o cualquier otra posición
+    {
+        level.zombie_counter_display.x = 10;
+        level.zombie_counter_display.y = 70; // TOP LEFT
+    }
+
+    // Actualizar displays existentes usando la función de modo
+    foreach(player in level.players)
+    {
+        scripts\zm\legacy_mods_performance::update_zombie_counter_position(player);
+    }
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[1]) && isDefined(self.menu_current.items[1].item))
+    {
+        // Determinar el texto de posición actual (solo TOP LEFT y TOP RIGHT)
+        if (level.zombie_counter_display.x == 10 && level.zombie_counter_display.y == 70)
+            pos_text = (self.langLEN == 0) ? "ARRIBA IZQUIERDA" : "TOP LEFT";
+        else if (level.zombie_counter_display.x == 630 && level.zombie_counter_display.y == 70)
+            pos_text = (self.langLEN == 0) ? "ARRIBA DERECHA" : "TOP RIGHT";
+        else
+            pos_text = (self.langLEN == 0) ? "ARRIBA IZQUIERDA" : "TOP LEFT"; // Default to TOP LEFT
+
+        // Actualizar el texto del elemento del menú (ahora en índice 1)
+        pos_label = (self.langLEN == 0) ? "Posición: " : "Position: ";
+        self.menu_current.items[1].item setText(pos_label + pos_text);
+    }
+}
+
+
+cycle_zombie_counter_color()
+{
+    // Ciclar colores predefinidos
+    if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 1) // WHITE
+        level.zombie_counter_display.color = (0, 1, 0); // GREEN
+    else if (level.zombie_counter_display.color[0] == 0 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 0) // GREEN
+        level.zombie_counter_display.color = (1, 0, 0); // RED
+    else if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 0 && level.zombie_counter_display.color[2] == 0) // RED
+        level.zombie_counter_display.color = (0, 0, 1); // BLUE
+    else if (level.zombie_counter_display.color[0] == 0 && level.zombie_counter_display.color[1] == 0 && level.zombie_counter_display.color[2] == 1) // BLUE
+        level.zombie_counter_display.color = (1, 1, 0); // YELLOW
+    else // YELLOW o personalizado
+        level.zombie_counter_display.color = (1, 1, 1); // WHITE
+
+    // Actualizar displays existentes
+    foreach(player in level.players)
+    {
+        if (isDefined(player.zombie_counter_hud))
+        {
+            player.zombie_counter_hud.color = level.zombie_counter_display.color;
+        }
+        if (isDefined(player.zombie_counter_value))
+        {
+            player.zombie_counter_value.color = level.zombie_counter_display.color;
+        }
+    }
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[2]) && isDefined(self.menu_current.items[2].item))
+    {
+        // Determinar el texto de color actual
+        if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 1)
+            color_text = (self.langLEN == 0) ? "BLANCO" : "WHITE";
+        else if (level.zombie_counter_display.color[0] == 0 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 0)
+            color_text = (self.langLEN == 0) ? "VERDE" : "GREEN";
+        else if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 0 && level.zombie_counter_display.color[2] == 0)
+            color_text = (self.langLEN == 0) ? "ROJO" : "RED";
+        else if (level.zombie_counter_display.color[0] == 0 && level.zombie_counter_display.color[1] == 0 && level.zombie_counter_display.color[2] == 1)
+            color_text = (self.langLEN == 0) ? "AZUL" : "BLUE";
+        else if (level.zombie_counter_display.color[0] == 1 && level.zombie_counter_display.color[1] == 1 && level.zombie_counter_display.color[2] == 0)
+            color_text = (self.langLEN == 0) ? "AMARILLO" : "YELLOW";
+        else
+            color_text = (self.langLEN == 0) ? "PERSONALIZADO" : "CUSTOM";
+
+        // Actualizar el texto del elemento del menú
+        self.menu_current.items[2].item setText("Color: " + color_text);
+    }
+}
+
+cycle_zombie_counter_alpha()
+{
+    // Ciclar niveles de transparencia
+    if (level.zombie_counter_display.alpha == 0.5)
+        level.zombie_counter_display.alpha = 0.75;
+    else if (level.zombie_counter_display.alpha == 0.75)
+        level.zombie_counter_display.alpha = 1.0;
+    else // 1.0 o personalizado
+        level.zombie_counter_display.alpha = 0.5;
+
+    // Actualizar displays existentes
+    foreach(player in level.players)
+    {
+        if (isDefined(player.zombie_counter_hud))
+        {
+            player.zombie_counter_hud.alpha = level.zombie_counter_display.alpha;
+        }
+        if (isDefined(player.zombie_counter_value))
+        {
+            player.zombie_counter_value.alpha = level.zombie_counter_display.alpha;
+        }
+    }
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[3]) && isDefined(self.menu_current.items[3].item))
+    {
+        // Determinar el texto de transparencia actual
+        if (level.zombie_counter_display.alpha == 0.5)
+            alpha_text = "50%";
+        else if (level.zombie_counter_display.alpha == 0.75)
+            alpha_text = "75%";
+        else if (level.zombie_counter_display.alpha == 1.0)
+            alpha_text = "100%";
+        else
+            alpha_text = (self.langLEN == 0) ? "PERSONALIZADO" : "CUSTOM";
+
+        // Actualizar el texto del elemento del menú
+        self.menu_current.items[3].item setText("Transparencia: " + alpha_text);
+    }
+}
+
 test_menu_sounds()
 {
     // Evitar múltiples activaciones
@@ -3946,6 +5094,48 @@ test_menu_sounds()
     self.is_testing_sounds = undefined;
 }
 
+// ========================================
+// FUNCIONES TOGGLE PARA DEGRADADO DE COLORES
+// ========================================
+
+toggle_player_health_gradient()
+{
+    level.player_health_display.color_gradient_enabled = !level.player_health_display.color_gradient_enabled;
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && (self.menu_current.title == "VIDA JUGADOR" || self.menu_current.title == "PLAYER HEALTH"))
+    {
+        // Actualizar el texto del estado del degradado
+        if (isDefined(self.menu_current.items[4]) && isDefined(self.menu_current.items[4].item))
+        {
+            gradient_status = level.player_health_display.color_gradient_enabled ? "ON" : "OFF";
+            if (self.langLEN == 0)
+                self.menu_current.items[4].item setText("Degradado Colores: " + gradient_status);
+            else
+                self.menu_current.items[4].item setText("Color Gradient: " + gradient_status);
+        }
+    }
+}
+
+toggle_zombie_health_gradient()
+{
+    level.zombie_health_display.color_gradient_enabled = !level.zombie_health_display.color_gradient_enabled;
+
+    // Actualizar menú en tiempo real
+    if (isDefined(self.menu_current) && (self.menu_current.title == "VIDA ZOMBIE" || self.menu_current.title == "ZOMBIE HEALTH"))
+    {
+        // Actualizar el texto del estado del degradado
+        if (isDefined(self.menu_current.items[4]) && isDefined(self.menu_current.items[4].item))
+        {
+            gradient_status = level.zombie_health_display.color_gradient_enabled ? "ON" : "OFF";
+            if (self.langLEN == 0)
+                self.menu_current.items[4].item setText("Degradado Colores: " + gradient_status);
+            else
+                self.menu_current.items[4].item setText("Color Gradient: " + gradient_status);
+        }
+    }
+}
+
 cycle_edge_animation_style()
 {
     // Evitar múltiples activaciones
@@ -3954,28 +5144,41 @@ cycle_edge_animation_style()
         wait 0.1;
         return;
     }
-
+    
     self.is_cycling_edge_animation = true;
 
+    // Verificar si hay mods legacy activos
+    legacy_mods_active = are_legacy_mods_active();
+    
     // Incrementar el índice de estilo de animación
     self.edge_animation_style_index += 1;
-
+    
     // Si excede el máximo, volver a 0
     maxEdgeAnimStyles = level.edge_animation_styles.size;
     if (self.edge_animation_style_index >= maxEdgeAnimStyles)
         self.edge_animation_style_index = 0;
-
+    
+    // Si hay mods legacy activos y se intenta activar bordes, forzar a 0 (sin borde)
+    if (legacy_mods_active && self.edge_animation_style_index > 0)
+    {
+        self.edge_animation_style_index = 0;
+        // Mostrar mensaje de advertencia
+        if (self.langLEN == 0)
+            self iPrintlnBold("^3Bordes desactivados - Mods de rendimiento activos");
+        else
+            self iPrintlnBold("^3Borders disabled - Performance mods active");
+    }
 
     // Aplicar la nueva animación de borde al menú actual
     if (isDefined(self.menu_current))
     {
         self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
     }
-
+    
     // Obtener el nombre del estilo para mostrar
     edgeAnimStyleName = scripts\zm\style_edge_animation::get_edge_animation_style_name(self.edge_animation_style_index, self.langLEN);
-
-
+    
+    
     // Actualizar el texto del menú
     if (isDefined(self.menu_current))
     {
@@ -3991,7 +5194,7 @@ cycle_edge_animation_style()
             }
         }
     }
-
+    
     wait 0.2;
     self.is_cycling_edge_animation = undefined;
 }
@@ -5538,6 +6741,7 @@ open_mods_littlegods_menu()
     borders_active = (self.edge_animation_style_index > 0);
     healthbar_active = self.healthbar_enabled;
     healthbarzombie_active = self.healthbarzombie_enabled;
+    legacy_mods_active = are_legacy_mods_active();
 
     if (self.langLEN == 0) // Español
     {
@@ -5545,17 +6749,20 @@ open_mods_littlegods_menu()
 
         // Agregar opción de barra de vida y marcarla en rojo si no está disponible
         healthbar_item = add_menu_item(menu, "Barra de Vida", ::open_healthbar_menu);
-        if ((borders_active && !self.healthbar_enabled) || (healthbarzombie_active && !self.healthbar_enabled))
+        if ((borders_active && !self.healthbar_enabled) || (healthbarzombie_active && !self.healthbar_enabled) || (legacy_mods_active && !self.healthbar_enabled))
         {
             healthbar_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
         }
 
         // Agregar opción de barra zombie y marcarla en rojo si no está disponible
-        zombie_bar_item = add_menu_item(menu, "Barra Zombie", ::open_healthbarzombie_menu);
-        if ((borders_active && !self.healthbarzombie_enabled) || (healthbar_active && !self.healthbarzombie_enabled))
+        zombie_bar_item =         add_menu_item(menu, "Barra Zombie", ::open_healthbarzombie_menu);
+        if ((borders_active && !self.healthbarzombie_enabled) || (healthbar_active && !self.healthbarzombie_enabled) || (legacy_mods_active && !self.healthbarzombie_enabled))
         {
             zombie_bar_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
         }
+
+        // Nuevos mods de rendimiento
+        add_menu_item(menu, "Heredado Mods", ::open_performance_mods_menu);
 
         add_menu_item(menu, "Volver", ::menu_go_back_to_main);
         add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
@@ -5566,17 +6773,20 @@ open_mods_littlegods_menu()
 
         // Agregar opción de barra de vida y marcarla en rojo si no está disponible
         healthbar_item = add_menu_item(menu, "Health Bar", ::open_healthbar_menu);
-        if ((borders_active && !self.healthbar_enabled) || (healthbarzombie_active && !self.healthbar_enabled))
+        if ((borders_active && !self.healthbar_enabled) || (healthbarzombie_active && !self.healthbar_enabled) || (legacy_mods_active && !self.healthbar_enabled))
         {
             healthbar_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
         }
 
         // Agregar opción de barra zombie y marcarla en rojo si no está disponible
         zombie_bar_item = add_menu_item(menu, "Zombie Bar", ::open_healthbarzombie_menu);
-        if ((borders_active && !self.healthbarzombie_enabled) || (healthbar_active && !self.healthbarzombie_enabled))
+        if ((borders_active && !self.healthbarzombie_enabled) || (healthbar_active && !self.healthbarzombie_enabled) || (legacy_mods_active && !self.healthbarzombie_enabled))
         {
             zombie_bar_item.item.color = (1, 0.2, 0.2); // Rojo para indicar que no está disponible
         }
+
+        // Nuevos mods de rendimiento
+        add_menu_item(menu, "Legacy Mods", ::open_performance_mods_menu);
 
         add_menu_item(menu, "Back", ::menu_go_back_to_main);
         add_menu_item(menu, "Close Menu", ::close_all_menus);

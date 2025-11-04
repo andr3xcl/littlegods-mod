@@ -85,8 +85,8 @@ toggle_godmode()
         else
             self iPrintLnBold("^2God Mode ENABLED");
             
-        // Mostrar un indicador de God Mode activo
-        self thread show_godmode_indicator();
+        // Indicador de God Mode removido por petición del usuario
+        // self thread show_godmode_indicator();
     }
     else
     {
