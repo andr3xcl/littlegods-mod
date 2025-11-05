@@ -6726,13 +6726,17 @@ menu_go_back_to_map()
 //====================================================================================
 
 // Menú para ver estadísticas guardadas
-open_recent_matches_menu()
+open_recent_matches_menu(saved_position)
 {
     self endon("disconnect");
     self endon("destroy_all_menus");
 
+    // Si no se especifica posición guardada, usar 0
+    if (!isDefined(saved_position))
+        saved_position = 0;
+
     self notify("destroy_current_menu");
-    wait 0.1;
+    wait 0.01; // Delay reducido para navegación en tiempo real
 
     title = (self.langLEN == 0) ? "PARTIDAS RECIENTES" : "RECENT MATCHES";
     menu = create_menu(title, self);
@@ -6934,6 +6938,16 @@ open_recent_matches_menu()
     show_menu(menu);
     menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
 
+    // Establecer la posición del selector guardada (para navegación en tiempo real)
+    if (saved_position >= 0 && saved_position < menu.items.size)
+    {
+        menu.selected = saved_position;
+    }
+    else
+    {
+        menu.selected = 0; // Fallback a la primera posición
+    }
+
     if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
     {
         menu.active_color = self.menu_current.active_color;
@@ -7035,6 +7049,13 @@ cycle_recent_match_forward()
 // Función para cambiar inmediatamente a otra partida (efecto tiempo real)
 change_recent_match_instantly(recent_files)
 {
+    // Guardar la posición actual del selector antes de destruir el menú
+    saved_selector_position = 0;
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.selected))
+    {
+        saved_selector_position = self.menu_current.selected;
+    }
+
     // Destruir el menú actual inmediatamente
     if (isDefined(self.menu_current))
     {
@@ -7067,7 +7088,7 @@ change_recent_match_instantly(recent_files)
 
     // Recrear el menú inmediatamente con la nueva partida
     wait 0.01; // Pequeño delay para asegurar que se destruya
-    self thread open_recent_matches_menu();
+    self thread open_recent_matches_menu(saved_selector_position);
 
     // Reproducir sonido de navegación
     self playsound("menu_click");
