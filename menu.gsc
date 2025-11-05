@@ -401,6 +401,28 @@ onPlayerSpawned()
             self disableInvulnerability();
             self.godmode_enabled = false;
         }
+
+        // Cargar configuración guardada AUTOMÁTICAMENTE al respawnear
+        // Esto sobrescribe los valores por defecto con la configuración guardada
+        success = scripts\zm\sqllocal::load_menu_config(self);
+        if (success)
+        {
+            // Aplicar estilos guardados automáticamente
+            if (isDefined(self.menu_style_index) && self.menu_style_index >= 0)
+            {
+                // Aplicar estilo del menú si hay una función disponible
+                if (isDefined(level.apply_menu_style_func))
+                {
+                    self thread [[level.apply_menu_style_func]](self.menu_style_index);
+                }
+            }
+
+            // Aplicar otros ajustes si existen funciones disponibles
+            if (isDefined(self.transparency_index) && isDefined(level.apply_transparency_func))
+            {
+                self thread [[level.apply_transparency_func]](self.transparency_index);
+            }
+        }
     }
 }
 
@@ -2926,21 +2948,171 @@ toggle_language()
         wait 0.1;
         return;
     }
-    
+
     self.is_toggling_language = true;
-    
+
     // Alternar entre español e inglés
     self.langLEN = (self.langLEN == 0) ? 1 : 0;
-    
-    
-    // Reconstruir el menú principal para reflejar el nuevo idioma
-    self notify("destroy_current_menu");
-    wait 0.1;
-    self thread open_main_menu();
-    
+
+    // Actualizar textos del menú en tiempo real
+    self update_settings_menu_texts();
+
     // Esperar un tiempo antes de permitir otra activación
     wait 0.5;
     self.is_toggling_language = undefined;
+}
+
+// Función para actualizar textos del menú settings en tiempo real
+update_settings_menu_texts()
+{
+    // Solo actualizar si estamos en el menú de settings
+    if (!isDefined(self.menu_current) || !isDefined(self.menu_current.title))
+        return;
+
+    // Verificar si es el menú de settings
+    menu_title = self.menu_current.title;
+    if (menu_title != "CONFIGURACIÓN" && menu_title != "SETTINGS")
+        return;
+
+    // Actualizar cada item del menú según el idioma actual
+    if (self.langLEN == 0) // Español
+    {
+        // Item 0: Idioma
+        if (isDefined(self.menu_current.items[0]))
+        {
+            lang = (self.langLEN == 0) ? "Español" : "Inglés";
+            self.menu_current.items[0].item setText("Idioma: " + lang);
+        }
+
+        // Item 1: Estilo Menú
+        if (isDefined(self.menu_current.items[1]))
+        {
+            styleName = get_style_name(self.menu_style_index, self.langLEN);
+            self.menu_current.items[1].item setText("Estilo Menú: " + styleName);
+        }
+
+        // Item 2: Estilo Selector
+        if (isDefined(self.menu_current.items[2]))
+        {
+            selectorStyleName = scripts\zm\style_selector::get_selector_style_name(self.selector_style_index, self.langLEN);
+            self.menu_current.items[2].item setText("Estilo Selector: " + selectorStyleName);
+        }
+
+        // Item 3: Posición Texto
+        if (isDefined(self.menu_current.items[3]))
+        {
+            fontPositionName = scripts\zm\style_font_position::get_font_position_name(self.font_position_index, self.langLEN);
+            self.menu_current.items[3].item setText("Posición Texto: " + fontPositionName);
+        }
+
+        // Item 4: Animación Borde
+        if (isDefined(self.menu_current.items[4]))
+        {
+            edgeAnimStyleName = scripts\zm\style_edge_animation::get_edge_animation_style_name(self.edge_animation_style_index, self.langLEN);
+            self.menu_current.items[4].item setText("Animación Borde: " + edgeAnimStyleName);
+        }
+
+        // Item 5: Animación Fuente
+        if (isDefined(self.menu_current.items[5]))
+        {
+            fontAnimName = scripts\zm\style_font_animation::get_font_animation_name(self.font_animation_index, self.langLEN);
+            self.menu_current.items[5].item setText("Animación Fuente: " + fontAnimName);
+        }
+
+        // Item 6: Transparencia
+        if (isDefined(self.menu_current.items[6]))
+        {
+            transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
+            self.menu_current.items[6].item setText(transparencyName);
+        }
+
+        // Item 7: Sonidos
+        if (isDefined(self.menu_current.items[7]))
+        {
+            self.menu_current.items[7].item setText("Sonidos");
+        }
+
+        // Item 8: Guardar Configuración
+        if (isDefined(self.menu_current.items[8]))
+        {
+            self.menu_current.items[8].item setText("Guardar Configuración");
+        }
+
+        // Items restantes: Volver y Cerrar Menú
+        if (isDefined(self.menu_current.items[9]))
+            self.menu_current.items[9].item setText("Volver");
+        if (isDefined(self.menu_current.items[10]))
+            self.menu_current.items[10].item setText("Cerrar Menú");
+    }
+    else // Inglés
+    {
+        // Item 0: Language
+        if (isDefined(self.menu_current.items[0]))
+        {
+            lang = (self.langLEN == 0) ? "Spanish" : "English";
+            self.menu_current.items[0].item setText("Language: " + lang);
+        }
+
+        // Item 1: Menu Style
+        if (isDefined(self.menu_current.items[1]))
+        {
+            styleName = get_style_name(self.menu_style_index, self.langLEN);
+            self.menu_current.items[1].item setText("Menu Style: " + styleName);
+        }
+
+        // Item 2: Selector Style
+        if (isDefined(self.menu_current.items[2]))
+        {
+            selectorStyleName = scripts\zm\style_selector::get_selector_style_name(self.selector_style_index, self.langLEN);
+            self.menu_current.items[2].item setText("Selector Style: " + selectorStyleName);
+        }
+
+        // Item 3: Text Position
+        if (isDefined(self.menu_current.items[3]))
+        {
+            fontPositionName = scripts\zm\style_font_position::get_font_position_name(self.font_position_index, self.langLEN);
+            self.menu_current.items[3].item setText("Text Position: " + fontPositionName);
+        }
+
+        // Item 4: Edge Animation
+        if (isDefined(self.menu_current.items[4]))
+        {
+            edgeAnimStyleName = scripts\zm\style_edge_animation::get_edge_animation_style_name(self.edge_animation_style_index, self.langLEN);
+            self.menu_current.items[4].item setText("Edge Animation: " + edgeAnimStyleName);
+        }
+
+        // Item 5: Font Animation
+        if (isDefined(self.menu_current.items[5]))
+        {
+            fontAnimName = scripts\zm\style_font_animation::get_font_animation_name(self.font_animation_index, self.langLEN);
+            self.menu_current.items[5].item setText("Font Animation: " + fontAnimName);
+        }
+
+        // Item 6: Transparency
+        if (isDefined(self.menu_current.items[6]))
+        {
+            transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
+            self.menu_current.items[6].item setText(transparencyName);
+        }
+
+        // Item 7: Sound
+        if (isDefined(self.menu_current.items[7]))
+        {
+            self.menu_current.items[7].item setText("Sound");
+        }
+
+        // Item 8: Save Configuration
+        if (isDefined(self.menu_current.items[8]))
+        {
+            self.menu_current.items[8].item setText("Save Configuration");
+        }
+
+        // Items restantes: Back y Close Menu
+        if (isDefined(self.menu_current.items[9]))
+            self.menu_current.items[9].item setText("Back");
+        if (isDefined(self.menu_current.items[10]))
+            self.menu_current.items[10].item setText("Close Menu");
+    }
 }
 
 // Función personalizada para configurar la barra
@@ -3041,7 +3213,7 @@ open_settings_menu()
 
     if(!isDefined(self.menu_select_sound_index))
         self.menu_select_sound_index = 2; // uin_main_enter por defecto
-    
+
     // Añadir opciones al menú con textos según el idioma
     if (self.langLEN == 0) // Español
     {
@@ -3075,6 +3247,9 @@ open_settings_menu()
 
         // Nueva opción para menú de sonidos
         add_menu_item(menu, "Sonidos", ::open_sound_settings_menu);
+
+        // Nueva opción para guardar configuración del menú
+        add_menu_item(menu, "Guardar Configuración", ::save_menu_configuration);
 
 
         /*// Opción para activar/desactivar God Mode
@@ -3131,6 +3306,9 @@ open_settings_menu()
 
         // Nueva opción para menú de sonidos
         add_menu_item(menu, "Sound", ::open_sound_settings_menu);
+
+        // Nueva opción para guardar configuración del menú
+        add_menu_item(menu, "Save Configuration", ::save_menu_configuration);
 
 
         /*// Opción para activar/desactivar God Mode
@@ -3481,6 +3659,42 @@ cycle_transparency()
     
     wait 0.2;
     self.is_cycling_transparency = undefined;
+}
+
+// Función para guardar la configuración del menú
+save_menu_configuration()
+{
+    // Evitar múltiples activaciones
+    if (isDefined(self.is_saving_config))
+    {
+        wait 0.1;
+        return;
+    }
+
+    self.is_saving_config = true;
+
+    // Llamar a la función de sqllocal para guardar la configuración
+    success = scripts\zm\sqllocal::save_menu_config(self);
+
+    if (success)
+    {
+        // Mostrar mensaje de éxito
+        if (self.langLEN == 0)
+            self iPrintLnBold("^2Configuración guardada correctamente");
+        else
+            self iPrintLnBold("^2Configuration saved successfully");
+    }
+    else
+    {
+        // Mostrar mensaje de error
+        if (self.langLEN == 0)
+            self iPrintLnBold("^1Error al guardar configuración");
+        else
+            self iPrintLnBold("^1Error saving configuration");
+    }
+
+    wait 0.5;
+    self.is_saving_config = undefined;
 }
 
 

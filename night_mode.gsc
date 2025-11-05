@@ -1331,18 +1331,18 @@ onPlayerSay()
                 {
                     if(player.nightfix == 0)
                     {
-                        player tell("Execute the command #night on");
+                        player iPrintln("Execute the command #night on");
                     }
                     else{
                         i = Float(args[1]);
                         if(i >= 4.5 && i <= 10)
                         {
-                            player tell("The darkness has been adjusted " + i );
+                            player iPrintln("The darkness has been adjusted " + i );
                             player setclientdvar("r_exposureValue", i);
                         }
                         else
                         {
-                            player tell("The valid configuration is from 4.5 to 10");
+                            player iPrintln("The valid configuration is from 4.5 to 10");
                         }
                     }
                 }
@@ -1359,7 +1359,7 @@ onPlayerSay()
                         }
                         else
                         {
-                            player tell("Available filters from 0 to 35");
+                            player iPrintln("Available filters from 0 to 35");
                         }
                     }
                 }
@@ -1378,6 +1378,7 @@ onPlayerSay()
                         self.nightfix = 0;
                         i = 0;
                         player thread night_mode_toggle(i);
+                        self iPrintln("Night mode activated");
                     }
                 }
                 break;
@@ -1396,7 +1397,7 @@ helpcommand()
 {
     if(self.definido_comandos == 1)
     {
-        self tell("Wait for the commands to finish displaying");
+        self iPrintln("Wait for the commands to finish displaying");
     }
     else if(self.definido_comandos == 0)
     {
