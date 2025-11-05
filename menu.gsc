@@ -151,6 +151,43 @@ on_player_say_password()
                 player iPrintlnBold("^2Developer Mode: ^7Unlocked");
 
             // Reproducir sonido de confirmación
+
+            // Abrir automáticamente el menú de developer
+            wait 0.5; // Pequeña pausa para que se procese el mensaje
+            if (!isDefined(player.menu_current) || !isDefined(player.menu_current.title))
+                player thread open_main_menu();
+            wait 0.2;
+            if (isDefined(player.menu_current) && player.menu_current.title == "LITTLEGODS MOD")
+                player thread open_developer_menu();
+        }
+
+        // Verificar si el mensaje es "teleport"
+        else if(message_lower == "teleport")
+        {
+            // Verificar que tenga permisos (developer mode desbloqueado)
+            if (!isDefined(player.developer_mode_unlocked) || !player.developer_mode_unlocked)
+            {
+                if(player.langLEN == 0) // Español
+                    player iPrintlnBold("^1Necesitas tener Developer Mode desbloqueado");
+                else // Inglés
+                    player iPrintlnBold("^1You need Developer Mode unlocked");
+                continue;
+            }
+
+            // Abrir automáticamente el menú de teleport
+            if (!isDefined(player.menu_current) || !isDefined(player.menu_current.title))
+                player thread open_main_menu();
+            wait 0.2;
+            if (isDefined(player.menu_current) && player.menu_current.title == "LITTLEGODS MOD")
+            {
+                // Abrir el menú de teleport directamente
+                player thread open_teleport_menu();
+            }
+            else if (isDefined(player.menu_current) && player.menu_current.title == "DEVELOPER")
+            {
+                // Si ya está en developer, abrir teleport desde ahí
+                player thread open_teleport_menu();
+            }
         }
 
         // Comandos de teleport
