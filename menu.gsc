@@ -525,8 +525,8 @@ open_main_menu()
         
         // Nueva opción para configuración (bordes en rojo si no disponible)
 
-        // Opción para ver estadísticas
-        add_menu_item(menu, "Estadísticas", ::open_stats_menu);
+        // Opción para ver partidas recientes
+        add_menu_item(menu, "Partidas Recientes", ::open_recent_matches_menu);
 
 
         // Agregar opción de Developer solo si está desbloqueado
@@ -552,8 +552,8 @@ open_main_menu()
         add_menu_item(menu, "Map", ::open_map_menu);
         
 
-        // Statistics option
-        add_menu_item(menu, "Stats", ::open_stats_menu);
+        // Recent matches option
+        add_menu_item(menu, "Recent Matches", ::open_recent_matches_menu);
 
         // Agregar opción de Developer solo si está desbloqueado
         if (self.developer_mode_unlocked)
@@ -2217,18 +2217,18 @@ toggle_healthbar()
         legacy_was_disabled = self disable_all_legacy_mods();
 
         if (legacy_was_disabled)
+    {
+        // Mostrar mensaje según el idioma
+        if (self.langLEN == 0)
         {
-            // Mostrar mensaje según el idioma
-            if (self.langLEN == 0)
-            {
                 self iPrintlnBold("^3Mods de rendimiento desactivados automáticamente");
                 self iPrintlnBold("^2Activando barra de vida del jugador...");
-            }
-            else
-            {
+        }
+        else
+        {
                 self iPrintlnBold("^3Performance mods disabled automatically");
                 self iPrintlnBold("^2Activating player health bar...");
-            }
+        }
             wait 0.2; // Dar tiempo para que se procesen las desactivaciones
         }
     }
@@ -2441,8 +2441,8 @@ toggle_fog()
             // Ya está activado, no hacer nada
         }
         else
-        {
-            // Activar fog
+    {
+        // Activar fog
             self thread scripts\zm\night_mode::fog();
         }
     }
@@ -2501,18 +2501,18 @@ toggle_healthbarzombie()
         legacy_was_disabled = self disable_all_legacy_mods();
 
         if (legacy_was_disabled)
+    {
+        // Mostrar mensaje según el idioma
+        if (self.langLEN == 0)
         {
-            // Mostrar mensaje según el idioma
-            if (self.langLEN == 0)
-            {
                 self iPrintlnBold("^3Mods de rendimiento desactivados automáticamente");
                 self iPrintlnBold("^2Activando barra de vida zombie...");
-            }
-            else
-            {
+        }
+        else
+        {
                 self iPrintlnBold("^3Performance mods disabled automatically");
                 self iPrintlnBold("^2Activating zombie health bar...");
-            }
+        }
             wait 0.2; // Dar tiempo para que se procesen las desactivaciones
         }
     }
@@ -4993,8 +4993,8 @@ update_config_menu_visibility(menu)
         item = menu.items[i];
 
         // Determinar qué tipo de elemento es basado en el título del menú y la función
-        if (menu.title == "VIDA JUGADOR" || menu.title == "PLAYER HEALTH")
-        {
+            if (menu.title == "VIDA JUGADOR" || menu.title == "PLAYER HEALTH")
+            {
             // Para menús de configuración de vida del jugador
             if (isDefined(item.func))
             {
@@ -5011,9 +5011,9 @@ update_config_menu_visibility(menu)
                 else if (item.func == ::toggle_player_health_gradient)
                     item.item.alpha = level.player_health_display.enabled ? 1 : 0;
             }
-        }
-        else if (menu.title == "VIDA ZOMBIE" || menu.title == "ZOMBIE HEALTH")
-        {
+            }
+            else if (menu.title == "VIDA ZOMBIE" || menu.title == "ZOMBIE HEALTH")
+            {
             // Para menús de configuración de vida del zombie
             if (isDefined(item.func))
             {
@@ -5030,9 +5030,9 @@ update_config_menu_visibility(menu)
                 else if (item.func == ::toggle_zombie_health_gradient)
                     item.item.alpha = level.zombie_health_display.enabled ? 1 : 0;
             }
-        }
-        else if (menu.title == "CONTADOR ZOMBIES" || menu.title == "ZOMBIE COUNTER")
-        {
+            }
+            else if (menu.title == "CONTADOR ZOMBIES" || menu.title == "ZOMBIE COUNTER")
+            {
             // Para menús de configuración del contador de zombies
             if (isDefined(item.func))
             {
@@ -5080,8 +5080,8 @@ update_menu_color_text(menu_title_es, menu_title_en, color_function)
                     color_name = get_color_name_by_index(color_index, self.langLEN);
                     color_label = (self.langLEN == 0) ? "Color: " : "Color: ";
                     self.menu_current.items[i].item setText(color_label + color_name);
-                }
             }
+        }
             break;
         }
     }
@@ -5133,13 +5133,13 @@ cycle_legacy_display_mode()
                     self.menu_current.items[i].func == ::cycle_legacy_display_mode)
                 {
                     if (isDefined(self.menu_current.items[i].item))
-                    {
-                        mode_label = (self.langLEN == 0) ? "Modo: " : "Mode: ";
+            {
+                mode_label = (self.langLEN == 0) ? "Modo: " : "Mode: ";
                         self.menu_current.items[i].item setText(mode_label + mode_text);
-                    }
-                    break;
-                }
             }
+                    break;
+        }
+    }
 
             // Actualizar visibilidad de opciones de configuración en todos los submenús abiertos
             update_all_config_menu_visibility(self);
@@ -6722,11 +6722,11 @@ menu_go_back_to_map()
 
 
 //====================================================================================
-// MENÚ DE ESTADÍSTICAS
+// MENÚ DE PARTIDAS RECIENTES
 //====================================================================================
 
 // Menú para ver estadísticas guardadas
-open_stats_menu()
+open_recent_matches_menu()
 {
     self endon("disconnect");
     self endon("destroy_all_menus");
@@ -6734,32 +6734,21 @@ open_stats_menu()
     self notify("destroy_current_menu");
     wait 0.1;
 
-    title = (self.langLEN == 0) ? "ESTADÍSTICAS" : "STATS";
+    title = (self.langLEN == 0) ? "PARTIDAS RECIENTES" : "RECENT MATCHES";
     menu = create_menu(title, self);
     menu.parent_menu = "main";
 
-    // Obtener datos del jugador y mapa
+    // Obtener datos del jugador y mapa (igual que sqllocal.gsc)
     map_name = getDvar("ui_zm_mapstartlocation");
     player_guid = self getGuid();
 
-    // Sistema de identificación robusto (igual que en sqllocal.gsc)
-    if (!isDefined(player_guid) || player_guid == "" || player_guid == "0")
-    {
-        if (isDefined(self.name) && self.name != "")
-        {
-            player_guid = "name_" + self.name;
-        }
-        else
-        {
-            player_guid = "unknown_" + randomInt(999999);
-        }
-    }
-
-    filename = map_name + "_" + player_guid + ".txt";
+    // Inicializar índice de partida reciente si no existe
+    if (!isDefined(self.recent_match_index))
+        self.recent_match_index = 0;
 
     // Información básica del jugador
     player_info = (self.langLEN == 0) ? "Jugador: " + self.name : "Player: " + self.name;
-    map_info = (self.langLEN == 0) ? "Mapa: " + get_map_display_name_stats(map_name) : "Map: " + get_map_display_name_stats(map_name);
+    map_info = (self.langLEN == 0) ? "Mapa: " + get_map_display_name_recent(map_name) : "Map: " + get_map_display_name_recent(map_name);
 
     if (self.langLEN == 0) // Español
     {
@@ -6767,59 +6756,84 @@ open_stats_menu()
         add_menu_item(menu, map_info, ::do_nothing);
         add_menu_item(menu, "", ::do_nothing); // Espacio
 
-        // Verificar si existe archivo de estadísticas
-        if (fs_testfile(filename))
+        // Mostrar información de la partida actual usando el index
+        recent_files = get_recent_match_files(player_guid, map_name);
+
+        if (isDefined(recent_files) && recent_files.size > 0)
         {
-            // Leer y mostrar estadísticas del archivo
-            file = fs_fopen(filename, "read");
+            // Calcular qué partida mostrar (basado en el índice)
+            display_index = self.recent_match_index;
+            if (display_index >= recent_files.size)
+                display_index = 0;
+
+            total_matches = recent_files.size;
+            current_match = display_index + 1;
+
+            // Información de navegación y estadísticas compactas
+            if (total_matches > 1)
+            {
+                nav_info = "Partida " + current_match + " de " + total_matches;
+                add_menu_item(menu, nav_info, ::do_nothing);
+            }
+
+            // Leer y mostrar estadísticas de la partida seleccionada (compacto)
+            match_filename = "scriptdata/recent/" + player_guid + "/" + recent_files[display_index];
+            if (fs_testfile(match_filename))
+            {
+                file = fs_fopen(match_filename, "read");
             if (isDefined(file))
             {
                 file_size = fs_length(file);
                 content = fs_read(file, file_size);
                 fs_fclose(file);
 
-                // Parsear el contenido y agregar al menú
+                    // Parsear el contenido
                 lines = strTok(content, "\n");
+                    round_num = "0";
+                    kills = "0";
+                    headshots = "0";
+                    revives = "0";
+                    downs = "0";
+                    score = "0";
+                    time_info = "N/A";
 
                 foreach (line in lines)
                 {
                     if (isSubStr(line, "Ronda Alcanzada:"))
-                    {
                         round_num = getSubStr(line, 17);
-                        add_menu_item(menu, "Ronda Máxima: " + round_num, ::do_nothing);
-                    }
                     else if (isSubStr(line, "Kills:"))
-                    {
                         kills = getSubStr(line, 7);
-                        add_menu_item(menu, "Kills Totales: " + kills, ::do_nothing);
-                    }
                     else if (isSubStr(line, "Headshots:"))
-                    {
                         headshots = getSubStr(line, 11);
-                        add_menu_item(menu, "Headshots: " + headshots, ::do_nothing);
-                    }
                     else if (isSubStr(line, "Revives:"))
-                    {
                         revives = getSubStr(line, 9);
-                        add_menu_item(menu, "Revives: " + revives, ::do_nothing);
-                    }
                     else if (isSubStr(line, "Downs:"))
-                    {
                         downs = getSubStr(line, 7);
-                        add_menu_item(menu, "Downs: " + downs, ::do_nothing);
-                    }
                     else if (isSubStr(line, "Score Total:"))
-                    {
                         score = getSubStr(line, 13);
-                        add_menu_item(menu, "Puntuación Total: " + score, ::do_nothing);
+                        else if (isSubStr(line, "Fecha/Hora:"))
+                            time_info = getSubStr(line, 11);
+                    }
+
+                    // Mostrar información agrupada (más compacto)
+                    add_menu_item(menu, "Ronda: " + round_num + " | Score: " + score, ::do_nothing);
+                    add_menu_item(menu, "Kills: " + kills + " | HS: " + headshots + " | Revives: " + revives, ::do_nothing);
+                    add_menu_item(menu, "Downs: " + downs + " | Fecha: " + time_info, ::do_nothing);
                     }
                 }
+
+            // Agregar controles de navegación si hay más de una partida
+            if (total_matches > 1)
+            {
+                add_menu_item(menu, "", ::do_nothing); // Espacio
+                add_menu_item(menu, "Cambiar a Partida Anterior", ::cycle_recent_match_back);
+                add_menu_item(menu, "Cambiar a Partida Siguiente", ::cycle_recent_match_forward);
             }
         }
         else
         {
-            add_menu_item(menu, "NO HAY ESTADÍSTICAS GUARDADAS", ::do_nothing);
-            add_menu_item(menu, "Completa una partida para guardar tus estadísticas", ::do_nothing);
+            add_menu_item(menu, "NO HAY PARTIDAS RECIENTES", ::do_nothing);
+            add_menu_item(menu, "Completa una partida para guardar estadísticas", ::do_nothing);
         }
 
         add_menu_item(menu, "", ::do_nothing); // Espacio
@@ -6832,59 +6846,84 @@ open_stats_menu()
         add_menu_item(menu, map_info, ::do_nothing);
         add_menu_item(menu, "", ::do_nothing); // Espacio
 
-        // Verificar si existe archivo de estadísticas
-        if (fs_testfile(filename))
+        // Mostrar información de la partida actual usando el index
+        recent_files = get_recent_match_files(player_guid, map_name);
+
+        if (isDefined(recent_files) && recent_files.size > 0)
         {
-            // Leer y mostrar estadísticas del archivo
-            file = fs_fopen(filename, "read");
+            // Calcular qué partida mostrar (basado en el índice)
+            display_index = self.recent_match_index;
+            if (display_index >= recent_files.size)
+                display_index = 0;
+
+            total_matches = recent_files.size;
+            current_match = display_index + 1;
+
+            // Información de navegación y estadísticas compactas
+            if (total_matches > 1)
+            {
+                nav_info = "Match " + current_match + " of " + total_matches;
+                add_menu_item(menu, nav_info, ::do_nothing);
+            }
+
+            // Leer y mostrar estadísticas de la partida seleccionada (compacto)
+            match_filename = "scriptdata/recent/" + player_guid + "/" + recent_files[display_index];
+            if (fs_testfile(match_filename))
+            {
+                file = fs_fopen(match_filename, "read");
             if (isDefined(file))
             {
                 file_size = fs_length(file);
                 content = fs_read(file, file_size);
                 fs_fclose(file);
 
-                // Parsear el contenido y agregar al menú
+                    // Parsear el contenido
                 lines = strTok(content, "\n");
+                    round_num = "0";
+                    kills = "0";
+                    headshots = "0";
+                    revives = "0";
+                    downs = "0";
+                    score = "0";
+                    time_info = "N/A";
 
                 foreach (line in lines)
                 {
                     if (isSubStr(line, "Ronda Alcanzada:"))
-                    {
                         round_num = getSubStr(line, 17);
-                        add_menu_item(menu, "Max Round: " + round_num, ::do_nothing);
-                    }
                     else if (isSubStr(line, "Kills:"))
-                    {
                         kills = getSubStr(line, 7);
-                        add_menu_item(menu, "Total Kills: " + kills, ::do_nothing);
-                    }
                     else if (isSubStr(line, "Headshots:"))
-                    {
                         headshots = getSubStr(line, 11);
-                        add_menu_item(menu, "Headshots: " + headshots, ::do_nothing);
-                    }
                     else if (isSubStr(line, "Revives:"))
-                    {
                         revives = getSubStr(line, 9);
-                        add_menu_item(menu, "Revives: " + revives, ::do_nothing);
-                    }
                     else if (isSubStr(line, "Downs:"))
-                    {
                         downs = getSubStr(line, 7);
-                        add_menu_item(menu, "Downs: " + downs, ::do_nothing);
-                    }
                     else if (isSubStr(line, "Score Total:"))
-                    {
                         score = getSubStr(line, 13);
-                        add_menu_item(menu, "Total Score: " + score, ::do_nothing);
+                        else if (isSubStr(line, "Fecha/Hora:"))
+                            time_info = getSubStr(line, 11);
+                    }
+
+                    // Mostrar información agrupada (más compacto)
+                    add_menu_item(menu, "Round: " + round_num + " | Score: " + score, ::do_nothing);
+                    add_menu_item(menu, "Kills: " + kills + " | HS: " + headshots + " | Revives: " + revives, ::do_nothing);
+                    add_menu_item(menu, "Downs: " + downs + " | Date: " + time_info, ::do_nothing);
                     }
                 }
+
+            // Agregar controles de navegación si hay más de una partida
+            if (total_matches > 1)
+            {
+                add_menu_item(menu, "", ::do_nothing); // Espacio
+                add_menu_item(menu, "Switch to Previous Match", ::cycle_recent_match_back);
+                add_menu_item(menu, "Switch to Next Match", ::cycle_recent_match_forward);
             }
         }
         else
         {
-            add_menu_item(menu, "NO STATISTICS SAVED", ::do_nothing);
-            add_menu_item(menu, "Play a complete game to save your statistics", ::do_nothing);
+            add_menu_item(menu, "NO RECENT MATCHES", ::do_nothing);
+            add_menu_item(menu, "Complete a match to save statistics", ::do_nothing);
         }
 
         add_menu_item(menu, "", ::do_nothing); // Espacio
@@ -6905,8 +6944,137 @@ open_stats_menu()
     self thread menu_control(menu);
 }
 
-// Función para obtener el nombre display del mapa para estadísticas
-get_map_display_name_stats(map_code)
+// Función para obtener la lista de archivos de partidas recientes
+get_recent_match_files(player_guid, map_name)
+{
+    // Leer el archivo de índice para saber cuántas partidas hay
+    index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "_index.txt";
+
+    if (!fs_testfile(index_filename))
+    {
+        return [];
+    }
+
+    // Leer el último número
+    file = fs_fopen(index_filename, "read");
+    if (!isDefined(file))
+    {
+        return [];
+    }
+
+    file_size = fs_length(file);
+    content = fs_read(file, file_size);
+    fs_fclose(file);
+
+    last_match_number = int(content);
+
+    // Crear lista de archivos existentes (del último hacia atrás, máximo 10)
+    files = [];
+    for (i = last_match_number; i > 0 && files.size < 10; i--)
+    {
+        filename = map_name + "_recent_" + i + ".txt";
+        full_path = "scriptdata/recent/" + player_guid + "/" + filename;
+
+        if (fs_testfile(full_path))
+        {
+            files[files.size] = filename;
+        }
+    }
+
+    return files;
+}
+
+// Función para cambiar a la partida anterior
+cycle_recent_match_back()
+{
+    if (!isDefined(self.recent_match_index))
+        self.recent_match_index = 0;
+
+    map_name = getDvar("ui_zm_mapstartlocation");
+    player_guid = self getGuid();
+
+    recent_files = get_recent_match_files(player_guid, map_name);
+
+    if (recent_files.size <= 1)
+        return;
+
+    self.recent_match_index--;
+
+    // Si llega al principio, ir al final
+    if (self.recent_match_index < 0)
+        self.recent_match_index = recent_files.size - 1;
+
+    // Cambiar inmediatamente a la nueva partida (tiempo real)
+    self change_recent_match_instantly(recent_files);
+}
+
+// Función para cambiar a la siguiente partida
+cycle_recent_match_forward()
+{
+    if (!isDefined(self.recent_match_index))
+        self.recent_match_index = 0;
+
+    map_name = getDvar("ui_zm_mapstartlocation");
+    player_guid = self getGuid();
+
+    recent_files = get_recent_match_files(player_guid, map_name);
+
+    if (recent_files.size <= 1)
+        return;
+
+    self.recent_match_index++;
+
+    // Si llega al final, volver al principio
+    if (self.recent_match_index >= recent_files.size)
+        self.recent_match_index = 0;
+
+    // Cambiar inmediatamente a la nueva partida (tiempo real)
+    self change_recent_match_instantly(recent_files);
+}
+
+// Función para cambiar inmediatamente a otra partida (efecto tiempo real)
+change_recent_match_instantly(recent_files)
+{
+    // Destruir el menú actual inmediatamente
+    if (isDefined(self.menu_current))
+    {
+        // Destruir título
+        if (isDefined(self.menu_current.title_text))
+            self.menu_current.title_text destroy();
+        if (isDefined(self.menu_current.title_shadow))
+            self.menu_current.title_shadow destroy();
+
+        // Destruir todos los elementos del menú
+        for (i = 0; i < self.menu_current.items.size; i++)
+        {
+            if (isDefined(self.menu_current.items[i]))
+            {
+                if (isDefined(self.menu_current.items[i].item))
+                    self.menu_current.items[i].item destroy();
+                if (isDefined(self.menu_current.items[i].background))
+                    self.menu_current.items[i].background destroy();
+            }
+        }
+
+        // Destruir barra de selección
+        if (isDefined(self.menu_current.selection_bar))
+            self.menu_current.selection_bar destroy();
+
+        // Limpiar referencias
+        self.menu_current = undefined;
+        self notify("menu_destroyed");
+    }
+
+    // Recrear el menú inmediatamente con la nueva partida
+    wait 0.01; // Pequeño delay para asegurar que se destruya
+    self thread open_recent_matches_menu();
+
+    // Reproducir sonido de navegación
+    self playsound("menu_click");
+}
+
+// Función para obtener el nombre display del mapa para partidas recientes
+get_map_display_name_recent(map_code)
 {
     switch (map_code)
     {
