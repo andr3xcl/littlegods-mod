@@ -2974,6 +2974,22 @@ update_settings_menu_texts()
     if (menu_title != "CONFIGURACIÓN" && menu_title != "SETTINGS")
         return;
 
+    // Actualizar el título del menú según el idioma actual
+    new_title = (self.langLEN == 0) ? "CONFIGURACIÓN" : "SETTINGS";
+    self.menu_current.title = new_title;
+
+    // Actualizar el elemento de texto del título si existe
+    if (isDefined(self.menu_current.title_text))
+    {
+        self.menu_current.title_text setText(new_title);
+    }
+
+    // Actualizar la sombra del título si existe
+    if (isDefined(self.menu_current.title_shadow))
+    {
+        self.menu_current.title_shadow setText(new_title);
+    }
+
     // Actualizar cada item del menú según el idioma actual
     if (self.langLEN == 0) // Español
     {
@@ -4859,8 +4875,8 @@ cycle_legacy_display_mode()
     {
         mode_text = (level.legacy_display_mode == "littlegods") ? "LITTLEGODS" : "CLASSIC";
 
-        // Solo actualizar si estamos en el menú principal de Performance Mods
-        if (self.menu_current.title == "MODS DE RENDIMIENTO" || self.menu_current.title == "PERFORMANCE MODS")
+        // Solo actualizar si estamos en el menú de Legacy Mods
+        if (self.menu_current.title == "MODS Heredado" || self.menu_current.title == "LEGACY MODS")
         {
             // El modo está en el índice 3 (después de los 3 submenús)
             if (isDefined(self.menu_current.items[3]) && isDefined(self.menu_current.items[3].item))

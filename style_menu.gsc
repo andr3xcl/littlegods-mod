@@ -60,6 +60,17 @@ init()
     level.menu_styles[40] = "Ancient Egypt";     // Estilo egipcio con dorados y azules
     level.menu_styles[41] = "Neon Retro";        // Estilo 80s con colores neón intensos
     level.menu_styles[42] = "Hologram";          // Estilo holográfico futurista con efectos translúcidos
+    // SEXTA TANDA DE ESTILOS NUEVOS - MODERNOS Y TEXTURIZADOS
+    level.menu_styles[43] = "Crystal Glass";     // Estilo cristalino transparente con refracciones
+    level.menu_styles[44] = "Velvet Noir";       // Estilo terciopelo negro con acentos metálicos
+    level.menu_styles[45] = "Aurora Borealis";   // Estilo aurora boreal con cambios dinámicos
+    level.menu_styles[46] = "Marble Luxe";       // Estilo mármol blanco con vetas doradas
+    level.menu_styles[47] = "Neon City";         // Estilo neón urbano con reflejos
+    level.menu_styles[48] = "Sakura Blossom";    // Estilo cerezo en flor rosa y blanco
+    level.menu_styles[49] = "Deep Space";        // Estilo espacio profundo con estrellas
+    level.menu_styles[50] = "Coral Reef";        // Estilo arrecife de coral submarino
+    level.menu_styles[51] = "Royal Purple";      // Estilo púrpura real con oro
+    level.menu_styles[52] = "Sunrise Gradient";  // Estilo gradiente amanecer cálido
 }
 
 // Función para aplicar el estilo seleccionado a un menú
@@ -67,10 +78,14 @@ apply_menu_style(menu, style_index)
 {
     if (!isDefined(style_index))
         style_index = 0; // Estilo predeterminado
-    
+
+    // Detener efectos dinámicos antes de cambiar de estilo
+    stop_rainbow_effect(menu);
+    stop_aurora_effect(menu);
+
     // Guardar el estilo actual
     menu.style_index = style_index;
-    
+
     // Aplicar el estilo según el índice
     switch(style_index)
     {
@@ -209,6 +224,37 @@ apply_menu_style(menu, style_index)
         case 42:
             apply_hologram_style(menu);
             break;
+        // SEXTA TANDA DE ESTILOS NUEVOS - MODERNOS Y TEXTURIZADOS
+        case 43:
+            apply_crystal_glass_style(menu);
+            break;
+        case 44:
+            apply_velvet_noir_style(menu);
+            break;
+        case 45:
+            apply_aurora_borealis_style(menu);
+            break;
+        case 46:
+            apply_marble_luxe_style(menu);
+            break;
+        case 47:
+            apply_neon_city_style(menu);
+            break;
+        case 48:
+            apply_sakura_blossom_style(menu);
+            break;
+        case 49:
+            apply_deep_space_style(menu);
+            break;
+        case 50:
+            apply_coral_reef_style(menu);
+            break;
+        case 51:
+            apply_royal_purple_style(menu);
+            break;
+        case 52:
+            apply_sunrise_gradient_style(menu);
+            break;
         default:
             apply_modern_blue_style(menu); // Estilo predeterminado
     }
@@ -281,6 +327,17 @@ get_style_name(style_index, lang_index)
             case 40: return "Egipto Antiguo";
             case 41: return "Neón Retro";
             case 42: return "Holograma";
+            // SEXTA TANDA DE ESTILOS EN ESPAÑOL
+            case 43: return "Cristal Vidrio";
+            case 44: return "Terciopelo Negro";
+            case 45: return "Aurora Boreal";
+            case 46: return "Mármol Lujo";
+            case 47: return "Neón Ciudad";
+            case 48: return "Flor Sakura";
+            case 49: return "Espacio Profundo";
+            case 50: return "Arrecife Coral";
+            case 51: return "Púrpura Real";
+            case 52: return "Gradiente Amanecer";
             default: return "Desconocido";
         }
     }
@@ -337,6 +394,17 @@ get_style_name(style_index, lang_index)
             case 40: return "Ancient Egypt";
             case 41: return "Neon Retro";
             case 42: return "Hologram";
+            // SEXTA TANDA DE ESTILOS EN INGLÉS
+            case 43: return "Crystal Glass";
+            case 44: return "Velvet Noir";
+            case 45: return "Aurora Borealis";
+            case 46: return "Marble Luxe";
+            case 47: return "Neon City";
+            case 48: return "Sakura Blossom";
+            case 49: return "Deep Space";
+            case 50: return "Coral Reef";
+            case 51: return "Royal Purple";
+            case 52: return "Sunrise Gradient";
             default: return "Unknown";
         }
     }
@@ -745,6 +813,13 @@ update_menu_visuals(menu)
     menu.header_bg.color = menu.header_color;
     menu.header_bg setShader("white", menu.width, menu.header_height);
 
+    // Forzar actualización inmediata del color del encabezado
+    if (isDefined(menu.header_bg))
+    {
+        menu.header_bg.color = menu.header_color;
+        menu.header_bg.alpha = menu.header_alpha;
+    }
+
     // Actualizar borde superior del encabezado solo si está habilitado
     if (isDefined(menu.has_border) && menu.has_border)
     {
@@ -791,6 +866,12 @@ update_menu_visuals(menu)
     }
     menu.selection_bar.color = menu.active_color;
     menu.selection_bar setShader("white", menu.width, menu.item_height);
+
+    // Forzar actualización inmediata del color de la barra de selección
+    if (isDefined(menu.selection_bar))
+    {
+        menu.selection_bar.color = menu.active_color;
+    }
 
     // Actualizar elementos del menú manteniendo posiciones
     for (i = 0; i < menu.items.size; i++)
@@ -1756,12 +1837,347 @@ apply_ancient_egypt_style(menu)
     // Opacidad
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
-    
+
     // Desactivar bordes
     menu.has_border = false;
-    
+
     // Actualizar elementos visuales si ya existen
     update_menu_visuals(menu);
+}
+
+// Estilo 43: Cristal Vidrio (cristalino transparente con refracciones)
+apply_crystal_glass_style(menu)
+{
+    // Colores
+    menu.header_color = (0.8, 0.95, 1);      // Azul cristalino para el encabezado
+    menu.active_color = (0.6, 0.85, 1);      // Azul hielo para selección
+    menu.inactive_color = (0.9, 0.95, 1);    // Blanco azulado para elementos no seleccionados
+    menu.title_color = (0.2, 0.4, 0.8);      // Azul profundo para el texto del título
+    menu.bg_color = (0.95, 0.98, 1);         // Blanco cristalino para el fondo
+
+    // Dimensiones - centrado en la pantalla
+    menu.width = 185;
+    menu.margin_x = 258;
+    menu.margin_y = 180;
+    menu.item_height = 19;
+    menu.header_height = 25;
+
+    // Opacidad - semitransparente para efecto cristalino
+    menu.bg_alpha = 0.7;
+    menu.header_alpha = 0.85;
+
+    // Desactivar bordes
+    menu.has_border = false;
+
+    // Actualizar elementos visuales si ya existen
+    update_menu_visuals(menu);
+}
+
+// Estilo 44: Terciopelo Negro (terciopelo negro con acentos metálicos)
+apply_velvet_noir_style(menu)
+{
+    // Colores
+    menu.header_color = (0.1, 0.1, 0.15);    // Negro terciopelo para el encabezado
+    menu.active_color = (0.8, 0.7, 0.2);     // Oro metálico para selección
+    menu.inactive_color = (0.4, 0.4, 0.5);   // Gris azulado para elementos no seleccionados
+    menu.title_color = (0.9, 0.8, 0.3);      // Oro brillante para el texto del título
+    menu.bg_color = (0.05, 0.05, 0.08);      // Negro profundo para el fondo
+
+    // Dimensiones - centrado en la pantalla
+    menu.width = 190;
+    menu.margin_x = 255;
+    menu.margin_y = 180;
+    menu.item_height = 20;
+    menu.header_height = 26;
+
+    // Opacidad
+    menu.bg_alpha = 0.95;
+    menu.header_alpha = 1;
+
+    // Desactivar bordes
+    menu.has_border = false;
+
+    // Actualizar elementos visuales si ya existen
+    update_menu_visuals(menu);
+}
+
+// Estilo 45: Aurora Boreal (aurora boreal con cambios dinámicos)
+apply_aurora_borealis_style(menu)
+{
+    // Colores base - el resto se maneja dinámicamente
+    menu.header_color = (0.2, 0.8, 0.6);     // Verde aurora para empezar
+    menu.active_color = (0.8, 0.4, 1);       // Púrpura aurora para selección
+    menu.inactive_color = (0.9, 0.9, 1);     // Blanco azulado para elementos no seleccionados
+    menu.title_color = (0.6, 1, 0.8);        // Verde neón para el texto del título
+    menu.bg_color = (0.05, 0.1, 0.2);        // Azul noche para el fondo
+
+    // Dimensiones - centrado en la pantalla
+    menu.width = 195;
+    menu.margin_x = 253;
+    menu.margin_y = 180;
+    menu.item_height = 21;
+    menu.header_height = 28;
+
+    // Opacidad
+    menu.bg_alpha = 0.85;
+    menu.header_alpha = 0.95;
+
+    // Desactivar bordes
+    menu.has_border = false;
+
+    // Actualizar elementos visuales si ya existen
+    update_menu_visuals(menu);
+
+    // Iniciar efecto aurora si no está ya activo
+    if (!isDefined(menu.aurora_active))
+    {
+        menu.aurora_active = true;
+        menu.user thread aurora_effect(menu);
+    }
+}
+
+// Efecto de aurora boreal para cambios dinámicos de colores
+aurora_effect(menu)
+{
+    menu.user endon("disconnect");
+    menu endon("destroy_all_menus");
+    menu endon("destroy_current_menu");
+    menu endon("stop_aurora");
+
+    hue = 0;
+
+    while(isDefined(menu.aurora_active) && menu.aurora_active)
+    {
+        // Incrementar el tono de color (0-360 en formato normalizado 0-1)
+        hue += 0.005;
+        if (hue > 1) hue = 0;
+
+        // Convertir HSV a RGB para colores aurora
+        header_color = hsv_to_rgb(hue, 0.7, 0.9);
+        selection_color = hsv_to_rgb((hue + 0.3) % 1, 0.8, 0.95);
+
+        // Actualizar colores
+        menu.header_color = header_color;
+        menu.active_color = selection_color;
+
+        // Actualizar elementos visuales
+        if (isDefined(menu.header_bg))
+        {
+            menu.header_bg.color = header_color;
+            menu.header_bg.alpha = 0.95;
+        }
+
+        if (isDefined(menu.selection_bar))
+            menu.selection_bar.color = selection_color;
+
+        wait 0.08; // Actualizar cada 80ms para efecto más suave
+    }
+}
+
+// Estilo 46: Mármol Lujo (mármol blanco con vetas doradas)
+apply_marble_luxe_style(menu)
+{
+    // Colores
+    menu.header_color = (0.95, 0.95, 0.9);   // Blanco mármol para el encabezado
+    menu.active_color = (0.9, 0.8, 0.4);     // Dorado veteado para selección
+    menu.inactive_color = (0.85, 0.85, 0.8); // Gris mármol para elementos no seleccionados
+    menu.title_color = (0.3, 0.25, 0.1);     // Marrón dorado para el texto del título
+    menu.bg_color = (0.98, 0.98, 0.95);      // Blanco crema para el fondo
+
+    // Dimensiones - centrado en la pantalla
+    menu.width = 180;
+    menu.margin_x = 260;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 24;
+
+    // Opacidad
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 0.95;
+
+    // Desactivar bordes
+    menu.has_border = false;
+
+    // Actualizar elementos visuales si ya existen
+    update_menu_visuals(menu);
+}
+
+// Estilo 47: Neón Ciudad (neón urbano con reflejos)
+apply_neon_city_style(menu)
+{
+    // Colores
+    menu.header_color = (0.1, 0.1, 0.2);     // Azul noche urbana para el encabezado
+    menu.active_color = (1, 0.1, 0.8);       // Rosa neón intenso para selección
+    menu.inactive_color = (0.2, 0.8, 1);     // Cian neón para elementos no seleccionados
+    menu.title_color = (1, 0.5, 0);          // Naranja neón para el texto del título
+    menu.bg_color = (0.05, 0.05, 0.1);       // Azul muy oscuro para el fondo
+
+    // Dimensiones - centrado en la pantalla
+    menu.width = 200;
+    menu.margin_x = 250;
+    menu.margin_y = 180;
+    menu.item_height = 22;
+    menu.header_height = 30;
+
+    // Opacidad
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+
+    // Desactivar bordes
+    menu.has_border = false;
+
+    // Actualizar elementos visuales si ya existen
+    update_menu_visuals(menu);
+}
+
+// Estilo 48: Flor Sakura (cerezo en flor rosa y blanco)
+apply_sakura_blossom_style(menu)
+{
+    // Colores
+    menu.header_color = (0.95, 0.8, 0.9);    // Rosa sakura suave para el encabezado
+    menu.active_color = (0.9, 0.6, 0.8);     // Rosa flor para selección
+    menu.inactive_color = (0.95, 0.9, 0.95); // Blanco rosado para elementos no seleccionados
+    menu.title_color = (0.7, 0.4, 0.6);      // Rosa profundo para el texto del título
+    menu.bg_color = (0.98, 0.95, 0.97);      // Blanco con tinte rosa para el fondo
+
+    // Dimensiones - centrado en la pantalla
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 23;
+
+    // Opacidad
+    menu.bg_alpha = 0.85;
+    menu.header_alpha = 0.9;
+
+    // Desactivar bordes
+    menu.has_border = false;
+
+    // Actualizar elementos visuales si ya existen
+    update_menu_visuals(menu);
+}
+
+// Estilo 49: Espacio Profundo (espacio profundo con estrellas)
+apply_deep_space_style(menu)
+{
+    // Colores
+    menu.header_color = (0.1, 0.1, 0.3);     // Azul espacio para el encabezado
+    menu.active_color = (0.8, 0.8, 1);       // Azul estrella para selección
+    menu.inactive_color = (0.5, 0.5, 0.7);   // Azul grisáceo para elementos no seleccionados
+    menu.title_color = (1, 1, 0.8);          // Blanco estelar para el texto del título
+    menu.bg_color = (0.02, 0.02, 0.08);      // Negro espacio para el fondo
+
+    // Dimensiones - centrado en la pantalla
+    menu.width = 190;
+    menu.margin_x = 255;
+    menu.margin_y = 180;
+    menu.item_height = 20;
+    menu.header_height = 26;
+
+    // Opacidad
+    menu.bg_alpha = 0.95;
+    menu.header_alpha = 1;
+
+    // Desactivar bordes
+    menu.has_border = false;
+
+    // Actualizar elementos visuales si ya existen
+    update_menu_visuals(menu);
+}
+
+// Estilo 50: Arrecife Coral (arrecife de coral submarino)
+apply_coral_reef_style(menu)
+{
+    // Colores
+    menu.header_color = (0.9, 0.6, 0.3);     // Coral naranja para el encabezado
+    menu.active_color = (0.1, 0.7, 0.8);     // Turquesa agua para selección
+    menu.inactive_color = (0.8, 0.9, 0.7);   // Verde agua para elementos no seleccionados
+    menu.title_color = (0.9, 0.4, 0.2);      // Coral rojo para el texto del título
+    menu.bg_color = (0.1, 0.3, 0.4);         // Azul océano para el fondo
+
+    // Dimensiones - centrado en la pantalla
+    menu.width = 185;
+    menu.margin_x = 258;
+    menu.margin_y = 180;
+    menu.item_height = 19;
+    menu.header_height = 25;
+
+    // Opacidad
+    menu.bg_alpha = 0.85;
+    menu.header_alpha = 0.9;
+
+    // Desactivar bordes
+    menu.has_border = false;
+
+    // Actualizar elementos visuales si ya existen
+    update_menu_visuals(menu);
+}
+
+// Estilo 51: Púrpura Real (púrpura real con oro)
+apply_royal_purple_style(menu)
+{
+    // Colores
+    menu.header_color = (0.4, 0.1, 0.6);     // Púrpura real para el encabezado
+    menu.active_color = (0.9, 0.7, 0.1);     // Oro real para selección
+    menu.inactive_color = (0.6, 0.4, 0.7);   // Púrpura claro para elementos no seleccionados
+    menu.title_color = (0.95, 0.8, 0.2);     // Oro brillante para el texto del título
+    menu.bg_color = (0.2, 0.1, 0.3);         // Púrpura oscuro para el fondo
+
+    // Dimensiones - centrado en la pantalla
+    menu.width = 195;
+    menu.margin_x = 253;
+    menu.margin_y = 180;
+    menu.item_height = 21;
+    menu.header_height = 28;
+
+    // Opacidad
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+
+    // Desactivar bordes
+    menu.has_border = false;
+
+    // Actualizar elementos visuales si ya existen
+    update_menu_visuals(menu);
+}
+
+// Estilo 52: Gradiente Amanecer (gradiente amanecer cálido)
+apply_sunrise_gradient_style(menu)
+{
+    // Colores
+    menu.header_color = (0.9, 0.5, 0.2);     // Naranja amanecer para el encabezado
+    menu.active_color = (1, 0.7, 0.3);       // Dorado sol para selección
+    menu.inactive_color = (0.95, 0.8, 0.6);  // Melocotón para elementos no seleccionados
+    menu.title_color = (0.2, 0.1, 0.05);     // Marrón oscuro para el texto del título
+    menu.bg_color = (0.98, 0.85, 0.7);       // Beige amanecer para el fondo
+
+    // Dimensiones - centrado en la pantalla
+    menu.width = 180;
+    menu.margin_x = 260;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 24;
+
+    // Opacidad
+    menu.bg_alpha = 0.85;
+    menu.header_alpha = 0.9;
+
+    // Desactivar bordes
+    menu.has_border = false;
+
+    // Actualizar elementos visuales si ya existen
+    update_menu_visuals(menu);
+}
+
+// Función para detener el efecto aurora cuando se cambia de estilo
+stop_aurora_effect(menu)
+{
+    if (isDefined(menu.aurora_active) && menu.aurora_active)
+    {
+        menu.aurora_active = false;
+        menu notify("stop_aurora");
+    }
 }
 
 // Estilo 41: Neón Retro (estilo de los 80s con colores neón intensos)
