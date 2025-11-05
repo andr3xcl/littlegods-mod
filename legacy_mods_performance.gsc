@@ -128,9 +128,9 @@ update_zombie_health_position(player)
         // Posición abajo derecha para Classic (cerca del contador, 10 unidades debajo)
         // Layout: contador arriba (y=365, x=280-335), vida jugador abajo izquierda (y=375, x=200-255), vida zombie abajo derecha (y=375, x=410-465)
         player.zombie_health_hud.x = 365; // Derecha, cerca del contador (75 unidades a la derecha del contador en x=335)
-        player.zombie_health_hud.y = 365; // 10 unidades debajo del contador (365 + 10)
+        player.zombie_health_hud.y = 375; // 10 unidades debajo del contador (365 + 10)
         player.zombie_health_value.x = 435; // 55 unidades a la derecha del label
-        player.zombie_health_value.y = 365;
+        player.zombie_health_value.y = 375;
     }
     else
     {
