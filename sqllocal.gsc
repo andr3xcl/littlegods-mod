@@ -639,12 +639,86 @@ bank_withdraw_all(player)
 // Función para guardar la configuración del menú del jugador
 save_menu_config(player)
 {
+    return save_menu_config_selective(player, true, true, true);
+}
+
+// Función para guardar solo la configuración de settings
+save_settings_only(player)
+{
+    return save_menu_config_selective(player, true, false, false);
+}
+
+// Función para guardar solo la configuración de nightmode
+save_nightmode_only(player)
+{
+    return save_menu_config_selective(player, false, true, false);
+}
+
+// Función para guardar solo la configuración de map
+save_map_only(player)
+{
+    return save_menu_config_selective(player, false, false, true);
+}
+
+// Función interna para guardar configuración selectivamente
+save_menu_config_selective(player, save_settings, save_nightmode, save_map)
+{
     // Obtener GUID del jugador
     player_guid = player getGuid();
 
     // Crear nombre del archivo: scriptdata/menu/guid.txt
     filename = "scriptdata/menu/" + player_guid + ".txt";
 
+    // Leer configuración existente si el archivo existe
+    existing_settings = spawnStruct();
+    existing_nightmode = spawnStruct();
+    existing_map = spawnStruct();
+    
+    if (fs_testfile(filename))
+    {
+        // Leer archivo existente
+        file_read = fs_fopen(filename, "read");
+        if (isDefined(file_read))
+        {
+            file_size = fs_length(file_read);
+            content = fs_read(file_read, file_size);
+            fs_fclose(file_read);
+
+            // Parsear contenido existente
+            lines = strTok(content, "\n");
+            foreach (line in lines)
+            {
+                if (isSubStr(line, "="))
+                {
+                    parts = strTok(line, "=");
+                    if (parts.size >= 2)
+                    {
+                        key = parts[0];
+                        value = parts[1];
+
+                        // Guardar valores de settings
+                        if (key == "language") existing_settings.language = value;
+                        else if (key == "menu_style") existing_settings.menu_style = value;
+                        else if (key == "sector_style") existing_settings.sector_style = value;
+                        else if (key == "selector_style_index") existing_settings.selector_style_index = value;
+                        else if (key == "font_position_index") existing_settings.font_position_index = value;
+                        else if (key == "font_animation") existing_settings.font_animation = value;
+                        else if (key == "transparency_index") existing_settings.transparency_index = value;
+                        // Guardar valores de nightmode
+                        else if (key == "night_mode_enabled") existing_nightmode.night_mode_enabled = value;
+                        else if (key == "night_mode_filter") existing_nightmode.night_mode_filter = value;
+                        else if (key == "night_mode_darkness") existing_nightmode.night_mode_darkness = value;
+                        else if (key == "fog_enabled") existing_nightmode.fog_enabled = value;
+                        // Guardar valores de map
+                        else if (key == "perk_unlimited") existing_map.perk_unlimited = value;
+                        else if (key == "third_person") existing_map.third_person = value;
+                    }
+                }
+            }
+        }
+    }
+
+    // Abrir archivo para escritura
     file = fs_fopen(filename, "write");
 
     if (!isDefined(file))
@@ -671,34 +745,89 @@ save_menu_config(player)
     fs_write(file, "\n");
     fs_write(file, "CONFIGURACION GUARDADA:\n");
 
-    // Guardar configuración de idioma
-    lang_value = isDefined(player.langLEN) ? player.langLEN : 0;
+    // Escribir configuración de settings (usar valores existentes si no se está guardando)
+    if (save_settings)
+    {
+        lang_value = isDefined(player.langLEN) ? player.langLEN : 0;
+        menu_style = isDefined(player.menu_style_index) ? player.menu_style_index : 0;
+        sector_style = isDefined(player.sector_style_index) ? player.sector_style_index : 0;
+        selector_style = isDefined(player.selector_style_index) ? player.selector_style_index : 14;
+        font_position = isDefined(player.font_position_index) ? player.font_position_index : 0;
+        font_animation = isDefined(player.font_animation_index) ? player.font_animation_index : 0;
+        transparency_index = isDefined(player.transparency_index) ? player.transparency_index : 0;
+    }
+    else
+    {
+        // Usar valores existentes del archivo
+        lang_value = isDefined(existing_settings.language) ? int(existing_settings.language) : 0;
+        menu_style = isDefined(existing_settings.menu_style) ? int(existing_settings.menu_style) : 0;
+        sector_style = isDefined(existing_settings.sector_style) ? int(existing_settings.sector_style) : 0;
+        selector_style = isDefined(existing_settings.selector_style_index) ? int(existing_settings.selector_style_index) : 14;
+        font_position = isDefined(existing_settings.font_position_index) ? int(existing_settings.font_position_index) : 0;
+        font_animation = isDefined(existing_settings.font_animation) ? int(existing_settings.font_animation) : 0;
+        transparency_index = isDefined(existing_settings.transparency_index) ? int(existing_settings.transparency_index) : 0;
+    }
+
     fs_write(file, "language=" + lang_value + "\n");
-
-    // Guardar estilo del menú
-    menu_style = isDefined(player.menu_style_index) ? player.menu_style_index : 0;
     fs_write(file, "menu_style=" + menu_style + "\n");
-
-    // Guardar estilo del sector
-    sector_style = isDefined(player.sector_style_index) ? player.sector_style_index : 0;
     fs_write(file, "sector_style=" + sector_style + "\n");
-
-    // Guardar estilo del selector
-    selector_style = isDefined(player.selector_style_index) ? player.selector_style_index : 14;
     fs_write(file, "selector_style_index=" + selector_style + "\n");
-
-    // Guardar posición del texto
-    font_position = isDefined(player.font_position_index) ? player.font_position_index : 0;
     fs_write(file, "font_position_index=" + font_position + "\n");
-
-    // Guardar animación de fuente
-    font_animation = isDefined(player.font_animation_index) ? player.font_animation_index : 0;
     fs_write(file, "font_animation=" + font_animation + "\n");
-
-    // Guardar transparencia
-    transparency_index = isDefined(player.transparency_index) ? player.transparency_index : 0;
     fs_write(file, "transparency_index=" + transparency_index + "\n");
 
+    // ========================================
+    // LITTLEGODS MOD - NIGHTMODE
+    // ========================================
+    fs_write(file, "\n");
+    fs_write(file, "// LITTLEGODS MOD - NIGHTMODE //\n");
+    fs_write(file, "\n");
+
+    // Escribir configuración de nightmode (usar valores existentes si no se está guardando)
+    if (save_nightmode)
+    {
+        night_mode_enabled = isDefined(player.night_mode_enabled) ? player.night_mode_enabled : false;
+        night_mode_filter = isDefined(player.night_mode_filter) ? player.night_mode_filter : 0;
+        night_mode_darkness = isDefined(player.night_mode_darkness) ? player.night_mode_darkness : 0;
+        fog_enabled = isDefined(player.fog_enabled) ? player.fog_enabled : false;
+    }
+    else
+    {
+        // Usar valores existentes del archivo
+        night_mode_enabled = isDefined(existing_nightmode.night_mode_enabled) ? string_to_bool(existing_nightmode.night_mode_enabled) : false;
+        night_mode_filter = isDefined(existing_nightmode.night_mode_filter) ? int(existing_nightmode.night_mode_filter) : 0;
+        night_mode_darkness = isDefined(existing_nightmode.night_mode_darkness) ? int(existing_nightmode.night_mode_darkness) : 0;
+        fog_enabled = isDefined(existing_nightmode.fog_enabled) ? string_to_bool(existing_nightmode.fog_enabled) : false;
+    }
+
+    fs_write(file, "night_mode_enabled=" + (night_mode_enabled ? "1" : "0") + "\n");
+    fs_write(file, "night_mode_filter=" + night_mode_filter + "\n");
+    fs_write(file, "night_mode_darkness=" + night_mode_darkness + "\n");
+    fs_write(file, "fog_enabled=" + (fog_enabled ? "1" : "0") + "\n");
+
+    // ========================================
+    // LITTLEGODS MOD - MAP
+    // ========================================
+    fs_write(file, "\n");
+    fs_write(file, "// LITTLEGODS MOD - MAP //\n");
+    fs_write(file, "\n");
+
+    // Escribir configuración de map (usar valores existentes si no se está guardando)
+    // Nota: save_map se pasa como tercer parámetro en la función
+    if (isDefined(save_map) && save_map)
+    {
+        perk_unlimited = isDefined(player.perk_unlimite_active) ? player.perk_unlimite_active : false;
+        third_person = isDefined(player.TPP) ? player.TPP : false;
+    }
+    else
+    {
+        // Usar valores existentes del archivo
+        perk_unlimited = isDefined(existing_map.perk_unlimited) ? string_to_bool(existing_map.perk_unlimited) : false;
+        third_person = isDefined(existing_map.third_person) ? string_to_bool(existing_map.third_person) : false;
+    }
+
+    fs_write(file, "perk_unlimited=" + (perk_unlimited ? "1" : "0") + "\n");
+    fs_write(file, "third_person=" + (third_person ? "1" : "0") + "\n");
 
     fs_write(file, "\n");
     fs_write(file, "================================\n");
@@ -793,9 +922,73 @@ load_menu_config(player)
                         player.transparency_index = int(value);
                         break;
 
+                    // ========================================
+                    // LITTLEGODS MOD - NIGHTMODE
+                    // ========================================
+                    case "night_mode_enabled":
+                        player.night_mode_enabled = string_to_bool(value);
+                        break;
+
+                    case "night_mode_filter":
+                        player.night_mode_filter = int(value);
+                        break;
+
+                    case "night_mode_darkness":
+                        player.night_mode_darkness = int(value);
+                        break;
+
+                    case "fog_enabled":
+                        player.fog_enabled = string_to_bool(value);
+                        break;
+
+                    // ========================================
+                    // LITTLEGODS MOD - MAP
+                    // ========================================
+                    case "perk_unlimited":
+                        player.perk_unlimite_active = string_to_bool(value);
+                        break;
+
+                    case "third_person":
+                        player.TPP = string_to_bool(value);
+                        break;
                 }
             }
         }
+    }
+
+    // Esperar un poco para que el jugador spawne
+    wait 0.5;
+
+    // Aplicar Night Mode si estaba activado
+    if (isDefined(player.night_mode_enabled) && player.night_mode_enabled)
+    {
+        // Aplicar el filtro guardado
+        if (isDefined(player.night_mode_filter))
+        {
+            player thread scripts\zm\night_mode::night_mode_toggle(player.night_mode_filter);
+        }
+    }
+    
+    // Aplicar la niebla si estaba activada (independiente del Night Mode)
+    if (isDefined(player.fog_enabled) && player.fog_enabled)
+    {
+        wait 0.2;
+        player thread scripts\zm\night_mode::toggle_fog_saved();
+    }
+
+    // Aplicar configuración de Map
+    // Perk Unlimited - se aplica automáticamente al cargar la variable
+    if (isDefined(player.perk_unlimite_active) && player.perk_unlimite_active)
+    {
+        wait 0.2;
+        player thread scripts\zm\funciones::apply_perk_unlimited_saved();
+    }
+
+    // Third Person - se aplica automáticamente al cargar la variable
+    if (isDefined(player.TPP) && player.TPP)
+    {
+        wait 0.2;
+        player thread scripts\zm\funciones::apply_third_person_saved();
     }
 
     // Mensaje de confirmación silencioso (solo para debug)

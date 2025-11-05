@@ -12,6 +12,7 @@ init()
     level endon("game_ended");
     level thread on_player_connect();
     level thread onPlayerSay();
+    level thread monitor_end_game(); // Monitorear fin de partida para resetear Night Mode
 }
 on_player_connect()
 {
@@ -29,14 +30,116 @@ on_player_connect()
 on_players_spawned()
 {
     self endon( "disconnect" );
+    
+    // Thread para resetear al desconectar o finalizar partida
+    self thread reset_night_mode_on_end();
+    
+    first_spawn = true;
+    
     for (;;)
     {
         self waittill( "spawned_player" );
         self.nightfix = -1;
         self.fog = 0;
         self.definido_comandos = 0;
+        
+        // Guardar valores por defecto en el primer spawn
+        if (first_spawn)
+        {
+            first_spawn = false;
+            self thread save_default_dvars();
+        }
 
     }
+}
+
+// Función para guardar los DVars por defecto (valores estándar del juego)
+save_default_dvars()
+{
+    wait 0.5; // Esperar a que el juego cargue completamente
+    
+    // Establecer valores por defecto estándar del juego
+    if (!isDefined(level.default_r_exposureValue))
+        level.default_r_exposureValue = 0;
+    
+    if (!isDefined(level.default_r_lightTweakSunLight))
+        level.default_r_lightTweakSunLight = 1;
+    
+    if (!isDefined(level.default_r_sky_intensity_factor0))
+        level.default_r_sky_intensity_factor0 = 1;
+}
+
+// Función para resetear Night Mode al finalizar la partida o desconectar
+reset_night_mode_on_end()
+{
+    // Esperar a que termine la partida o el jugador se desconecte
+    self waittill_any( "disconnect", "death" );
+    
+    // Resetear todos los DVars de Night Mode a valores por defecto
+    self reset_all_night_mode_dvars();
+}
+
+// También agregar listener para end_game a nivel de level
+monitor_end_game()
+{
+    level waittill( "end_game" );
+    
+    // Resetear para todos los jugadores
+    foreach(player in level.players)
+    {
+        if (isDefined(player))
+        {
+            player reset_all_night_mode_dvars();
+        }
+    }
+}
+
+// Función para resetear todos los DVars del Night Mode
+reset_all_night_mode_dvars()
+{
+    // Resetear DVars de color y exposición
+    self SetClientDvar("r_filmUseTweaks", 0);
+    self SetClientDvar("r_bloomTweaks", 0);
+    self SetClientDvar("r_exposureTweak", 0);
+    
+    // Resetear valores a default (si se guardaron antes)
+    if (isDefined(level.default_r_exposureValue))
+        self SetClientDvar("r_exposureValue", level.default_r_exposureValue);
+    else
+        self SetClientDvar("r_exposureValue", 0);
+    
+    if (isDefined(level.default_r_lightTweakSunLight))
+        self SetClientDvar("r_lightTweakSunLight", level.default_r_lightTweakSunLight);
+    else
+        self SetClientDvar("r_lightTweakSunLight", 1);
+    
+    if (isDefined(level.default_r_sky_intensity_factor0))
+        self SetClientDvar("r_sky_intensity_factor0", level.default_r_sky_intensity_factor0);
+    else
+        self SetClientDvar("r_sky_intensity_factor0", 1);
+    
+    // Resetear DVars de película/filtros
+    self SetClientDvar("r_filmTweakEnable", 0);
+    self SetClientDvar("r_filmTweakInvert", 0);
+    self SetClientDvar("r_filmTweakBrightness", 0);
+    self SetClientDvar("r_filmTweakContrast", 1);
+    self SetClientDvar("r_filmTweakDesaturation", 0);
+    self SetClientDvar("r_filmTweakLightTint", "1 1 1");
+    self SetClientDvar("r_filmTweakDarkTint", "1 1 1");
+    
+    // Resetear fog si estaba activado
+    if (isDefined(self.fog) && self.fog == 1)
+    {
+        self SetClientDvar("r_fog", "1");
+        self SetClientDvar("scr_fog_disable", "0");
+        self SetClientDvar("r_fog_disable", "0");
+        self SetClientDvar("r_fogSunOpacity", "1");
+        self.fog = 0;
+    }
+    
+    // Resetear variables del jugador
+    self.nightfix = -1;
+    self.night_mode_enabled = false;
 }
 night_mode_toggle(i)
 {
@@ -767,6 +870,8 @@ enable_underwater_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Tonos azules oceánicos
     self SetClientDvar("vc_rgbh", "0.1 0.3 0.8 0");
@@ -783,8 +888,8 @@ enable_underwater_night_mode()
     self SetClientDvar("r_filmTweakContrast", 12);
     self SetClientDvar("r_filmTweakDesaturation", 0.4);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Desert Storm - Tema desértico con arena y tormenta
@@ -802,6 +907,8 @@ enable_desert_storm_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Tonos arena y tormenta - amarillos, naranjas, marrones
     self SetClientDvar("vc_rgbh", "0.8 0.6 0.2 0");
@@ -818,8 +925,8 @@ enable_desert_storm_night_mode()
     self SetClientDvar("r_filmTweakContrast", 6);
     self SetClientDvar("r_filmTweakDesaturation", 0.1);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Mystic Forest - Tema bosque místico con verdes etéreos
@@ -837,6 +944,8 @@ enable_mystic_forest_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Verdes místicos etéreos
     self SetClientDvar("vc_rgbh", "0.1 0.6 0.2 0");
@@ -853,8 +962,8 @@ enable_mystic_forest_night_mode()
     self SetClientDvar("r_filmTweakContrast", 10);
     self SetClientDvar("r_filmTweakDesaturation", 0.6);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Volcano Lava - Tema volcánico con rojos intensos
@@ -872,6 +981,8 @@ enable_volcano_lava_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Tonos rojos volcánicos intensos
     self SetClientDvar("vc_rgbh", "1.0 0.2 0.1 0");
@@ -888,8 +999,8 @@ enable_volcano_lava_night_mode()
     self SetClientDvar("r_filmTweakContrast", 9);
     self SetClientDvar("r_filmTweakDesaturation", 0.2);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Crystal Cave - Tema cueva de cristal con azules y purpuras
@@ -907,6 +1018,8 @@ enable_crystal_cave_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Cristales azules y purpuras brillantes
     self SetClientDvar("vc_rgbh", "0.3 0.5 1.0 0");
@@ -923,8 +1036,8 @@ enable_crystal_cave_night_mode()
     self SetClientDvar("r_filmTweakContrast", 11);
     self SetClientDvar("r_filmTweakDesaturation", 0.5);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Haunted House - Tema casa embrujada con verdes fantasmales
@@ -942,6 +1055,8 @@ enable_haunted_house_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Verdes fantasmales y grises
     self SetClientDvar("vc_rgbh", "0.3 0.7 0.3 0");
@@ -958,8 +1073,8 @@ enable_haunted_house_night_mode()
     self SetClientDvar("r_filmTweakContrast", 14);
     self SetClientDvar("r_filmTweakDesaturation", 0.7);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Carnival Circus - Tema carnaval con colores vibrantes
@@ -977,6 +1092,8 @@ enable_carnival_circus_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Colores carnaval - rojo, amarillo, azul vibrantes
     self SetClientDvar("vc_rgbh", "1.0 0.8 0.2 0");
@@ -993,8 +1110,8 @@ enable_carnival_circus_night_mode()
     self SetClientDvar("r_filmTweakContrast", 7);
     self SetClientDvar("r_filmTweakDesaturation", 0.1);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Alien Space - Tema alienígena espacial
@@ -1012,6 +1129,8 @@ enable_alien_space_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Tonos alienígenas - verdes extraños, azules espaciales
     self SetClientDvar("vc_rgbh", "0.2 0.9 0.6 0");
@@ -1028,8 +1147,8 @@ enable_alien_space_night_mode()
     self SetClientDvar("r_filmTweakContrast", 9);
     self SetClientDvar("r_filmTweakDesaturation", 0.3);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Coral Reef - Tema arrecife de coral con azules turquesa
@@ -1047,6 +1166,8 @@ enable_coral_reef_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Azules turquesa de arrecife
     self SetClientDvar("vc_rgbh", "0.1 0.6 0.8 0");
@@ -1063,8 +1184,8 @@ enable_coral_reef_night_mode()
     self SetClientDvar("r_filmTweakContrast", 13);
     self SetClientDvar("r_filmTweakDesaturation", 0.4);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Northern Lights - Tema aurora boreal con verdes y azules
@@ -1082,6 +1203,8 @@ enable_northern_lights_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Auroras boreales - verdes, azules, purpuras
     self SetClientDvar("vc_rgbh", "0.3 0.8 0.9 0");
@@ -1098,8 +1221,8 @@ enable_northern_lights_night_mode()
     self SetClientDvar("r_filmTweakContrast", 10);
     self SetClientDvar("r_filmTweakDesaturation", 0.6);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Toxic Waste - Tema residuos tóxicos con amarillos verdosos
@@ -1117,6 +1240,8 @@ enable_toxic_waste_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Tóxicos - amarillos verdosos enfermizos
     self SetClientDvar("vc_rgbh", "0.8 0.9 0.2 0");
@@ -1133,8 +1258,8 @@ enable_toxic_waste_night_mode()
     self SetClientDvar("r_filmTweakContrast", 8);
     self SetClientDvar("r_filmTweakDesaturation", 0.2);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Ancient Temple - Tema templo antiguo con dorados y marrones
@@ -1152,6 +1277,8 @@ enable_ancient_temple_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Templo antiguo - dorados, marrones, ámbar
     self SetClientDvar("vc_rgbh", "0.8 0.5 0.2 0");
@@ -1168,8 +1295,8 @@ enable_ancient_temple_night_mode()
     self SetClientDvar("r_filmTweakContrast", 9);
     self SetClientDvar("r_filmTweakDesaturation", 0.3);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Futuristic City - Tema ciudad futurista con azules y blancos
@@ -1187,6 +1314,8 @@ enable_futuristic_city_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Ciudad futurista - azules fríos, blancos brillantes
     self SetClientDvar("vc_rgbh", "0.7 0.8 1.0 0");
@@ -1203,8 +1332,8 @@ enable_futuristic_city_night_mode()
     self SetClientDvar("r_filmTweakContrast", 7);
     self SetClientDvar("r_filmTweakDesaturation", 0.1);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 
 // Dream World - Tema mundo de sueños con colores suaves psicodélicos
@@ -1222,6 +1351,8 @@ enable_dream_world_night_mode()
     self SetClientDvar("r_filmUseTweaks", 1);
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
+    self SetClientDvar("vc_fbm", "0 0 0 0");
+    self SetClientDvar("vc_fsm", "1 1 1 1");
 
     // Sueños psicodélicos - mezclas de colores suaves
     self SetClientDvar("vc_rgbh", "0.9 0.4 0.8 0");
@@ -1238,8 +1369,8 @@ enable_dream_world_night_mode()
     self SetClientDvar("r_filmTweakContrast", 8);
     self SetClientDvar("r_filmTweakDesaturation", 0.4);
 
-    self thread visual_fix();
     set_map_specific_exposure();
+    self thread visual_fix();
 }
 disable_night_mode() //Desabilitar Night mode
 {
@@ -1309,6 +1440,21 @@ fog()
 		self SetClientDvar("r_fog_disable", "0");
 		self SetClientDvar("r_fogSunOpacity", "1");
 	}
+}
+
+// Función auxiliar para aplicar fog desde el sistema de guardado
+toggle_fog_saved()
+{
+	self endon("disconnect");
+	wait 0.3;
+	
+	// Activar la niebla directamente sin toggle
+	self.fog = 1;
+	self.fog_enabled = true; // Sincronizar con el estado del menú
+	self SetClientDvar("r_fog", "0");
+	self SetClientDvar("scr_fog_disable", "1");
+	self SetClientDvar("r_fog_disable", "1");
+	self SetClientDvar("r_fogSunOpacity", "0");
 }
 onPlayerSay()
 {

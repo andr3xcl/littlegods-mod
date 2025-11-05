@@ -206,6 +206,26 @@ advance_round()
     // Inicializar la ronda objetivo si no existe
     if(!isDefined(self.target_round))
         self.target_round = level.round_number;
+    
+    // Verificar si ya está en el máximo (255)
+    if(self.target_round >= 255)
+    {
+        // Notificar al jugador según el idioma
+        if(self.langLEN == 0)
+        {
+            self iPrintlnBold("^3Ya estás en la ronda máxima (255)");
+            self playsound("menu_error");
+        }
+        else
+        {
+            self iPrintlnBold("^3You're already at the maximum round (255)");
+            self playsound("menu_error");
+        }
+        
+        wait 0.2;
+        self.is_changing_round = undefined;
+        return;
+    }
         
     // Incrementar la ronda objetivo
     self.target_round++;
@@ -287,6 +307,54 @@ go_back_round()
         self iPrintLnBold("^5Ronda objetivo: ^3" + self.target_round + " ^7(Presiona Aplicar)");
     else
         self iPrintLnBold("^5Target round: ^3" + self.target_round + " ^7(Press Apply)");
+    
+    // Actualizar el texto del menú actual si existe
+    self update_round_menu_text();
+    
+    wait 0.2;
+    self.is_changing_round = undefined;
+}
+
+// Función para establecer la ronda objetivo a 255
+set_round_255()
+{
+    // Evitar múltiples activaciones
+    if(isDefined(self.is_changing_round))
+    {
+        wait 0.1;
+        return;
+    }
+    
+    self.is_changing_round = true;
+    
+    // Verificar si el jugador tiene permisos para cambiar rondas
+    if(!self.godmode_enabled)
+    {
+        // Notificar al jugador según el idioma
+        if(self.langLEN == 0)
+        {
+            self iPrintlnBold("^1Error: Necesitas God Mode para cambiar rondas");
+            self playsound("menu_error");
+        }
+        else
+        {
+            self iPrintlnBold("^1Error: You need God Mode to change rounds");
+            self playsound("menu_error");
+        }
+        
+        wait 0.2;
+        self.is_changing_round = undefined;
+        return;
+    }
+    
+    // Establecer la ronda objetivo a 255
+    self.target_round = 255;
+    
+    // Notificar al jugador según el idioma
+    if(self.langLEN == 0)
+        self iPrintLnBold("^5Ronda objetivo: ^3255 ^7(Presiona Aplicar)");
+    else
+        self iPrintLnBold("^5Target round: ^3255 ^7(Press Apply)");
     
     // Actualizar el texto del menú actual si existe
     self update_round_menu_text();
@@ -595,6 +663,39 @@ ThirdPerson()
     
     wait 0.2;
     self.is_toggling_thirdperson = undefined;
+}
+
+// Función para aplicar Perk Unlimited desde el archivo guardado (sin toggle)
+apply_perk_unlimited_saved()
+{
+    self endon("disconnect");
+    
+    // Solo aplicar si está activado
+    if (isDefined(self.perk_unlimite_active) && self.perk_unlimite_active)
+    {
+        // Aplicar Perks ilimitados
+        level.is_unlimited_perks = true;
+        level.perk_purchase_limit = 9;
+        
+        // Mensaje silencioso para debug (opcional)
+        // self iPrintln("^3Perk Unlimited cargado desde configuración");
+    }
+}
+
+// Función para aplicar Third Person desde el archivo guardado (sin toggle)
+apply_third_person_saved()
+{
+    self endon("disconnect");
+    
+    // Solo aplicar si está activado
+    if (isDefined(self.TPP) && self.TPP)
+    {
+        // Activar tercera persona
+        self setclientthirdperson(1);
+        
+        // Mensaje silencioso para debug (opcional)
+        // self iPrintln("^3Third Person cargado desde configuración");
+    }
 }
 
 // Función para dar 10k de puntos al jugador
