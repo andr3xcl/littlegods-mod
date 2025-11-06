@@ -525,8 +525,6 @@ open_main_menu()
         
         // Nueva opción para configuración (bordes en rojo si no disponible)
 
-        // Opción para ver partidas recientes
-        add_menu_item(menu, "Partidas Recientes", ::open_recent_matches_menu);
 
 
         // Agregar opción de Developer solo si está desbloqueado
@@ -552,8 +550,6 @@ open_main_menu()
         add_menu_item(menu, "Map", ::open_map_menu);
         
 
-        // Recent matches option
-        add_menu_item(menu, "Recent Matches", ::open_recent_matches_menu);
 
         // Agregar opción de Developer solo si está desbloqueado
         if (self.developer_mode_unlocked)
@@ -3534,6 +3530,9 @@ open_map_menu()
         thirdperson_status = self.TPP ? "ON" : "OFF";
         add_menu_item(menu, "Tercera Persona: " + thirdperson_status, scripts\zm\funciones::ThirdPerson);
 
+        // Opción para ver partidas recientes
+        add_menu_item(menu, "Partidas Recientes", ::open_recent_matches_menu);
+
         // Opción de banco (solo si developer no está activado)
         if (!self.developer_mode_unlocked)
             add_menu_item(menu, "Banco", ::open_bank_menu);
@@ -3553,6 +3552,9 @@ open_map_menu()
         // Opción para activar/desactivar Tercera Persona
         thirdperson_status = self.TPP ? "ON" : "OFF";
         add_menu_item(menu, "Third Person: " + thirdperson_status, scripts\zm\funciones::ThirdPerson);
+
+        // Opción para ver partidas recientes
+        add_menu_item(menu, "Recent Matches", ::open_recent_matches_menu);
 
 
         // Bank option (only if developer is not activated)
@@ -6726,17 +6728,13 @@ menu_go_back_to_map()
 //====================================================================================
 
 // Menú para ver estadísticas guardadas
-open_recent_matches_menu(saved_position)
+open_recent_matches_menu()
 {
     self endon("disconnect");
     self endon("destroy_all_menus");
 
-    // Si no se especifica posición guardada, usar 0
-    if (!isDefined(saved_position))
-        saved_position = 0;
-
     self notify("destroy_current_menu");
-    wait 0.01; // Delay reducido para navegación en tiempo real
+    wait 0.1;
 
     title = (self.langLEN == 0) ? "PARTIDAS RECIENTES" : "RECENT MATCHES";
     menu = create_menu(title, self);
@@ -6938,16 +6936,6 @@ open_recent_matches_menu(saved_position)
     show_menu(menu);
     menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
 
-    // Establecer la posición del selector guardada (para navegación en tiempo real)
-    if (saved_position >= 0 && saved_position < menu.items.size)
-    {
-        menu.selected = saved_position;
-    }
-    else
-    {
-        menu.selected = 0; // Fallback a la primera posición
-    }
-
     if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
     {
         menu.active_color = self.menu_current.active_color;
@@ -6982,9 +6970,9 @@ get_recent_match_files(player_guid, map_name)
 
     last_match_number = int(content);
 
-    // Crear lista de archivos existentes (del último hacia atrás, máximo 10)
+    // Crear lista de archivos existentes (del último hacia atrás, sin límite)
     files = [];
-    for (i = last_match_number; i > 0 && files.size < 10; i--)
+    for (i = last_match_number; i > 0; i--)
     {
         filename = map_name + "_recent_" + i + ".txt";
         full_path = "scriptdata/recent/" + player_guid + "/" + filename;
@@ -7049,13 +7037,6 @@ cycle_recent_match_forward()
 // Función para cambiar inmediatamente a otra partida (efecto tiempo real)
 change_recent_match_instantly(recent_files)
 {
-    // Guardar la posición actual del selector antes de destruir el menú
-    saved_selector_position = 0;
-    if (isDefined(self.menu_current) && isDefined(self.menu_current.selected))
-    {
-        saved_selector_position = self.menu_current.selected;
-    }
-
     // Destruir el menú actual inmediatamente
     if (isDefined(self.menu_current))
     {
@@ -7088,7 +7069,7 @@ change_recent_match_instantly(recent_files)
 
     // Recrear el menú inmediatamente con la nueva partida
     wait 0.01; // Pequeño delay para asegurar que se destruya
-    self thread open_recent_matches_menu(saved_selector_position);
+    self thread open_recent_matches_menu();
 
     // Reproducir sonido de navegación
     self playsound("menu_click");
