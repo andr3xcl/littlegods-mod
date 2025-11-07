@@ -1,3 +1,6 @@
+
+<img src="https://img.shields.io/badge/☕-Ko--fi-8A2BE2?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/littlegods"> <img src="https://img.shields.io/badge/💜-PayPal-6E00FF?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=7W9ABVTNCV3EA">
+
 # LITTLEGODS MOD MENU – [RELEASE]
 
 ![Version](https://img.shields.io/badge/VERSION-3.5.0-6E00FF?style=for-the-badge&logo=starship&logoColor=white)
