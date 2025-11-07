@@ -1,5 +1,7 @@
 
-<img src="https://img.shields.io/badge/☕-Ko--fi-8A2BE2?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/littlegods"> <img src="https://img.shields.io/badge/💜-PayPal-6E00FF?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=7W9ABVTNCV3EA">
+[![Donate](https://img.shields.io/badge/☕_DONATE-Ko--fi-8A2BE2?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/littlegods)
+[![Donate](https://img.shields.io/badge/💜_DONATE-PayPal-6E00FF?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=7W9ABVTNCV3EA)
+
 
 # LITTLEGODS MOD MENU – [RELEASE]
 
