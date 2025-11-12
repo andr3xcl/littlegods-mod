@@ -780,7 +780,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     
     
     fs_write(file, "\n");
-    fs_write(file, "
+    fs_write(file, "NIGHTMODE\n");
     fs_write(file, "\n");
 
     
@@ -809,7 +809,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     
     
     fs_write(file, "\n");
-    fs_write(file, "
+    fs_write(file, "PERKS\n");
     fs_write(file, "\n");
 
     
