@@ -4,32 +4,32 @@
 #include common_scripts\utility;
 #include scripts\zm\sqllocal;
 
-//====================================================================================
-// SISTEMA REDISEÑADO DE TOP DE RONDAS Y ESTADÍSTICAS
-//====================================================================================
 
-// Función que inicializa el sistema de estadísticas
+
+
+
+
 TopRound()
 {
     self endon("disconnect");
 
-    // Solo inicializar una vez por partida
+    
     if (isDefined(level.stats_system_initialized))
         return;
 
     level.stats_system_initialized = true;
 
-    // Obtener el mapa actual
+    
     level.current_game_map = getDvar("ui_zm_mapstartlocation");
 
-    // Esperar a que termine el juego
+    
     level waittill("end_game");
 
-    // Procesar estadísticas para todos los jugadores una sola vez
+    
     process_all_players_stats();
 }
 
-// Función que procesa las estadísticas de TODOS los jugadores
+
 process_all_players_stats()
 {
     round_reached = level.round_number;
@@ -38,13 +38,13 @@ process_all_players_stats()
     {
         if (isDefined(player) && isPlayer(player))
         {
-            // NO procesar estadísticas si el developer mode está activado
+            
             if (isDefined(player.developer_mode_unlocked) && player.developer_mode_unlocked)
             {
-                continue; // Saltar este jugador
+                continue; 
             }
 
-            // Verificar si ya se procesaron las stats de este jugador
+            
             if (!isDefined(player.stats_processed) || !player.stats_processed)
             {
                 player.stats_processed = true;
@@ -53,18 +53,18 @@ process_all_players_stats()
         }
     }
 
-    // Efectos finales (solo una vez, incluso si todos tienen developer mode)
-    // Buscar el primer jugador que NO tenga developer mode activado
+    
+    
     foreach (player in level.players)
     {
         if (isDefined(player) && isPlayer(player) && (!isDefined(player.developer_mode_unlocked) || !player.developer_mode_unlocked))
         {
             player thread execute_map_end_effects(level.current_game_map);
-            break; // Solo ejecutar una vez
+            break; 
         }
     }
 
-    // Si todos tienen developer mode, ejecutar efectos con el primer jugador disponible
+    
     if (!isDefined(level.effects_executed))
     {
         level.effects_executed = true;
@@ -75,49 +75,49 @@ process_all_players_stats()
     }
 }
 
-// Función que procesa estadísticas para un jugador individual
+
 process_single_player_stats(current_map, round_reached)
 {
-    // Recopilar estadísticas de la partida
+    
     self thread collect_game_stats();
 
-    // Esperar a que se recopilen las estadísticas
+    
     self waittill("stats_collected");
 
-    // Obtener las estadísticas recopiladas
+    
     kills = isDefined(self.game_kills) ? self.game_kills : 0;
     headshots = isDefined(self.game_headshots) ? self.game_headshots : 0;
     revives = isDefined(self.game_revives) ? self.game_revives : 0;
     downs = isDefined(self.game_downs) ? self.game_downs : 0;
     total_score = isDefined(self.score) ? self.score : 0;
 
-    // Verificar el tipo de resultado de ronda
+    
     round_result = scripts\zm\sqllocal::check_round_result(self, current_map, round_reached);
 
-    // Guardar estadísticas automáticamente (solo si no es peor que el record)
+    
     scripts\zm\sqllocal::save_player_round_data(self, current_map, round_reached, kills, headshots, revives, downs, total_score);
 
-    // Mensaje de feedback según el tipo de resultado
-    if (isDefined(self.langLEN) && self.langLEN == 0) // Español
+    
+    if (isDefined(self.langLEN) && self.langLEN == 0) 
     {
         switch (round_result)
         {
-            case 3: // Primer record
+            case 3: 
                 self iPrintlnBold("^3¡PRIMER RECORD!");
                 self iPrintlnBold("^7Ronda: ^2" + round_reached + " ^7en " + get_map_display_name(current_map));
                 break;
 
-            case 2: // Nuevo record
+            case 2: 
                 self iPrintlnBold("^3¡NUEVO RECORD PERSONAL!");
                 self iPrintlnBold("^7Ronda: ^2" + round_reached + " ^7en " + get_map_display_name(current_map));
                 break;
 
-            case 1: // Igual que record
+            case 1: 
                 self iPrintlnBold("^2¡RONDA IGUALADA!");
                 self iPrintlnBold("^7Ronda: ^2" + round_reached + " ^7en " + get_map_display_name(current_map) + " ^7(igual que tu record)");
                 break;
 
-            case 0: // Peor que record
+            case 0: 
                 self iPrintlnBold("^1Ronda no superada");
                 self iPrintlnBold("^7Ronda: ^8" + round_reached + " ^7en " + get_map_display_name(current_map) + " ^7(record no actualizado)");
                 break;
@@ -127,26 +127,26 @@ process_single_player_stats(current_map, round_reached)
             break;
         }
     }
-    else // Inglés
+    else 
     {
         switch (round_result)
         {
-            case 3: // First record
+            case 3: 
                 self iPrintlnBold("^3FIRST RECORD!");
                 self iPrintlnBold("^7Round: ^2" + round_reached + " ^7in " + get_map_display_name(current_map));
                 break;
 
-            case 2: // New record
+            case 2: 
                 self iPrintlnBold("^3NEW PERSONAL RECORD!");
                 self iPrintlnBold("^7Round: ^2" + round_reached + " ^7in " + get_map_display_name(current_map));
                 break;
 
-            case 1: // Equal to record
+            case 1: 
                 self iPrintlnBold("^2ROUND TIED!");
                 self iPrintlnBold("^7Round: ^2" + round_reached + " ^7in " + get_map_display_name(current_map) + " ^7(equal to your record)");
                 break;
 
-            case 0: // Worse than record
+            case 0: 
                 self iPrintlnBold("^1Round not beaten");
                 self iPrintlnBold("^7Round: ^8" + round_reached + " ^7in " + get_map_display_name(current_map) + " ^7(record not updated)");
                 break;
@@ -158,7 +158,7 @@ process_single_player_stats(current_map, round_reached)
     }
 }
 
-// Función para recopilar estadísticas de la partida
+
 collect_game_stats()
 {
     self.game_kills = 0;
@@ -166,19 +166,19 @@ collect_game_stats()
     self.game_revives = 0;
     self.game_downs = 0;
 
-    // Contar kills
+    
     if (isDefined(self.pers["kills"]))
         self.game_kills = self.pers["kills"];
 
-    // Contar headshots (si está disponible)
+    
     if (isDefined(self.pers["headshots"]))
         self.game_headshots = self.pers["headshots"];
 
-    // Contar revives
+    
     if (isDefined(self.pers["revives"]))
         self.game_revives = self.pers["revives"];
 
-    // Contar downs
+    
     if (isDefined(self.pers["downs"]))
         self.game_downs = self.pers["downs"];
 
@@ -186,7 +186,7 @@ collect_game_stats()
     self notify("stats_collected");
 }
 
-// Función para obtener el nombre display del mapa
+
 get_map_display_name(map_code)
 {
     switch (map_code)
@@ -201,14 +201,14 @@ get_map_display_name(map_code)
     }
 }
 
-// Función para ejecutar efectos finales según el mapa
+
 execute_map_end_effects(map_code)
 {
     trace = (0, 0, 3000);
 
     switch (map_code)
     {
-        case "tomb": // Origins - Efectos especiales
+        case "tomb": 
             earthquake(0.9, 15, (0, 0, 0), 100000);
             foreach (player in level.players)
                 player EnableInvulnerability();
@@ -235,7 +235,7 @@ execute_map_end_effects(map_code)
             }
             break;
 
-        case "transit": // Transit - Efectos estándar
+        case "transit": 
             earthquake(0.6, 10, (0, 0, 0), 50000);
             foreach (player in level.players)
                 player EnableInvulnerability();
@@ -244,7 +244,7 @@ execute_map_end_effects(map_code)
                 player DisableInvulnerability();
             break;
 
-        case "processing": // Buried - Efectos estándar
+        case "processing": 
             earthquake(0.7, 12, (0, 0, 0), 75000);
             foreach (player in level.players)
                 player EnableInvulnerability();
@@ -253,12 +253,12 @@ execute_map_end_effects(map_code)
                 player DisableInvulnerability();
             break;
 
-        case "prison": // Mob of the Dead - Sin efectos especiales
+        case "prison": 
             earthquake(0.5, 8, (0, 0, 0), 25000);
             wait 1;
             break;
 
-        default: // Efectos estándar para otros mapas
+        default: 
             earthquake(0.4, 6, (0, 0, 0), 20000);
             wait 1;
             break;
@@ -267,9 +267,9 @@ execute_map_end_effects(map_code)
     level notify("end_game");
 }
 
-// Función auxiliar para BlackHolePull2 (si existe)
+
 BlackHolePull2(trace)
 {
-    // Implementación básica si la función no existe
+    
     self setOrigin(trace);
 }

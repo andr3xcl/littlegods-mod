@@ -31,8 +31,8 @@ init()
     level thread on_player_connect_player();
     level thread onPlayerSay();
     
-    // No activar automáticamente el monitoreo de zombies aquí
-    // Solo se activará cuando el usuario lo llame desde el menú
+    
+    
 }
 
 on_player_connect_player()
@@ -50,7 +50,7 @@ on_player_connect_player()
         player.definido_comandos = 0;
 		player.zombieDeathCounter = 0;
         
-        // Añadimos un flag para indicar si la barra está activa (inicialmente desactivada)
+        
         player.healthbarzombie_active = false;
 
         player.hud_damagefeedback = newdamageindicatorhudelem( player );
@@ -80,15 +80,15 @@ on_players_spawned()
     {
         self waittill( "spawned_player" );
         self.definido_comandos = 0;
-        self.shaderON = 0; //default 0 transparent bar//bar 1 with black shader//por defecto 0 barra transparente //barra 1 con shader negro
-        self.zombieNAME = 1; //1 name zombies on // 1 Nombres Zombies on // 0 off 
+        self.shaderON = 0; 
+        self.zombieNAME = 1; 
         self.sizeW = 100;
         self.sizeH = 2;
-        self.sizeN = 1; //manual font // tamaño de fuente
-        self.langLEN = 1; //Default ingles 1 / 0 Español
-        self.colorcito = (1, 1, 1); // Color por defecto (blanco)
+        self.sizeN = 1; 
+        self.langLEN = 1; 
+        self.colorcito = (1, 1, 1); 
         
-        // Asegurarse de que la barra de zombie esté desactivada al aparecer
+        
         if (isDefined(self.hud_zombie_health))
         {
             self.hud_zombie_health destroy();
@@ -113,7 +113,7 @@ on_players_spawned()
             self.hud_zombie_health_max_label = undefined;
         }
         
-        // Reiniciar el estado de activación al aparecer
+        
         self.healthbarzombie_active = false;
     }
 }
@@ -177,23 +177,23 @@ do_hitmarker( mod, hitloc, hitorig, player, damage )
 }
 hud_show_zombie_health(entity, isDead)
 {
-    // Si la barra zombie no está activada desde el menú, no hacer nada
+    
     if (!isDefined(self.healthbarzombie_active) || !self.healthbarzombie_active)
         return;
     
-    // Verificar si el zombie existe
+    
     if (!isDefined(entity))
         return;
     
-    // Obtener el nombre del zombie
+    
     name_zombie = entity.zombie_name;
     
-    // Si no tiene nombre definido, asignar uno según el tipo
+    
     if (!isDefined(name_zombie))
     {
         type = "Zombie";
         
-        // Verificar atributos especiales para detectar Panzer
+        
         if(isDefined(entity.ai_type) && entity.ai_type == "mechz")
         {
             type = "Panzer Soldat";
@@ -202,14 +202,14 @@ hud_show_zombie_health(entity, isDead)
         {
             type = "Panzer Soldat";
         }
-        // Verificar primero si es un Panzer usando la función dedicada
+        
         else if(self is_panzer_soldat(entity))
         {
             type = "Panzer Soldat";
         }
         else
         {
-            // Si el modelo no está definido, intenta usar otros atributos para identificarlo
+            
             if(!isDefined(entity.model))
             {
                 if(isDefined(entity.zombie_move_speed) && entity.zombie_move_speed == "mechz_speed")
@@ -220,7 +220,7 @@ hud_show_zombie_health(entity, isDead)
             }
             else
             {
-                // Determinar tipo por modelo si no es un Panzer
+                
                 switch (entity.model)
                 {
                     case "c_zom_dlc3_mech_z": type = "Panzer Soldat"; break;
@@ -229,7 +229,7 @@ hud_show_zombie_health(entity, isDead)
                     case "c_zom_tomb_crusader_zombie": type = "Crusader"; break;
                     case "c_zom_tomb_templar_zombie": type = "Knight"; break;
                     case "c_zom_zombie_german_guard_frigid": type = "Guard"; break;
-                    // Añadir más identificadores para el Panzer Soldat
+                    
                     case "c_zom_mechz": type = "Panzer Soldat"; break;
                     case "mechz_zombie": type = "Panzer Soldat"; break;
                     case "c_zom_mech_zombie": type = "Panzer Soldat"; break;
@@ -242,23 +242,23 @@ hud_show_zombie_health(entity, isDead)
             }
         }
         
-        // Si estamos en el mapa Origins o tiene atributos específicos, verificar si es un Panzer
-        // Si tiene un modelo único, nombrar como jefe
+        
+        
         if (isDefined(entity.isUniqueModel) && entity.isUniqueModel && !isDefined(entity.boss))
             type = "Boss Zombie";
             
         name_zombie = type;
     }
     
-    // Calcular porcentaje de salud
+    
     max_health = entity.maxhealth;
     health = entity.health;
     percent = health / max_health;
     
-    // Si ya existe la barra, actualizarla
+    
     if (isDefined(self.hud_zombie_health) && isDefined(self.hud_zombie_name_label) && isDefined(self.hud_zombie_health_current_label) && isDefined(self.hud_zombie_health_max_label))
     {
-        // Si el zombie está muerto, mostrar barra vacía
+        
         if (isDefined(isDead) && isDead)
         {
             self.hud_zombie_health updatebar(0);
@@ -277,21 +277,21 @@ hud_show_zombie_health(entity, isDead)
         }
         else
         {
-            // Asegurarse de que el color sea el seleccionado por el usuario
-            // Si color no está definido todavía, usar blanco como predeterminado
+            
+            
             if (!isDefined(self.colorcito))
                 self.colorcito = (1, 1, 1);
 
-            // Actualizar el color de la barra solo si es necesario
+            
             if (isDefined(self.hud_zombie_health.bar) && self.hud_zombie_health.bar.color != self.colorcito)
                 self.hud_zombie_health.bar.color = self.colorcito;
 
             self.hud_zombie_health updatebar(percent);
 
-            // Solo mostrar nombre si está habilitado
+            
             if (self.zombieNAME)
             {
-                // Actualizar valores usando setvalue
+                
                 self.hud_zombie_name_label setText(name_zombie + "  ");
                 self.hud_zombie_health_current_label.alpha = 1;
                 self.hud_zombie_health_max_label.alpha = 1;
@@ -300,7 +300,7 @@ hud_show_zombie_health(entity, isDead)
             }
             else
             {
-                // Solo mostrar salud sin nombre
+                
                 self.hud_zombie_name_label setText("");
                 self.hud_zombie_health_current_label.alpha = 1;
                 self.hud_zombie_health_max_label.alpha = 1;
@@ -311,21 +311,21 @@ hud_show_zombie_health(entity, isDead)
     }
     else
     {
-        // Crear barra de salud si no existe
+        
         self.hud_zombie_health = self createprimaryprogressbar();
 
-        // Crear elementos para label/setvalue
+        
         self.hud_zombie_name_label = self createfontstring("Objective", 1);
         self.hud_zombie_health_current_label = self createfontstring("Objective", 1);
         self.hud_zombie_health_max_label = self createfontstring("Objective", 1);
         
-        // Posicionar en la parte izquierda de la pantalla (posición original, no modificar)
+        
         self.hud_zombie_health setpoint("LEFT", "LEFT", 0, 90);
 
-        // Configurar los labels con setvalue - separados en eje X
+        
         self.hud_zombie_name_label setpoint("LEFT", "LEFT", 0, 105);
 
-        // Separar los valores de vida del nombre - posicionar más a la derecha
+        
         self.hud_zombie_health_current_label setpoint("LEFT", "LEFT", 35, 105);
         self.hud_zombie_health_current_label.label = &"^7^3";
         self.hud_zombie_health_current_label setvalue(int(health));
@@ -334,11 +334,11 @@ hud_show_zombie_health(entity, isDead)
         self.hud_zombie_health_max_label.label = &"^7/^2";
         self.hud_zombie_health_max_label setvalue(int(max_health));
 
-        // Asegurarse de que el color sea el seleccionado por el usuario
+        
         if (!isDefined(self.colorcito))
             self.colorcito = (1, 1, 1);
 
-        // Configurar propiedades de la barra
+        
         self.hud_zombie_health.bar.color = self.colorcito;
         self.hud_zombie_health.hidewheninmenu = false;
         self.hud_zombie_name_label.hidewheninmenu = false;
@@ -346,16 +346,16 @@ hud_show_zombie_health(entity, isDead)
         self.hud_zombie_health_max_label.hidewheninmenu = false;
         self.hud_zombie_health.alpha = self.shaderON;
 
-        // Establecer dimensiones
+        
         self.hud_zombie_health.width = self.sizeW;
         self.hud_zombie_health.height = self.sizeH;
         self.hud_zombie_name_label.fontScale = self.sizeN;
         
-        // Asegurar que el fondo de la barra sea transparente para no interferir con el menú
+        
         if(isDefined(self.hud_zombie_health.barframe))
             self.hud_zombie_health.barframe.alpha = 0;
 
-        // Si el zombie está muerto, mostrar barra vacía
+        
         if (isDefined(isDead) && isDead)
         {
             self.hud_zombie_health updatebar(0);
@@ -374,10 +374,10 @@ hud_show_zombie_health(entity, isDead)
         }
         else
         {
-            // Actualizar barra con el porcentaje actual
+            
             self.hud_zombie_health updatebar(percent);
 
-            // Mostrar texto según configuración
+            
             if (self.zombieNAME)
             {
                 self.hud_zombie_name_label setText(name_zombie + "   ");
@@ -397,7 +397,7 @@ hud_show_zombie_health(entity, isDead)
         }
     }
     
-    // Si el zombie no está muerto pero está en plena salud, ocultamos la barra después de un tiempo
+    
     if (isDefined(isDead) && !isDead && health == max_health)
     {
         self.hud_zombie_health fadeovertime(1.5);
@@ -454,37 +454,37 @@ colorBAR(varN)
     level endon("end_game");
     self endon("end_colorBAR");
     
-    // Definición de la lista de colores
+    
     colorbarlist = [];
-    colorbarlist[0] = (1, 0, 0);   // Rojo
-    colorbarlist[1] = (0, 1, 0);   // Verde
-    colorbarlist[2] = (0, 0, 1);   // Azul
-    colorbarlist[3] = (1, 1, 0);   // Amarillo
-    colorbarlist[4] = (1, 0, 1);   // Magenta
-    colorbarlist[5] = (0, 1, 1);   // Cian
-    colorbarlist[6] = (1, 1, 1);   // Blanco
-    colorbarlist[7] = (0, 0, 0);   // Negro
-    colorbarlist[8] = (0.5, 0, 0); // Rojo oscuro
-    colorbarlist[9] = (0, 0.5, 0); // Verde oscuro
-    colorbarlist[10] = (0, 0, 0.5); // Azul oscuro
-    colorbarlist[11] = (0.5, 0.5, 0); // Amarillo oscuro
-    colorbarlist[12] = (0.5, 0, 0.5); // Magenta oscuro
-    colorbarlist[13] = (0, 0.5, 0.5); // Cian oscuro
-    colorbarlist[14] = (0.75, 0.75, 0.75); // Gris claro
-    colorbarlist[15] = (0.25, 0.25, 0.25); // Gris oscuro
-    colorbarlist[16] = (1, 0.5, 0);  // Naranja
-    colorbarlist[17] = (0.5, 0.25, 0); // Marrón
-    colorbarlist[18] = (1, 0.75, 0.8); // Rosa claro
-    colorbarlist[19] = (0.5, 0, 0.25); // Púrpura oscuro
-    colorbarlist[20] = (0.5, 1, 0.5); // Verde claro
+    colorbarlist[0] = (1, 0, 0);   
+    colorbarlist[1] = (0, 1, 0);   
+    colorbarlist[2] = (0, 0, 1);   
+    colorbarlist[3] = (1, 1, 0);   
+    colorbarlist[4] = (1, 0, 1);   
+    colorbarlist[5] = (0, 1, 1);   
+    colorbarlist[6] = (1, 1, 1);   
+    colorbarlist[7] = (0, 0, 0);   
+    colorbarlist[8] = (0.5, 0, 0); 
+    colorbarlist[9] = (0, 0.5, 0); 
+    colorbarlist[10] = (0, 0, 0.5); 
+    colorbarlist[11] = (0.5, 0.5, 0); 
+    colorbarlist[12] = (0.5, 0, 0.5); 
+    colorbarlist[13] = (0, 0.5, 0.5); 
+    colorbarlist[14] = (0.75, 0.75, 0.75); 
+    colorbarlist[15] = (0.25, 0.25, 0.25); 
+    colorbarlist[16] = (1, 0.5, 0);  
+    colorbarlist[17] = (0.5, 0.25, 0); 
+    colorbarlist[18] = (1, 0.75, 0.8); 
+    colorbarlist[19] = (0.5, 0, 0.25); 
+    colorbarlist[20] = (0.5, 1, 0.5); 
 
-    // Configurar un color específico de inmediato si se solicita
+    
     if (varN >= 1 && varN <= 21)
     {
-        // Almacenar el color seleccionado en la variable global
+        
         self.colorcito = colorbarlist[varN - 1];
         
-        // Aplicar el color inmediatamente si la barra existe
+        
         if (isDefined(self.hud_zombie_health) && isDefined(self.hud_zombie_health.bar))
         {
             self.hud_zombie_health.bar.color = self.colorcito;
@@ -497,15 +497,15 @@ colorBAR(varN)
         {
             if (varN == 0)
             {
-                // Modo aleatorio
+                
                 randomIndex = randomint(colorbarlist.size);
                 self.colorcito = colorbarlist[randomIndex];
                 self.hud_zombie_health.bar.color = self.colorcito;
             }
             else if (varN >= 1 && varN <= 21)
             {
-                // Modo color fijo - ya configurado anteriormente
-                // Verificar que el color siga siendo el correcto
+                
+                
                 if (self.hud_zombie_health.bar.color != self.colorcito)
                 {
                     self.hud_zombie_health.bar.color = self.colorcito;
@@ -719,11 +719,11 @@ updateShader(args, player)
 
 confirmSize(type, value, player)
 {
-    if(player.langLEN == 1) // Inglés
+    if(player.langLEN == 1) 
     {
         player tell("^2Bar adjusted: " + type + " " + value);
     }
-    else if(player.langLEN == 0) // Español
+    else if(player.langLEN == 0) 
     {
         player tell("^2Barra ajustada: " + type + " " + value);
     }
@@ -731,11 +731,11 @@ confirmSize(type, value, player)
 
 confirmShader(value, player)
 {
-    if(player.langLEN == 1) // Inglés
+    if(player.langLEN == 1) 
     {
         player tell("^2Shader adjusted: " + value);
     }
-    else if(player.langLEN == 0) // Español
+    else if(player.langLEN == 0) 
     {
         player tell("^2Shader ajustado: " + value);
     }
@@ -789,14 +789,14 @@ helpcommand()
     }
     else if(self.definido_comandos == 0)
     {
-        // Variable de encendido
+        
         self.definido_comandos = 1;
 
-        // Crear shader para el hudlemen de comandos
+        
         hud = create_simple_hud_element();
-        hud.x = 0.1; hud.y = 0.1; hud.fontScale = 1; // Ajustar [eje x & eje y - tamaño del font]
+        hud.x = 0.1; hud.y = 0.1; hud.fontScale = 1; 
 
-        // Primera parte de los comandos de "barzm"
+        
         if(self.langLEN == 1)
         {
             hud setText("^1#^7barzm ^6color ^7<^30-21^7> <- Change color\n^1#^7barzm ^6sizew ^7<^350-105^7> <- Ancho\n^1#^7barzm ^6name ^7<^30-1^7> <- Zombie Nombre");
@@ -805,9 +805,9 @@ helpcommand()
         {
             hud setText("^1#^7barzm ^6color ^7<^30-21^7> <- Cambia color\n^1#^7barzm ^6sizew ^7<^350-105^7> <- Ancho\n^1#^7barzm ^6name ^7<^30-1^7> <- Zombie Nombre");
         }
-        wait(10); // Esperar 10 segundos
+        wait(10); 
 
-        // Segunda parte de los comandos de "barzm"
+        
         if(self.langLEN == 1)
         {
             hud setText("^1#^7barzm ^6sizeh ^7<^32-4^7> <- Height\n^1#^7barzm ^6sizen ^7<^31-1.4^7> <- Font size\n^3^1#^7barzm ^6shader <^30-1> ^7<- Black shader");
@@ -816,9 +816,9 @@ helpcommand()
         {
             hud setText("^1#^7barzm ^6sizeh ^7<^32-4^7> <- Altura\n^1#^7barzm ^6sizen ^7<^31-1.4^7> <- Tamaño de fuente\n^1#^4barzm ^6shader <^30-1> ^7<- Shader negro");
         }
-        wait(10); // Esperar 10 segundos
+        wait(10); 
 
-        // Destruir HUD y reiniciar la variable de comandos
+        
         hud destroy();
         self.definido_comandos = 0;
     } 
@@ -834,7 +834,7 @@ create_simple_hud_element()
     hudElem.elemtype = "icon";
     hudElem.font = "default";
     hudElem.fontscale = 1;
-    //hudElem.color = (1,1,1);
+    
     hudElem.alpha = 1;
     hudElem.alignx = "left";
     hudElem.aligny = "top";
@@ -842,23 +842,23 @@ create_simple_hud_element()
     return hudElem;
 }
 
-// Función para activar/desactivar la barra de salud del zombie
+
 toggleHealthBar(shader_enabled, show_name, size_height, size_width, size_name, color_position)
 {
     self endon("disconnect");
     level endon("end_game");
     
-    // Asegurarse de que solo una instancia de la función se ejecute a la vez
+    
     self notify("toggling_health_bar");
     self endon("toggling_health_bar");
     
-    // Si se llama sin parámetros, es para desactivar la barra
+    
     if (!isDefined(shader_enabled))
     {
-        // Detener cualquier hilo de configuración activo
+        
         self notify("stop_zombie_health_config");
         
-        // Destruir la barra de salud si existe
+        
         if (isDefined(self.hud_zombie_health))
         {
             if (isDefined(self.hud_zombie_health.bar))
@@ -871,7 +871,7 @@ toggleHealthBar(shader_enabled, show_name, size_height, size_width, size_name, c
             self.hud_zombie_health = undefined;
         }
         
-        // Destruir el texto de la barra de salud si existe
+        
         if (isDefined(self.hud_zombie_name_label))
         {
             self.hud_zombie_name_label destroy();
@@ -890,16 +890,16 @@ toggleHealthBar(shader_enabled, show_name, size_height, size_width, size_name, c
             self.hud_zombie_health_max_label = undefined;
         }
         
-        // Indicar que la barra está desactivada
+        
         self.healthbarzombie_active = false;
         
-        // Detener cualquier efecto de color
+        
         self notify("end_colorBAR");
             
         return;
     }
     
-    // Si ya existe una barra activa, destruirla primero
+    
     if (isDefined(self.healthbarzombie_active) && self.healthbarzombie_active)
     {
         self notify("stop_zombie_health_config");
@@ -934,14 +934,14 @@ toggleHealthBar(shader_enabled, show_name, size_height, size_width, size_name, c
             self.hud_zombie_health_max_label = undefined;
         }
         
-        // Detener cualquier efecto de color anterior
+        
         self notify("end_colorBAR");
         
-        // Esperar un breve momento para asegurar que todo se ha destruido
+        
         wait 0.05;
     }
     
-    // Configurar parámetros con valores por defecto si no se proporcionan
+    
     if (!isDefined(shader_enabled))
         shader_enabled = self.shaderON;
     else
@@ -967,24 +967,24 @@ toggleHealthBar(shader_enabled, show_name, size_height, size_width, size_name, c
     else
         self.sizeN = size_name;
     
-    // NO crear elementos HUD aquí - se crearán en hud_show_zombie_health() cuando sea necesario
-    // Solo guardar las preferencias del usuario para que se apliquen cuando se creen los elementos
     
-    // Aplicar color según la selección del usuario
-    // Primero detener cualquier hilo de color anterior
+    
+    
+    
+    
     self notify("end_colorBAR");
     
-    // Inicializar el color por defecto (blanco) si no se ha especificado uno
+    
     if (!isDefined(self.colorcito))
         self.colorcito = (1, 1, 1);
     
-    // Aplicar color si se especifica
+    
     if (isDefined(color_position) && color_position != "default")
     {
-        // Mapear strings de colores a índices para la función colorBAR
-        color_index = 0; // Por defecto, color aleatorio
         
-        // Reemplazar switch con if/else para evitar problemas de sintaxis
+        color_index = 0; 
+        
+        
         if(color_position == "rojo")
             color_index = 1;
         else if(color_position == "verde")
@@ -1028,32 +1028,32 @@ toggleHealthBar(shader_enabled, show_name, size_height, size_width, size_name, c
         else if(color_position == "verdeclaro")
             color_index = 21;
         else
-            color_index = 7; // Blanco como valor predeterminado
+            color_index = 7; 
         
-        // Iniciar hilo de color con el índice correspondiente
+        
         self thread colorBAR(color_index);
     }
     else
     {
-        // Si no se especificó un color o se eligió "default", usar color blanco (índice 7)
+        
         self thread colorBAR(7);
     }
     
-    // Indicar que la barra está activa
+    
     self.healthbarzombie_active = true;
     
-    // Iniciar hilo de configuración continua
+    
     self thread maintain_zombie_health_config();
 }
 
-// Función para mantener la configuración de la barra de salud
+
 maintain_zombie_health_config()
 {
     self endon("disconnect");
     self endon("stop_zombie_health_config");
     level endon("end_game");
     
-    // Asegurarse de que solo haya un hilo ejecutándose a la vez
+    
     self notify("stop_previous_maintain_config");
     self endon("stop_previous_maintain_config");
     
@@ -1061,7 +1061,7 @@ maintain_zombie_health_config()
     {
         if (isDefined(self.hud_zombie_health))
         {
-            // Usar try/catch para evitar errores si el elemento se está eliminando
+            
             if (isDefined(self.hud_zombie_health.width) && isDefined(self.sizeW))
                 self.hud_zombie_health.width = self.sizeW;
                 
@@ -1071,7 +1071,7 @@ maintain_zombie_health_config()
             if (isDefined(self.hud_zombie_health.alpha) && isDefined(self.shaderON))
                 self.hud_zombie_health.alpha = self.shaderON;
                 
-            // Actualizar también la barra interna si existe
+            
             if (isDefined(self.hud_zombie_health.bar))
             {
                 if (isDefined(self.hud_zombie_health.bar.width) && isDefined(self.sizeW))
@@ -1097,18 +1097,18 @@ maintain_zombie_health_config()
                 self.hud_zombie_health_max_label.fontScale = self.sizeN;
         }
         
-        wait 0.25; // Reducir la frecuencia para mejorar el rendimiento
+        wait 0.25; 
     }
 }
 
-// Función para destruir la barra de salud del zombie
+
 destroy_zombie_health_bar()
 {
-    // Detener cualquier hilo de configuración activo
+    
     self notify("stop_zombie_health_config");
     self notify("end_colorBAR");
     
-    // Destruir la barra de salud si existe
+    
     if (isDefined(self.hud_zombie_health))
     {
         if (isDefined(self.hud_zombie_health.bar))
@@ -1118,7 +1118,7 @@ destroy_zombie_health_bar()
         self.hud_zombie_health = undefined;
     }
     
-    // Destruir el texto de la barra de salud si existe
+    
     if (isDefined(self.hud_zombie_name_label))
     {
         self.hud_zombie_name_label destroy();
@@ -1137,17 +1137,17 @@ destroy_zombie_health_bar()
         self.hud_zombie_health_max_label = undefined;
     }
     
-    // Indicar que la barra está desactivada
+    
     self.healthbarzombie_active = false;
 }
 
-// Función para detectar si una entidad es un Panzer Soldat
+
 is_panzer_soldat(entity)
 {
-    // Verificar por modelo
+    
     if(isDefined(entity.model))
     {
-        // Lista de modelos conocidos de Panzer (declaración correcta para GSC)
+        
         panzer_models = [];
         panzer_models[0] = "c_zom_dlc3_mech_z";
         panzer_models[1] = "c_zom_mechz";
@@ -1158,7 +1158,7 @@ is_panzer_soldat(entity)
         panzer_models[6] = "c_zom_tomb_mech_zombie";
         panzer_models[7] = "c_zom_dlc4_mechz";
         
-        // Comprobar si el modelo actual es uno de los modelos de Panzer
+        
         for(i = 0; i < panzer_models.size; i++)
         {
             if(entity.model == panzer_models[i])
@@ -1166,14 +1166,14 @@ is_panzer_soldat(entity)
         }
     }
     
-    // Verificar por nombre de spawner
+    
     if(isDefined(entity.spawner))
     {
         if(isDefined(entity.spawner.classname) && (entity.spawner.classname == "mechz_zombie" || entity.spawner.classname == "mech_zombie" || entity.spawner.classname == "zombie_mechz"))
             return true;
     }
     
-    // Verificar por comportamiento
+    
     if(isDefined(entity.zombie_move_speed) && entity.zombie_move_speed == "mechz_speed")
         return true;
         
@@ -1183,7 +1183,7 @@ is_panzer_soldat(entity)
     if(isDefined(entity.is_mechz) && entity.is_mechz)
         return true;
     
-    // Verificar por tipo
+    
     if(isDefined(entity.zombie_type) && (entity.zombie_type == "mechz" || entity.zombie_type == "mech_zombie"))
         return true;
     

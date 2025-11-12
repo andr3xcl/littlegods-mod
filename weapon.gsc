@@ -26,21 +26,21 @@ init()
         level.weaponList = [];
         level.weaponList[1] = "dsr50_zm";
         level.weaponList[2] = "barretm82_zm";
-        level.weaponList[3] = "qcw05_zm"; // Chicom
+        level.weaponList[3] = "qcw05_zm"; 
         level.weaponList[4] = "ak74u_zm";
         level.weaponList[5] = "mp5k_zm";
         level.weaponList[6] = "pdw57_zm";
         level.weaponList[7] = "fnfal_zm";
         level.weaponList[8] = "m14_zm";
-        level.weaponList[9] = "saritch_zm"; // SMR
+        level.weaponList[9] = "saritch_zm"; 
         level.weaponList[10] = "m16_zm";
         level.weaponList[11] = "tar21_zm";
         level.weaponList[12] = "gl_tar21_zm";
         level.weaponList[13] = "type95_zm";
         level.weaponList[14] = "galil_zm";
-        level.weaponList[15] = "xm8_zm"; // M8A1
+        level.weaponList[15] = "xm8_zm"; 
         level.weaponList[16] = "870mcs_zm";
-        level.weaponList[17] = "rottweil72_zm"; // Olympia
+        level.weaponList[17] = "rottweil72_zm"; 
         level.weaponList[18] = "saiga12_zm";
         level.weaponList[19] = "srm1216_zm";
         level.weaponList[20] = "rpd_zm";
@@ -80,11 +80,11 @@ init()
         level.weaponList[12] = "galil_zm";
         level.weaponList[13] = "ak47_zm";
         level.weaponList[14] = "870mcs_zm";
-        level.weaponList[15] = "rottweil72_zm"; // Olympia
+        level.weaponList[15] = "rottweil72_zm"; 
         level.weaponList[16] = "saiga12_zm";
         level.weaponList[17] = "srm1216_zm";
         level.weaponList[18] = "lsat_zm";
-        level.weaponList[19] = "minigun_alcatraz_zm"; // Death Machine
+        level.weaponList[19] = "minigun_alcatraz_zm"; 
         level.weaponList[20] = "m1911_zm";
         level.weaponList[21] = "judge_zm";
         level.weaponList[22] = "fiveseven_zm";
@@ -98,7 +98,7 @@ init()
         level.weaponList[30] = "ray_gun_zm";
         level.weaponList[31] = "raygun_mark2_zm";
 		level.weaponList[32] = "blundergat_zm";
-		level.weaponList[33] = "blundersplat_zm"; // Acidgat
+		level.weaponList[33] = "blundersplat_zm"; 
 
     break;
     case "tomb":
@@ -107,14 +107,14 @@ init()
         level.weaponList = [];
         level.weaponList[1] = "dsr50_zm";
         level.weaponList[2] = "ballista_zm";
-        level.weaponList[3] = "qcw05_zm"; // Chicom
+        level.weaponList[3] = "qcw05_zm"; 
         level.weaponList[4] = "thompson_zm";
         level.weaponList[5] = "ak74u_zm";
         level.weaponList[6] = "ak74u_extclip_zm";
         level.weaponList[7] = "pdw57_zm";
         level.weaponList[8] = "mp40_zm";
         level.weaponList[9] = "mp40_stalker_zm";
-        level.weaponList[10] = "evoskorpion_zm"; // Skorpion
+        level.weaponList[10] = "evoskorpion_zm"; 
         level.weaponList[11] = "fnfal_zm";
         level.weaponList[12] = "m14_zm";
         level.weaponList[13] = "mp44_zm";
@@ -126,7 +126,7 @@ init()
         level.weaponList[19] = "srm1216_zm";
         level.weaponList[20] = "mg08_zm";
         level.weaponList[21] = "hamr_zm";
-        level.weaponList[22] = "c96_zm"; // Mauser
+        level.weaponList[22] = "c96_zm"; 
         level.weaponList[23] = "python_zm";
         level.weaponList[24] = "kard_zm";
         level.weaponList[25] = "fiveseven_zm";
@@ -148,20 +148,20 @@ init()
         level.weaponList[6] = "pdw57_zm";
         level.weaponList[7] = "fnfal_zm";
         level.weaponList[8] = "m14_zm";
-        level.weaponList[9] = "saritch_zm"; // SMR
+        level.weaponList[9] = "saritch_zm"; 
         level.weaponList[10] = "m16_zm";
         level.weaponList[11] = "tar21_zm";
         level.weaponList[12] = "gl_tar21_zm";
         level.weaponList[13] = "galil_zm";
         level.weaponList[14] = "an94_zm";
         level.weaponList[15] = "870mcs_zm";
-        level.weaponList[16] = "rottweil72_zm"; // Olympia
+        level.weaponList[16] = "rottweil72_zm"; 
         level.weaponList[17] = "saiga12_zm";
         level.weaponList[18] = "srm1216_zm";
         level.weaponList[19] = "lsat_zm";
         level.weaponList[20] = "hamr_zm";
         level.weaponList[21] = "m1911_zm";
-        level.weaponList[22] = "rnma_zm"; // Remington New Model Army
+        level.weaponList[22] = "rnma_zm"; 
         level.weaponList[23] = "judge_zm";
         level.weaponList[24] = "kard_zm";
         level.weaponList[25] = "fiveseven_zm";
@@ -174,28 +174,28 @@ init()
         level.weaponList[32] = "knife_ballistic_no_melee_zm";
         level.weaponList[33] = "ray_gun_zm";
         level.weaponList[34] = "raygun_mark2_zm";
-        level.weaponList[35] = "slowgun_zm"; // Paralyzer
+        level.weaponList[35] = "slowgun_zm"; 
     break;
     case "nuked":
     case "nuketown":
         level.weaponList = [];
         level.weaponList[1] = "dsr50_zm";
         level.weaponList[2] = "barretm82_zm";
-        level.weaponList[3] = "qcw05_zm"; // Chicom
+        level.weaponList[3] = "qcw05_zm"; 
         level.weaponList[4] = "ak74u_zm";
         level.weaponList[5] = "mp5k_zm";
         level.weaponList[6] = "fnfal_zm";
         level.weaponList[7] = "m14_zm";
-        level.weaponList[8] = "saritch_zm"; // SMR
+        level.weaponList[8] = "saritch_zm"; 
         level.weaponList[9] = "m16_zm";
         level.weaponList[10] = "tar21_zm";
         level.weaponList[11] = "gl_tar21_zm";
         level.weaponList[12] = "type95_zm";
         level.weaponList[13] = "galil_zm";
-        level.weaponList[14] = "xm8_zm"; // M8A1
-        level.weaponList[15] = "hk416_zm"; // M27
+        level.weaponList[14] = "xm8_zm"; 
+        level.weaponList[15] = "hk416_zm"; 
         level.weaponList[16] = "870mcs_zm";
-        level.weaponList[17] = "rottweil72_zm"; // Olympia
+        level.weaponList[17] = "rottweil72_zm"; 
         level.weaponList[18] = "saiga12_zm";
         level.weaponList[19] = "srm1216_zm";
         level.weaponList[20] = "rpd_zm";
@@ -223,22 +223,22 @@ init()
         level.weaponList[1] = "dsr50_zm";
         level.weaponList[2] = "barretm82_zm";
         level.weaponList[3] = "svu_zm";
-        level.weaponList[4] = "qcw05_zm"; // Chicom
+        level.weaponList[4] = "qcw05_zm"; 
         level.weaponList[5] = "ak74u_zm";
         level.weaponList[6] = "mp5k_zm";
         level.weaponList[7] = "pdw57_zm";
         level.weaponList[8] = "fnfal_zm";
         level.weaponList[9] = "m14_zm";
-        level.weaponList[10] = "saritch_zm"; // SMR
+        level.weaponList[10] = "saritch_zm"; 
         level.weaponList[11] = "m16_zm";
         level.weaponList[12] = "tar21_zm";
         level.weaponList[13] = "gl_tar21_zm";
         level.weaponList[14] = "type95_zm";
         level.weaponList[15] = "galil_zm";
         level.weaponList[16] = "an94_zm";
-        level.weaponList[17] = "xm8_zm"; // M8A1
+        level.weaponList[17] = "xm8_zm"; 
         level.weaponList[18] = "870mcs_zm";
-        level.weaponList[19] = "rottweil72_zm"; // Olympia
+        level.weaponList[19] = "rottweil72_zm"; 
         level.weaponList[20] = "saiga12_zm";
         level.weaponList[21] = "srm1216_zm";
         level.weaponList[22] = "rpd_zm";
@@ -257,7 +257,7 @@ init()
         level.weaponList[35] = "knife_ballistic_no_melee_zm";
         level.weaponList[36] = "ray_gun_zm";
         level.weaponList[37] = "raygun_mark2_zm";
-        level.weaponList[38] = "slipgun_zm"; // Sliquifier
+        level.weaponList[38] = "slipgun_zm"; 
     break;
 	}
 }
@@ -271,30 +271,30 @@ Upgrade_arma(powerup)
 
         weapon_name = self getcurrentweapon();
     
-    // Verificar si es un bastón (staff) - no se puede mejorar aquí
+    
     if (weapon_name == "staff_fire_zm" || weapon_name == "staff_water_zm" || weapon_name == "staff_air_zm" || weapon_name == "staff_lightning_zm")
         {
         return;
             }
     
-    // Verificar si el arma puede ser mejorada
+    
     if (!can_upgrade_weapon(weapon_name))
             {
             return;
         }
     
-    // Obtener el arma mejorada
+    
         current_weapon = self GetCurrentWeapon();
     upgrade_name = self get_upgrade_weapon(current_weapon);
     weapon = get_upgrade_weapon(current_weapon, will_upgrade_weapon_as_attachment(current_weapon));
     
-    // Tomar el arma actual del jugador
+    
     self TakeWeapon(current_weapon);
     
-    // Otorgar la nueva arma mejorada al jugador
+    
         self GiveWeapon(weapon);
     
-    // Cambiar a la nueva arma mejorada
+    
         self SwitchToWeapon(weapon);
 }
 
@@ -332,7 +332,7 @@ weapon_baston_relampago()
             self GiveWeapon(weapon_staff);
             self SwitchToWeapon(weapon_staff);
 }
-//list perks glonbal menu
+
 give_perks_jugger()
 {
     if(self player_is_in_laststand() || self.sessionstate == "spectator")
@@ -431,7 +431,7 @@ give_perks_phd()
     }
 }
 
-give_perk_sensor() // Buried
+give_perk_sensor() 
 {
     if(self player_is_in_laststand() || self.sessionstate == "spectator")
         return;
@@ -466,7 +466,7 @@ give_perk_whoswho()
 
 
 
-////////perks
+
 func_GiveAllPerks()
 {
     if (isDefined(level.zombiemode_using_juggernaut_perk) && level.zombiemode_using_juggernaut_perk)
@@ -549,7 +549,7 @@ giveUpgradedStaffs(which)
     self givemaxammo("staff_revive_zm");
 }
 
-// Función para dar un arma específica instantáneamente
+
 GiveSpecificWeapon(weapon_name)
 {
     if (!IsAlive(self))
@@ -557,17 +557,17 @@ GiveSpecificWeapon(weapon_name)
 
     self endon("disconnect");
     
-    // Tomar el arma actual del jugador
+    
     self TakeWeapon(self GetCurrentWeapon());
     
-    // Otorgar la nueva arma al jugador
+    
     self GiveWeapon(weapon_name);
     
-    // Cambiar a la nueva arma otorgada
+    
     self SwitchToWeapon(weapon_name);
 }
 
-// Función para dar un arma aleatoria instantáneamente
+
 GiveRandomWeapon()
 {
     if (!IsAlive(self))
@@ -577,41 +577,41 @@ GiveRandomWeapon()
     
     currentWeapon = self GetCurrentWeapon();
     
-    // Obtener un índice de arma aleatorio de la lista del mapa actual
+    
     randomWeaponIndex = randomInt(level.weaponList.size);
     randomWeaponName = level.weaponList[randomWeaponIndex];
     
-    // Verifica en bucle si el arma random está en su inventario, si lo está genera otra
+    
     while (randomWeaponName == currentWeapon)
     {
         randomWeaponIndex = randomInt(level.weaponList.size);
         randomWeaponName = level.weaponList[randomWeaponIndex];
     }
     
-    // Tomar el arma actual del jugador
+    
 	self TakeWeapon(self GetCurrentWeapon());
     
-    // Otorgar la nueva arma al jugador
+    
     self GiveWeapon(randomWeaponName);
     
-    // Cambiar a la nueva arma otorgada
+    
     self SwitchToWeapon(randomWeaponName);
 }
 
-//====================================================================================
-// FUNCIONES PARA SPAWNEAR ENEMIGOS ESPECIALES
-//====================================================================================
 
-// Spawn Panzer Soldat (Origins) - Solo 1
+
+
+
+
 spawn_panzer_soldat()
 {
-    // Forzar spawn de 1 mechz
+    
     level.mechz_left_to_spawn = 1;
     level.mechz_spawned = 0;
     level notify("spawn_mechz", self.origin);
 }
 
-// Spawn Hellhounds
+
 spawn_hellhounds(amount)
 {
     if (!isDefined(amount))
@@ -625,7 +625,7 @@ spawn_hellhounds(amount)
     }
 }
 
-// Spawn ronda completa de perros
+
 spawn_dog_round()
 {
     level thread maps\mp\zombies\_zm_ai_dogs::dog_round_start();

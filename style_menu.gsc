@@ -1,92 +1,92 @@
-// Librería de estilos de menú para el sistema de menús
-// Contiene diferentes estilos visuales que pueden aplicarse al menú
+
+
 
 #include maps\mp\_utility;
 #include common_scripts\utility;
 #include maps\mp\gametypes_zm\_hud_util;
 #include scripts\zm\style_transparecy;
 
-// Inicialización de estilos de menú
+
 init()
 {
-    // Definir los estilos disponibles - añadir nuevos estilos aquí
+    
     level.menu_styles = [];
-    level.menu_styles[0] = "Modern Blue";       // Estilo moderno azul (predeterminado)
-    level.menu_styles[1] = "Classic";           // Estilo clásico
-    level.menu_styles[2] = "Zombie";            // Estilo zombie con verde/rojo
-    level.menu_styles[3] = "Minimalist";        // Estilo minimalista
-    level.menu_styles[4] = "Neon";              // Estilo neón con brillos
-    level.menu_styles[5] = "Dark Mode";         // Estilo oscuro
-    level.menu_styles[6] = "Military";          // Estilo militar
-    level.menu_styles[7] = "Rainbow";           // Estilo arcoíris
-    // Estilos modernos
-    level.menu_styles[8] = "Futuristic";        // Estilo futurista con azules
-    level.menu_styles[9] = "Elegant";           // Estilo elegante dorado y negro
-    level.menu_styles[10] = "Cyberpunk";        // Estilo cyberpunk con colores vibrantes
-    level.menu_styles[11] = "Aqua";             // Estilo acuático fresco
-    // NUEVOS ESTILOS AÑADIDOS
-    level.menu_styles[12] = "Retro Arcade";     // Estilo retro de arcades de los 80s
-    level.menu_styles[13] = "Polar Ice";        // Estilo hielo polar con tonos blancos y azules
-    level.menu_styles[14] = "Inferno";          // Estilo fuego infernal con rojos y naranjas
-    level.menu_styles[15] = "Nature";           // Estilo naturaleza con verdes y marrones
-    level.menu_styles[16] = "Halloween";        // Estilo Halloween con naranja y negro
-    level.menu_styles[17] = "Christmas";        // Estilo Navidad con rojo y verde
-    // SEGUNDA TANDA DE ESTILOS NUEVOS
-    level.menu_styles[18] = "Galaxy";           // Estilo galaxia con tonos púrpuras y azules
-    level.menu_styles[19] = "Tropical";         // Estilo tropical con tonos vivos
-    level.menu_styles[20] = "Metal";            // Estilo metálico con grises y reflejos
-    level.menu_styles[21] = "Vampire";          // Estilo vampiro con rojo oscuro y negro
-    level.menu_styles[22] = "Toxic";            // Estilo tóxico con verdes fluorescentes
-    level.menu_styles[23] = "Pastel";           // Estilo pastel con colores suaves
-    // TERCERA TANDA DE ESTILOS NUEVOS
-    level.menu_styles[24] = "Desert";           // Estilo desierto con tonos arena y marrón
-    level.menu_styles[25] = "Ocean Deep";       // Estilo océano profundo con azules oscuros
-    level.menu_styles[26] = "Nuke";             // Estilo nuclear con amarillo y negro
-    level.menu_styles[27] = "Gold Elite";       // Estilo dorado premium
-    level.menu_styles[28] = "Frozen";           // Estilo congelado con azules pálidos
-    level.menu_styles[29] = "Retro TV";         // Estilo TV retro con líneas y estática
-    // CUARTA TANDA DE ESTILOS NUEVOS
-    level.menu_styles[30] = "Sunset";           // Estilo atardecer con naranjas y rojos
-    level.menu_styles[31] = "Matrix";           // Estilo matrix con verde código sobre negro
-    level.menu_styles[32] = "Steampunk";        // Estilo steampunk con bronces y marrones
-    level.menu_styles[33] = "Blood Moon";       // Estilo luna de sangre, rojo sangre y negro
-    level.menu_styles[34] = "Synthwave";        // Estilo synthwave con rosa y azul neón
-    level.menu_styles[35] = "Comic";            // Estilo cómic con colores vivos y bordes negros
-    // QUINTA TANDA DE ESTILOS NUEVOS
-    level.menu_styles[36] = "Pixel Art";        // Estilo pixel art inspirado en 8-bit
-    level.menu_styles[37] = "Graffiti";         // Estilo urbano con colores de aerosol
-    level.menu_styles[38] = "Vaporwave";        // Estética retro de los 90s con pastel y neón
-    level.menu_styles[39] = "Enchanted Forest";  // Estilo bosque encantado con verdes y púrpuras
-    level.menu_styles[40] = "Ancient Egypt";     // Estilo egipcio con dorados y azules
-    level.menu_styles[41] = "Neon Retro";        // Estilo 80s con colores neón intensos
-    level.menu_styles[42] = "Hologram";          // Estilo holográfico futurista con efectos translúcidos
-    // SEXTA TANDA DE ESTILOS NUEVOS - MODERNOS Y TEXTURIZADOS
-    level.menu_styles[43] = "Crystal Glass";     // Estilo cristalino transparente con refracciones
-    level.menu_styles[44] = "Velvet Noir";       // Estilo terciopelo negro con acentos metálicos
-    level.menu_styles[45] = "Aurora Borealis";   // Estilo aurora boreal con cambios dinámicos
-    level.menu_styles[46] = "Marble Luxe";       // Estilo mármol blanco con vetas doradas
-    level.menu_styles[47] = "Neon City";         // Estilo neón urbano con reflejos
-    level.menu_styles[48] = "Sakura Blossom";    // Estilo cerezo en flor rosa y blanco
-    level.menu_styles[49] = "Deep Space";        // Estilo espacio profundo con estrellas
-    level.menu_styles[50] = "Coral Reef";        // Estilo arrecife de coral submarino
-    level.menu_styles[51] = "Royal Purple";      // Estilo púrpura real con oro
-    level.menu_styles[52] = "Sunrise Gradient";  // Estilo gradiente amanecer cálido
+    level.menu_styles[0] = "Modern Blue";       
+    level.menu_styles[1] = "Classic";           
+    level.menu_styles[2] = "Zombie";            
+    level.menu_styles[3] = "Minimalist";        
+    level.menu_styles[4] = "Neon";              
+    level.menu_styles[5] = "Dark Mode";         
+    level.menu_styles[6] = "Military";          
+    level.menu_styles[7] = "Rainbow";           
+    
+    level.menu_styles[8] = "Futuristic";        
+    level.menu_styles[9] = "Elegant";           
+    level.menu_styles[10] = "Cyberpunk";        
+    level.menu_styles[11] = "Aqua";             
+    
+    level.menu_styles[12] = "Retro Arcade";     
+    level.menu_styles[13] = "Polar Ice";        
+    level.menu_styles[14] = "Inferno";          
+    level.menu_styles[15] = "Nature";           
+    level.menu_styles[16] = "Halloween";        
+    level.menu_styles[17] = "Christmas";        
+    
+    level.menu_styles[18] = "Galaxy";           
+    level.menu_styles[19] = "Tropical";         
+    level.menu_styles[20] = "Metal";            
+    level.menu_styles[21] = "Vampire";          
+    level.menu_styles[22] = "Toxic";            
+    level.menu_styles[23] = "Pastel";           
+    
+    level.menu_styles[24] = "Desert";           
+    level.menu_styles[25] = "Ocean Deep";       
+    level.menu_styles[26] = "Nuke";             
+    level.menu_styles[27] = "Gold Elite";       
+    level.menu_styles[28] = "Frozen";           
+    level.menu_styles[29] = "Retro TV";         
+    
+    level.menu_styles[30] = "Sunset";           
+    level.menu_styles[31] = "Matrix";           
+    level.menu_styles[32] = "Steampunk";        
+    level.menu_styles[33] = "Blood Moon";       
+    level.menu_styles[34] = "Synthwave";        
+    level.menu_styles[35] = "Comic";            
+    
+    level.menu_styles[36] = "Pixel Art";        
+    level.menu_styles[37] = "Graffiti";         
+    level.menu_styles[38] = "Vaporwave";        
+    level.menu_styles[39] = "Enchanted Forest";  
+    level.menu_styles[40] = "Ancient Egypt";     
+    level.menu_styles[41] = "Neon Retro";        
+    level.menu_styles[42] = "Hologram";          
+    
+    level.menu_styles[43] = "Crystal Glass";     
+    level.menu_styles[44] = "Velvet Noir";       
+    level.menu_styles[45] = "Aurora Borealis";   
+    level.menu_styles[46] = "Marble Luxe";       
+    level.menu_styles[47] = "Neon City";         
+    level.menu_styles[48] = "Sakura Blossom";    
+    level.menu_styles[49] = "Deep Space";        
+    level.menu_styles[50] = "Coral Reef";        
+    level.menu_styles[51] = "Royal Purple";      
+    level.menu_styles[52] = "Sunrise Gradient";  
 }
 
-// Función para aplicar el estilo seleccionado a un menú
+
 apply_menu_style(menu, style_index)
 {
     if (!isDefined(style_index))
-        style_index = 0; // Estilo predeterminado
+        style_index = 0; 
 
-    // Detener efectos dinámicos antes de cambiar de estilo
+    
     stop_rainbow_effect(menu);
     stop_aurora_effect(menu);
 
-    // Guardar el estilo actual
+    
     menu.style_index = style_index;
 
-    // Aplicar el estilo según el índice
+    
     switch(style_index)
     {
         case 0:
@@ -113,7 +113,7 @@ apply_menu_style(menu, style_index)
         case 7:
             apply_rainbow_style(menu);
             break;
-        // Estilos modernos
+        
         case 8:
             apply_futuristic_style(menu);
             break;
@@ -126,7 +126,7 @@ apply_menu_style(menu, style_index)
         case 11:
             apply_aqua_style(menu);
             break;
-        // NUEVOS ESTILOS AÑADIDOS
+        
         case 12:
             apply_retro_arcade_style(menu);
             break;
@@ -145,7 +145,7 @@ apply_menu_style(menu, style_index)
         case 17:
             apply_christmas_style(menu);
             break;
-        // SEGUNDA TANDA DE ESTILOS NUEVOS
+        
         case 18:
             apply_galaxy_style(menu);
             break;
@@ -164,7 +164,7 @@ apply_menu_style(menu, style_index)
         case 23:
             apply_pastel_style(menu);
             break;
-        // TERCERA TANDA DE ESTILOS NUEVOS
+        
         case 24:
             apply_desert_style(menu);
             break;
@@ -183,7 +183,7 @@ apply_menu_style(menu, style_index)
         case 29:
             apply_retro_tv_style(menu);
             break;
-        // CUARTA TANDA DE ESTILOS NUEVOS
+        
         case 30:
             apply_sunset_style(menu);
             break;
@@ -202,7 +202,7 @@ apply_menu_style(menu, style_index)
         case 35:
             apply_comic_style(menu);
             break;
-        // QUINTA TANDA DE ESTILOS NUEVOS
+        
         case 36:
             apply_pixel_art_style(menu);
             break;
@@ -224,7 +224,7 @@ apply_menu_style(menu, style_index)
         case 42:
             apply_hologram_style(menu);
             break;
-        // SEXTA TANDA DE ESTILOS NUEVOS - MODERNOS Y TEXTURIZADOS
+        
         case 43:
             apply_crystal_glass_style(menu);
             break;
@@ -256,10 +256,10 @@ apply_menu_style(menu, style_index)
             apply_sunrise_gradient_style(menu);
             break;
         default:
-            apply_modern_blue_style(menu); // Estilo predeterminado
+            apply_modern_blue_style(menu); 
     }
 
-    // Reaplicar la transparencia configurada por el usuario después del cambio de estilo
+    
     if (isDefined(menu.transparency_index) && menu.transparency_index > 0)
     {
         menu = apply_transparency(menu, menu.transparency_index);
@@ -268,13 +268,13 @@ apply_menu_style(menu, style_index)
     return menu;
 }
 
-// Obtener el nombre del estilo según el índice y el idioma
+
 get_style_name(style_index, lang_index)
 {
     if (!isDefined(lang_index))
         lang_index = 0;
         
-    if (lang_index == 0) // Español
+    if (lang_index == 0) 
     {
         switch(style_index)
         {
@@ -286,40 +286,40 @@ get_style_name(style_index, lang_index)
             case 5: return "Modo Oscuro";
             case 6: return "Militar";
             case 7: return "Arcoíris";
-            // Estilos modernos en español
+            
             case 8: return "Futurista";
             case 9: return "Elegante";
             case 10: return "Cyberpunk";
             case 11: return "Aqua";
-            // NUEVOS ESTILOS EN ESPAÑOL
+            
             case 12: return "Arcade Retro";
             case 13: return "Hielo Polar";
             case 14: return "Infierno";
             case 15: return "Naturaleza";
             case 16: return "Halloween";
             case 17: return "Navidad";
-            // SEGUNDA TANDA DE ESTILOS EN ESPAÑOL
+            
             case 18: return "Galaxia";
             case 19: return "Tropical";
             case 20: return "Metal";
             case 21: return "Vampiro";
             case 22: return "Tóxico";
             case 23: return "Pastel";
-            // TERCERA TANDA DE ESTILOS EN ESPAÑOL
+            
             case 24: return "Desierto";
             case 25: return "Océano Profundo";
             case 26: return "Nuclear";
             case 27: return "Oro Elite";
             case 28: return "Congelado";
             case 29: return "TV Retro";
-            // CUARTA TANDA DE ESTILOS EN ESPAÑOL
+            
             case 30: return "Atardecer";
             case 31: return "Matrix";
             case 32: return "Steampunk";
             case 33: return "Luna Sangrienta";
             case 34: return "Synthwave";
             case 35: return "Cómic";
-            // QUINTA TANDA DE ESTILOS EN ESPAÑOL
+            
             case 36: return "Pixel Art";
             case 37: return "Grafiti";
             case 38: return "Vaporwave";
@@ -327,7 +327,7 @@ get_style_name(style_index, lang_index)
             case 40: return "Egipto Antiguo";
             case 41: return "Neón Retro";
             case 42: return "Holograma";
-            // SEXTA TANDA DE ESTILOS EN ESPAÑOL
+            
             case 43: return "Cristal Vidrio";
             case 44: return "Terciopelo Negro";
             case 45: return "Aurora Boreal";
@@ -341,7 +341,7 @@ get_style_name(style_index, lang_index)
             default: return "Desconocido";
         }
     }
-    else // Inglés
+    else 
     {
         switch(style_index)
         {
@@ -353,40 +353,40 @@ get_style_name(style_index, lang_index)
             case 5: return "Dark Mode";
             case 6: return "Military";
             case 7: return "Rainbow";
-            // Estilos modernos en inglés
+            
             case 8: return "Futuristic";
             case 9: return "Elegant";
             case 10: return "Cyberpunk";
             case 11: return "Aqua";
-            // NUEVOS ESTILOS EN INGLÉS
+            
             case 12: return "Retro Arcade";
             case 13: return "Polar Ice";
             case 14: return "Inferno";
             case 15: return "Nature";
             case 16: return "Halloween";
             case 17: return "Christmas";
-            // SEGUNDA TANDA DE ESTILOS EN INGLÉS
+            
             case 18: return "Galaxy";
             case 19: return "Tropical";
             case 20: return "Metal";
             case 21: return "Vampire";
             case 22: return "Toxic";
             case 23: return "Pastel";
-            // TERCERA TANDA DE ESTILOS EN INGLÉS
+            
             case 24: return "Desert";
             case 25: return "Ocean Deep";
             case 26: return "Nuke";
             case 27: return "Gold Elite";
             case 28: return "Frozen";
             case 29: return "Retro TV";
-            // CUARTA TANDA DE ESTILOS EN INGLÉS
+            
             case 30: return "Sunset";
             case 31: return "Matrix";
             case 32: return "Steampunk";
             case 33: return "Blood Moon";
             case 34: return "Synthwave";
             case 35: return "Comic";
-            // QUINTA TANDA DE ESTILOS EN INGLÉS
+            
             case 36: return "Pixel Art";
             case 37: return "Graffiti";
             case 38: return "Vaporwave";
@@ -394,7 +394,7 @@ get_style_name(style_index, lang_index)
             case 40: return "Ancient Egypt";
             case 41: return "Neon Retro";
             case 42: return "Hologram";
-            // SEXTA TANDA DE ESTILOS EN INGLÉS
+            
             case 43: return "Crystal Glass";
             case 44: return "Velvet Noir";
             case 45: return "Aurora Borealis";
@@ -410,233 +410,233 @@ get_style_name(style_index, lang_index)
     }
 }
 
-// Estilo 0: Moderno Azul (similar al de la imagen, predeterminado)
+
 apply_modern_blue_style(menu)
 {
-    // Colores
-    menu.header_color = (0.1, 0.45, 0.85);  // Azul más brillante para mejor visibilidad
-    menu.active_color = (0.1, 0.45, 0.85);  // Azul para selección
-    menu.inactive_color = (1, 1, 1);        // Blanco para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0, 0, 0);              // Negro para el fondo
+    
+    menu.header_color = (0.1, 0.45, 0.85);  
+    menu.active_color = (0.1, 0.45, 0.85);  
+    menu.inactive_color = (1, 1, 1);        
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0, 0, 0);              
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 24; // Altura ligeramente mayor para mejor proporción
+    menu.header_height = 24; 
 
-    // Opacidad
-    menu.bg_alpha = 0.75; // Opacidad ligeramente mayor para mejor visibilidad
-    menu.header_alpha = 0.98; // Casi opaco para máxima visibilidad
+    
+    menu.bg_alpha = 0.75; 
+    menu.header_alpha = 0.98; 
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 1: Clásico (estilo retro inspirado en menús antiguos)
+
 apply_classic_style(menu)
 {
-    // Colores
-    menu.header_color = (0.8, 0.8, 0.8);    // Gris claro para el encabezado
-    menu.active_color = (1, 1, 0);          // Amarillo para selección
-    menu.inactive_color = (0.9, 0.9, 0.9);  // Blanco grisáceo para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Amarillo para el texto del título
-    menu.bg_color = (0.2, 0.2, 0.2);        // Gris oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.8, 0.8, 0.8);    
+    menu.active_color = (1, 1, 0);          
+    menu.inactive_color = (0.9, 0.9, 0.9);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.2, 0.2, 0.2);        
+    
+    
     menu.width = 160;
     menu.margin_x = 270;
     menu.margin_y = 180;
     menu.item_height = 16;
     menu.header_height = 20;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 2: Zombie (verde y rojo inspirado en tema zombie)
+
 apply_zombie_style(menu)
 {
-    // Colores
-    menu.header_color = (0.2, 0.5, 0.1);    // Verde zombie para el encabezado
-    menu.active_color = (0.7, 0.1, 0.1);    // Rojo sangre para selección
-    menu.inactive_color = (0.8, 0.8, 0.6);  // Beige para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.1, 0.1, 0.1);        // Casi negro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.2, 0.5, 0.1);    
+    menu.active_color = (0.7, 0.1, 0.1);    
+    menu.inactive_color = (0.8, 0.8, 0.6);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.1, 0.1, 0.1);        
+    
+    
     menu.width = 190;
     menu.margin_x = 255;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 25;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.9;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 3: Minimalista (limpio y simple)
+
 apply_minimalist_style(menu)
 {
-    // Colores
-    menu.header_color = (0.05, 0.05, 0.05); // Casi negro para el encabezado
-    menu.active_color = (0.9, 0.9, 0.9);    // Blanco para selección
-    menu.inactive_color = (0.7, 0.7, 0.7);  // Gris para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.15, 0.15, 0.15);     // Gris oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.05, 0.05, 0.05); 
+    menu.active_color = (0.9, 0.9, 0.9);    
+    menu.inactive_color = (0.7, 0.7, 0.7);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.15, 0.15, 0.15);     
+    
+    
     menu.width = 170;
     menu.margin_x = 265;
     menu.margin_y = 180;
     menu.item_height = 16;
     menu.header_height = 18;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.6;
     menu.header_alpha = 0.7;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 4: Neón (brillante y llamativo)
+
 apply_neon_style(menu)
 {
-    // Colores
-    menu.header_color = (0, 0.8, 0.8);      // Cian brillante para el encabezado
-    menu.active_color = (1, 0.2, 0.8);      // Rosa brillante para selección
-    menu.inactive_color = (0.7, 0.9, 1);    // Azul claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.05, 0.05, 0.1);      // Azul muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0, 0.8, 0.8);      
+    menu.active_color = (1, 0.2, 0.8);      
+    menu.inactive_color = (0.7, 0.9, 1);    
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.05, 0.05, 0.1);      
+    
+    
     menu.width = 185;
     menu.margin_x = 258;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 24;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.8;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 5: Modo Oscuro (oscuro con acentos claros)
+
 apply_dark_mode_style(menu)
 {
-    // Colores
-    menu.header_color = (0.15, 0.15, 0.15); // Gris muy oscuro pero visible para el encabezado
-    menu.active_color = (0.4, 0.7, 1);      // Azul claro para selección
-    menu.inactive_color = (0.6, 0.6, 0.6);  // Gris claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);       // Azul claro para el texto del título
-    menu.bg_color = (0.05, 0.05, 0.05);     // Negro para el fondo
+    
+    menu.header_color = (0.15, 0.15, 0.15); 
+    menu.active_color = (0.4, 0.7, 1);      
+    menu.inactive_color = (0.6, 0.6, 0.6);  
+    menu.title_color = (1, 1, 1);       
+    menu.bg_color = (0.05, 0.05, 0.05);     
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 175;
     menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 22; // Altura ligeramente mayor
+    menu.header_height = 22; 
 
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
-    menu.header_alpha = 0.98; // Casi opaco para máxima visibilidad
+    menu.header_alpha = 0.98; 
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 6: Militar (estilo camuflaje)
+
 apply_military_style(menu)
 {
-    // Colores
-    menu.header_color = (0.2, 0.3, 0.15);   // Verde oliva para el encabezado
-    menu.active_color = (0.6, 0.6, 0.2);    // Amarillo oliva para selección
-    menu.inactive_color = (0.8, 0.8, 0.7);  // Beige para elementos no seleccionados
-    menu.title_color = (1, 1, 1);     // Amarillo oliva para el texto del título
-    menu.bg_color = (0.15, 0.15, 0.1);      // Verde muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.2, 0.3, 0.15);   
+    menu.active_color = (0.6, 0.6, 0.2);    
+    menu.inactive_color = (0.8, 0.8, 0.7);  
+    menu.title_color = (1, 1, 1);     
+    menu.bg_color = (0.15, 0.15, 0.1);      
+    
+    
     menu.width = 190;
     menu.margin_x = 255;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 24;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.9;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 7: Arcoíris (colorido y vibrante)
+
 apply_rainbow_style(menu)
 {
-    // Solo definimos colores base, el resto se maneja dinámicamente
-    // en la función rainbow_effect que se llama periódicamente
+    
+    
 
-    // Colores
-    menu.header_color = (1, 0, 0);          // Rojo para empezar
-    menu.active_color = (1, 0.5, 0);        // Naranja para selección
-    menu.inactive_color = (1, 1, 1);        // Blanco para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco brillante para el texto del título
-    menu.bg_color = (0.1, 0, 0.2);          // Púrpura muy oscuro para el fondo
+    
+    menu.header_color = (1, 0, 0);          
+    menu.active_color = (1, 0.5, 0);        
+    menu.inactive_color = (1, 1, 1);        
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.1, 0, 0.2);          
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 19;
-    menu.header_height = 25; // Altura ligeramente mayor
+    menu.header_height = 25; 
 
-    // Opacidad
-    menu.bg_alpha = 0.8; // Opacidad mayor para mejor visibilidad
-    menu.header_alpha = 0.98; // Casi opaco para máxima visibilidad
+    
+    menu.bg_alpha = 0.8; 
+    menu.header_alpha = 0.98; 
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 
-    // Iniciar efecto arcoíris si no está ya activo
+    
     if (!isDefined(menu.rainbow_active))
     {
         menu.rainbow_active = true;
@@ -644,7 +644,7 @@ apply_rainbow_style(menu)
     }
 }
 
-// Efecto de arcoíris para cambiar colores dinámicamente
+
 rainbow_effect(menu)
 {
     menu.user endon("disconnect");
@@ -656,54 +656,54 @@ rainbow_effect(menu)
 
     while(isDefined(menu.rainbow_active) && menu.rainbow_active)
     {
-        // Incrementar el tono de color (0-360 en formato normalizado 0-1)
+        
         hue += 0.01;
         if (hue > 1) hue = 0;
 
-        // Convertir HSV a RGB para el encabezado
+        
         header_color = hsv_to_rgb(hue, 0.8, 0.8);
-        // Convertir HSV a RGB para la selección (desplazamiento de 0.2 en el tono)
+        
         selection_color = hsv_to_rgb((hue + 0.2) % 1, 0.9, 0.9);
 
-        // Actualizar colores
+        
         menu.header_color = header_color;
         menu.active_color = selection_color;
 
-        // Actualizar elementos visuales
+        
         if (isDefined(menu.header_bg))
         {
             menu.header_bg.color = header_color;
-            menu.header_bg.alpha = 0.98; // Mantener alta opacidad
+            menu.header_bg.alpha = 0.98; 
         }
 
         if (isDefined(menu.header_border_top))
         {
-            menu.header_border_top.color = selection_color; // Borde sigue el color de selección
+            menu.header_border_top.color = selection_color; 
         }
 
         if (isDefined(menu.selection_bar))
             menu.selection_bar.color = selection_color;
 
-        // Asegurar que el texto del título mantenga buena visibilidad
+        
         if (isDefined(menu.title_text))
         {
-            menu.title_text.alpha = 1; // Máxima opacidad para el texto
+            menu.title_text.alpha = 1; 
         }
 
-        wait 0.05; // Actualizar el color cada 50ms
+        wait 0.05; 
     }
 }
 
-// Convertir HSV a RGB (Hue, Saturation, Value a Red, Green, Blue)
+
 hsv_to_rgb(h, s, v)
 {
-    // Algoritmo estándar de conversión de HSV a RGB
-    // h: 0-1 (tono), s: 0-1 (saturación), v: 0-1 (valor)
+    
+    
     
     if (s == 0)
-        return (v, v, v); // Escala de grises
+        return (v, v, v); 
     
-    h = h * 6; // Normalizar a 0-6
+    h = h * 6; 
     i = int(h);
     f = h - i;
     
@@ -723,17 +723,17 @@ hsv_to_rgb(h, s, v)
     }
 }
 
-// Función para actualizar los elementos visuales del menú
+
 update_menu_visuals(menu)
 {
-    // Verificar si existen los elementos básicos, y si no, crearlos
+    
     if (!isDefined(menu.background))
     {
         menu.background = newClientHudElem(menu.user);
         menu.background.vertalign = "top";
         menu.background.horzalign = "left";
-        menu.background.x = 0; // Posición izquierda
-        menu.background.y = 120; // Posición superior
+        menu.background.x = 0; 
+        menu.background.y = 120; 
     }
 
     if (!isDefined(menu.header_bg))
@@ -759,7 +759,7 @@ update_menu_visuals(menu)
         menu.title_text = newClientHudElem(menu.user);
         menu.title_text.vertalign = "top";
         menu.title_text.horzalign = "left";
-        menu.title_text.x = menu.background.x + 12; // Añadir margen para el texto del título
+        menu.title_text.x = menu.background.x + 12; 
         menu.title_text.y = menu.background.y + 3;
         menu.title_text.fontscale = 1.5;
         menu.title_text setText(menu.title);
@@ -786,7 +786,7 @@ update_menu_visuals(menu)
         menu.selection_bar.alpha = 0.6;
     }
 
-    // Esconder bordes si existen
+    
     if (isDefined(menu.border_top))
     {
         menu.border_top.alpha = 0;
@@ -795,59 +795,59 @@ update_menu_visuals(menu)
         menu.border_right.alpha = 0;
     }
 
-    // Mantener las coordenadas originales
+    
     original_x = menu.background.x;
     original_y = menu.background.y;
 
-    // Actualizar el fondo principal
+    
     menu.background.alpha = menu.bg_alpha;
     menu.background.color = menu.bg_color;
-    // Ajustar la altura dinámica
+    
     total_height = menu.header_height + (menu.item_height * menu.items.size);
     menu.background setShader("white", menu.width, total_height);
 
-    // Actualizar el encabezado manteniendo posición
+    
     menu.header_bg.x = original_x;
     menu.header_bg.y = original_y;
     menu.header_bg.alpha = menu.header_alpha;
     menu.header_bg.color = menu.header_color;
     menu.header_bg setShader("white", menu.width, menu.header_height);
 
-    // Forzar actualización inmediata del color del encabezado
+    
     if (isDefined(menu.header_bg))
     {
         menu.header_bg.color = menu.header_color;
         menu.header_bg.alpha = menu.header_alpha;
     }
 
-    // Actualizar borde superior del encabezado solo si está habilitado
+    
     if (isDefined(menu.has_border) && menu.has_border)
     {
         menu.header_border_top.x = original_x;
         menu.header_border_top.y = original_y;
         menu.header_border_top.alpha = 1;
-        menu.header_border_top.color = (0.8, 0.8, 0.9); // Borde blanco-azulado
+        menu.header_border_top.color = (0.8, 0.8, 0.9); 
         menu.header_border_top setShader("white", menu.width, 1);
     }
     else
     {
-        // Ocultar borde si no está habilitado
+        
         menu.header_border_top.alpha = 0;
     }
 
-    // Actualizar texto del título manteniendo posición
-    // Solo aplicar si no hay posición de texto personalizada
+    
+    
     if (!isDefined(menu.font_position_index) || menu.font_position_index == 0)
     {
-        menu.title_text.x = original_x + 12; // Añadir margen a la izquierda para el texto del título
+        menu.title_text.x = original_x + 12; 
         menu.title_text.alignX = "left";
     }
     menu.title_text.y = original_y + 3;
     menu.title_text.color = menu.title_color;
-    menu.title_text.alpha = 1; // Asegurar máxima opacidad
-    menu.title_text.sort = 2; // Asegurar que esté al frente
+    menu.title_text.alpha = 1; 
+    menu.title_text.sort = 2; 
 
-    // Actualizar sombra del título (detrás del texto principal)
+    
     if (!isDefined(menu.font_position_index) || menu.font_position_index == 0)
     {
         menu.title_shadow.x = original_x + 14;
@@ -855,10 +855,10 @@ update_menu_visuals(menu)
     }
     menu.title_shadow.y = original_y + 5;
     menu.title_shadow.color = (0, 0, 0);
-    menu.title_shadow.alpha = 0.4; // Sombra sutil
-    menu.title_shadow.sort = 0; // Asegurar que esté detrás
+    menu.title_shadow.alpha = 0.4; 
+    menu.title_shadow.sort = 0; 
 
-    // Actualizar barra de selección manteniendo posición
+    
     menu.selection_bar.x = original_x;
     if (isDefined(menu.selected))
     {
@@ -867,51 +867,51 @@ update_menu_visuals(menu)
     menu.selection_bar.color = menu.active_color;
     menu.selection_bar setShader("white", menu.width, menu.item_height);
 
-    // Forzar actualización inmediata del color de la barra de selección
+    
     if (isDefined(menu.selection_bar))
     {
         menu.selection_bar.color = menu.active_color;
     }
 
-    // Actualizar elementos del menú manteniendo posiciones
+    
     for (i = 0; i < menu.items.size; i++)
     {
         if (isDefined(menu.items[i].item))
         {
-            // No actualizar la posición horizontal si ya está configurada por el sistema de posición de texto
+            
             if (!isDefined(menu.font_position_index) || menu.font_position_index == 0)
             {
-                // Actualizar posición basada en fondo y altura de elemento
+                
                 if (menu.items[i].item.horzalign == "center")
                 {
-                    // Si está configurado para centrar, mantener centrado
+                    
                     menu.items[i].item.x = original_x + (menu.width / 2);
                     menu.items[i].item.alignX = "center";
                 }
                 else
                 {
-                    // Si no, alinear a la izquierda con margen
-                    menu.items[i].item.x = original_x + 15; // Añadir margen para texto
+                    
+                    menu.items[i].item.x = original_x + 15; 
                     menu.items[i].item.alignX = "left";
                 }
             }
 
             menu.items[i].item.y = original_y + menu.header_height + (menu.item_height * i) + (menu.item_height / 2) - 6;
-            menu.items[i].item.color = (i == menu.selected) ? (1, 1, 1) : menu.inactive_color; // Texto seleccionado en blanco
+            menu.items[i].item.color = (i == menu.selected) ? (1, 1, 1) : menu.inactive_color; 
         }
     }
 
-    // Si hay una posición de texto definida, aplicarla después
+    
     if (isDefined(menu.font_position_index) && menu.font_position_index > 0)
     {
         menu = scripts\zm\style_font_position::update_menu_visuals_with_position(menu);
     }
 
-    // Devolver la estructura de menú actualizada
+    
     return menu;
 }
 
-// Esta función debe ser llamada para detener el efecto arcoíris cuando se cambia de estilo
+
 stop_rainbow_effect(menu)
 {
     if (isDefined(menu.rainbow_active) && menu.rainbow_active)
@@ -921,1014 +921,1014 @@ stop_rainbow_effect(menu)
     }
 }
 
-// Estilo 8: Futurista (azules y detalles brillantes)
+
 apply_futuristic_style(menu)
 {
-    // Colores
-    menu.header_color = (0, 0.2, 0.5);      // Azul profundo para el encabezado
-    menu.active_color = (0.2, 0.8, 1);      // Azul brillante para selección
-    menu.inactive_color = (0.85, 0.95, 1);  // Azul muy claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.03, 0.06, 0.12);     // Azul oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0, 0.2, 0.5);      
+    menu.active_color = (0.2, 0.8, 1);      
+    menu.inactive_color = (0.85, 0.95, 1);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.03, 0.06, 0.12);     
+    
+    
     menu.width = 190;
     menu.margin_x = 255;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 24;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 9: Elegante (dorado y negro)
+
 apply_elegant_style(menu)
 {
-    // Colores
-    menu.header_color = (0.8, 0.65, 0.2);   // Dorado para el encabezado
-    menu.active_color = (0.9, 0.75, 0.3);   // Dorado brillante para selección
-    menu.inactive_color = (0.8, 0.8, 0.8);  // Gris claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Negro para el texto del título
-    menu.bg_color = (0.1, 0.1, 0.1);        // Negro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.8, 0.65, 0.2);   
+    menu.active_color = (0.9, 0.75, 0.3);   
+    menu.inactive_color = (0.8, 0.8, 0.8);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.1, 0.1, 0.1);        
+    
+    
     menu.width = 185;
     menu.margin_x = 258;
     menu.margin_y = 180;
     menu.item_height = 19;
     menu.header_height = 26;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 10: Cyberpunk (colores vibrantes y neón)
+
 apply_cyberpunk_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0.1, 0.6);    // Fucsia neón para el encabezado
-    menu.active_color = (0, 0.9, 0.9);      // Cian neón para selección
-    menu.inactive_color = (0.85, 0.85, 0.9); // Gris azulado para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.05, 0, 0.1);         // Morado oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.9, 0.1, 0.6);    
+    menu.active_color = (0, 0.9, 0.9);      
+    menu.inactive_color = (0.85, 0.85, 0.9); 
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.05, 0, 0.1);         
+    
+    
     menu.width = 195;
     menu.margin_x = 253;
     menu.margin_y = 180;
     menu.item_height = 21;
     menu.header_height = 28;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 11: Aqua (tonos acuáticos frescos)
+
 apply_aqua_style(menu)
 {
-    // Colores
-    menu.header_color = (0, 0.5, 0.5);      // Turquesa para el encabezado
-    menu.active_color = (0, 0.6, 0.8);      // Azul agua para selección
-    menu.inactive_color = (0.8, 1, 1);      // Celeste muy claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.05, 0.15, 0.2);      // Azul profundo para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0, 0.5, 0.5);      
+    menu.active_color = (0, 0.6, 0.8);      
+    menu.inactive_color = (0.8, 1, 1);      
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.05, 0.15, 0.2);      
+    
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 24;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.8;
     menu.header_alpha = 0.95;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 12: Retro Arcade (inspirado en las arcades de los 80s)
+
 apply_retro_arcade_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0, 0.9);      // Magenta brillante para el encabezado
-    menu.active_color = (0, 0.9, 0.9);      // Cian brillante para selección
-    menu.inactive_color = (0.5, 0.9, 0.5);  // Verde claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);          // Amarillo brillante para el texto del título
-    menu.bg_color = (0, 0, 0.3);            // Azul oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.9, 0, 0.9);      
+    menu.active_color = (0, 0.9, 0.9);      
+    menu.inactive_color = (0.5, 0.9, 0.5);  
+    menu.title_color = (1, 1, 1);          
+    menu.bg_color = (0, 0, 0.3);            
+    
+    
     menu.width = 200;
     menu.margin_x = 250;
     menu.margin_y = 180;
     menu.item_height = 22;
     menu.header_height = 30;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 13: Hielo Polar (tonos blancos y azules fríos)
+
 apply_polar_ice_style(menu)
 {
-    // Colores
-    menu.header_color = (0.7, 0.9, 1);      // Azul hielo claro para el encabezado
-    menu.active_color = (0.2, 0.6, 0.9);    // Azul brillante para selección
-    menu.inactive_color = (0.9, 0.95, 1);   // Blanco azulado para elementos no seleccionados
-    menu.title_color = (1, 1, 1);     // Azul brillante para el texto del título
-    menu.bg_color = (0.85, 0.9, 0.95);      // Blanco grisáceo para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.7, 0.9, 1);      
+    menu.active_color = (0.2, 0.6, 0.9);    
+    menu.inactive_color = (0.9, 0.95, 1);   
+    menu.title_color = (1, 1, 1);     
+    menu.bg_color = (0.85, 0.9, 0.95);      
+    
+    
     menu.width = 185;
     menu.margin_x = 258;
     menu.margin_y = 180;
     menu.item_height = 19;
     menu.header_height = 25;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.8;
     menu.header_alpha = 0.9;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 14: Inferno (tonos rojos y naranjas de fuego)
+
 apply_inferno_style(menu)
 {
-    // Colores
-    menu.header_color = (0.8, 0.2, 0);      // Naranja oscuro para el encabezado
-    menu.active_color = (1, 0.6, 0);        // Naranja brillante para selección
-    menu.inactive_color = (1, 0.8, 0.7);    // Beige claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.3, 0, 0);            // Rojo muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.8, 0.2, 0);      
+    menu.active_color = (1, 0.6, 0);        
+    menu.inactive_color = (1, 0.8, 0.7);    
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.3, 0, 0);            
+    
+    
     menu.width = 190;
     menu.margin_x = 255;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 26;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 15: Naturaleza (tonos verdes y marrones)
+
 apply_nature_style(menu)
 {
-    // Colores
-    menu.header_color = (0.2, 0.5, 0.1);    // Verde bosque para el encabezado
-    menu.active_color = (0.5, 0.8, 0.2);    // Verde brillante para selección
-    menu.inactive_color = (0.8, 0.9, 0.7);  // Verde claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.3, 0.2, 0.1);        // Marrón oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.2, 0.5, 0.1);    
+    menu.active_color = (0.5, 0.8, 0.2);    
+    menu.inactive_color = (0.8, 0.9, 0.7);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.3, 0.2, 0.1);        
+    
+    
     menu.width = 175;
     menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 24;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.95;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 16: Halloween (naranja y negro)
+
 apply_halloween_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0.5, 0);      // Naranja Halloween para el encabezado
-    menu.active_color = (0.8, 0.4, 0);      // Naranja más oscuro para selección
-    menu.inactive_color = (0.8, 0.7, 0.8);  // Lila claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);         // Naranja brillante para el texto del título
-    menu.bg_color = (0.1, 0.02, 0.1);       // Morado muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.9, 0.5, 0);      
+    menu.active_color = (0.8, 0.4, 0);      
+    menu.inactive_color = (0.8, 0.7, 0.8);  
+    menu.title_color = (1, 1, 1);         
+    menu.bg_color = (0.1, 0.02, 0.1);       
+    
+    
     menu.width = 195;
     menu.margin_x = 253;
     menu.margin_y = 180;
     menu.item_height = 21;
     menu.header_height = 28;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 17: Navidad (rojo y verde tradicionales)
+
 apply_christmas_style(menu)
 {
-    // Colores
-    menu.header_color = (0.8, 0.1, 0.1);    // Rojo navidad para el encabezado
-    menu.active_color = (0.1, 0.6, 0.1);    // Verde navidad para selección
-    menu.inactive_color = (1, 1, 1);        // Blanco para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.05, 0.1, 0.05);      // Verde muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.8, 0.1, 0.1);    
+    menu.active_color = (0.1, 0.6, 0.1);    
+    menu.inactive_color = (1, 1, 1);        
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.05, 0.1, 0.05);      
+    
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 25;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 18: Galaxia (colores cósmicos)
+
 apply_galaxy_style(menu)
 {
-    // Colores
-    menu.header_color = (0.3, 0.1, 0.5);    // Púrpura oscuro para el encabezado
-    menu.active_color = (0.5, 0.2, 1);      // Púrpura brillante para selección
-    menu.inactive_color = (0.6, 0.7, 1);    // Azul claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.05, 0.05, 0.15);     // Azul muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.3, 0.1, 0.5);    
+    menu.active_color = (0.5, 0.2, 1);      
+    menu.inactive_color = (0.6, 0.7, 1);    
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.05, 0.05, 0.15);     
+    
+    
     menu.width = 190;
     menu.margin_x = 255;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 26;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 0.95;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 19: Tropical (colores vivos y vibrantes)
+
 apply_tropical_style(menu)
 {
-    // Colores
-    menu.header_color = (0, 0.7, 0.7);      // Turquesa para el encabezado
-    menu.active_color = (1, 0.6, 0);        // Naranja tropical para selección
-    menu.inactive_color = (1, 1, 0.8);      // Amarillo claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);         // Naranja tropical para el texto del título
-    menu.bg_color = (0, 0.5, 0.5);          // Turquesa más oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0, 0.7, 0.7);      
+    menu.active_color = (1, 0.6, 0);        
+    menu.inactive_color = (1, 1, 0.8);      
+    menu.title_color = (1, 1, 1);         
+    menu.bg_color = (0, 0.5, 0.5);          
+    
+    
     menu.width = 185;
     menu.margin_x = 258;
     menu.margin_y = 180;
     menu.item_height = 19;
     menu.header_height = 25;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.8;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 20: Metal (gris metálico con reflejos)
+
 apply_metal_style(menu)
 {
-    // Colores
-    menu.header_color = (0.6, 0.6, 0.6);    // Gris plateado para el encabezado
-    menu.active_color = (0.8, 0.8, 0.8);    // Gris brillante para selección
-    menu.inactive_color = (0.5, 0.5, 0.5);  // Gris medio para elementos no seleccionados
-    menu.title_color = (1, 1, 1);    // Gris muy claro para el texto del título
-    menu.bg_color = (0.2, 0.2, 0.2);        // Gris oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.6, 0.6, 0.6);    
+    menu.active_color = (0.8, 0.8, 0.8);    
+    menu.inactive_color = (0.5, 0.5, 0.5);  
+    menu.title_color = (1, 1, 1);    
+    menu.bg_color = (0.2, 0.2, 0.2);        
+    
+    
     menu.width = 175;
     menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 24;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 21: Vampiro (rojo sangre y negro)
+
 apply_vampire_style(menu)
 {
-    // Colores
-    menu.header_color = (0.4, 0, 0);        // Rojo oscuro para el encabezado
-    menu.active_color = (0.7, 0, 0);        // Rojo sangre para selección
-    menu.inactive_color = (0.7, 0.6, 0.6);  // Rosa pálido para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.05, 0, 0.05);        // Negro púrpura para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.4, 0, 0);        
+    menu.active_color = (0.7, 0, 0);        
+    menu.inactive_color = (0.7, 0.6, 0.6);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.05, 0, 0.05);        
+    
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 25;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.95;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 22: Tóxico (verde neón y negro)
+
 apply_toxic_style(menu)
 {
-    // Colores
-    menu.header_color = (0.2, 0.8, 0);      // Verde tóxico para el encabezado
-    menu.active_color = (0.4, 1, 0);        // Verde neón brillante para selección
-    menu.inactive_color = (0.8, 1, 0.7);    // Verde claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Negro para el texto del título
-    menu.bg_color = (0.1, 0.1, 0.1);        // Negro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.2, 0.8, 0);      
+    menu.active_color = (0.4, 1, 0);        
+    menu.inactive_color = (0.8, 1, 0.7);    
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.1, 0.1, 0.1);        
+    
+    
     menu.width = 185;
     menu.margin_x = 258;
     menu.margin_y = 180;
     menu.item_height = 21;
     menu.header_height = 27;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 23: Pastel (colores suaves y delicados)
+
 apply_pastel_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0.8, 0.9);    // Lavanda suave para el encabezado
-    menu.active_color = (0.8, 0.6, 0.8);    // Púrpura pastel para selección
-    menu.inactive_color = (0.9, 0.9, 0.9);  // Gris muy claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);     // Púrpura oscuro para el texto del título
-    menu.bg_color = (1, 0.95, 1);           // Blanco ligeramente púrpura para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.9, 0.8, 0.9);    
+    menu.active_color = (0.8, 0.6, 0.8);    
+    menu.inactive_color = (0.9, 0.9, 0.9);  
+    menu.title_color = (1, 1, 1);     
+    menu.bg_color = (1, 0.95, 1);           
+    
+    
     menu.width = 170;
     menu.margin_x = 265;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 22;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.9;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 24: Desierto (tonos arena y marrón)
+
 apply_desert_style(menu)
 {
-    // Colores
-    menu.header_color = (0.8, 0.6, 0.3);    // Marrón arena para el encabezado
-    menu.active_color = (0.9, 0.7, 0.2);    // Dorado arena para selección
-    menu.inactive_color = (0.95, 0.9, 0.7); // Beige arena claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);    // Dorado arena para el texto del título
-    menu.bg_color = (0.7, 0.6, 0.4);        // Beige arena para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.8, 0.6, 0.3);    
+    menu.active_color = (0.9, 0.7, 0.2);    
+    menu.inactive_color = (0.95, 0.9, 0.7); 
+    menu.title_color = (1, 1, 1);    
+    menu.bg_color = (0.7, 0.6, 0.4);        
+    
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 19;
     menu.header_height = 24;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.95;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 25: Océano Profundo (azules oscuros)
+
 apply_ocean_deep_style(menu)
 {
-    // Colores
-    menu.header_color = (0.1, 0.2, 0.4);    // Azul profundo para el encabezado
-    menu.active_color = (0, 0.4, 0.7);      // Azul océano para selección
-    menu.inactive_color = (0.6, 0.8, 0.9);  // Azul claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.05, 0.1, 0.2);       // Azul muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.1, 0.2, 0.4);    
+    menu.active_color = (0, 0.4, 0.7);      
+    menu.inactive_color = (0.6, 0.8, 0.9);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.05, 0.1, 0.2);       
+    
+    
     menu.width = 185;
     menu.margin_x = 258;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 26;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.95;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 26: Nuclear (amarillo y negro)
+
 apply_nuke_style(menu)
 {
-    // Colores
-    menu.header_color = (0.8, 0.8, 0);      // Amarillo nuclear para el encabezado
-    menu.active_color = (0.9, 0.9, 0);      // Amarillo brillante para selección
-    menu.inactive_color = (0.8, 0.8, 0.6);  // Amarillo apagado para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Amarillo brillante para el texto del título
-    menu.bg_color = (0.15, 0.15, 0.15);     // Negro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.8, 0.8, 0);      
+    menu.active_color = (0.9, 0.9, 0);      
+    menu.inactive_color = (0.8, 0.8, 0.6);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.15, 0.15, 0.15);     
+    
+    
     menu.width = 195;
     menu.margin_x = 253;
     menu.margin_y = 180;
     menu.item_height = 22;
     menu.header_height = 28;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 27: Oro Elite (dorado premium)
+
 apply_gold_elite_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0.8, 0.2);    // Dorado brillante para el encabezado
-    menu.active_color = (1, 0.85, 0.1);     // Dorado intenso para selección
-    menu.inactive_color = (0.85, 0.7, 0.2); // Dorado más apagado para elementos no seleccionados
-    menu.title_color = (1, 1, 1);     // Casi negro para el texto del título
-    menu.bg_color = (0.25, 0.2, 0.1);       // Marrón oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.9, 0.8, 0.2);    
+    menu.active_color = (1, 0.85, 0.1);     
+    menu.inactive_color = (0.85, 0.7, 0.2); 
+    menu.title_color = (1, 1, 1);     
+    menu.bg_color = (0.25, 0.2, 0.1);       
+    
+    
     menu.width = 190;
     menu.margin_x = 255;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 25;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 28: Congelado (tonos azules pálidos)
+
 apply_frozen_style(menu)
 {
-    // Colores
-    menu.header_color = (0.8, 0.9, 1);      // Azul hielo para el encabezado
-    menu.active_color = (0.6, 0.8, 1);      // Azul hielo más oscuro para selección
-    menu.inactive_color = (0.9, 0.95, 1);   // Blanco azulado para elementos no seleccionados
-    menu.title_color = (1, 1, 1);     // Azul medio para el texto del título
-    menu.bg_color = (0.95, 0.98, 1);        // Blanco azulado para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.8, 0.9, 1);      
+    menu.active_color = (0.6, 0.8, 1);      
+    menu.inactive_color = (0.9, 0.95, 1);   
+    menu.title_color = (1, 1, 1);     
+    menu.bg_color = (0.95, 0.98, 1);        
+    
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 24;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.9;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 29: TV Retro (estilo de televisor antiguo)
+
 apply_retro_tv_style(menu)
 {
-    // Colores
-    menu.header_color = (0.2, 0.2, 0.2);    // Gris oscuro para el encabezado
-    menu.active_color = (0.1, 0.7, 0.1);    // Verde fosforescente para selección
-    menu.inactive_color = (0.7, 0.7, 0.7);  // Gris claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);      // Verde neón brillante para el texto del título
-    menu.bg_color = (0.1, 0.1, 0.1);        // Negro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.2, 0.2, 0.2);    
+    menu.active_color = (0.1, 0.7, 0.1);    
+    menu.inactive_color = (0.7, 0.7, 0.7);  
+    menu.title_color = (1, 1, 1);      
+    menu.bg_color = (0.1, 0.1, 0.1);        
+    
+    
     menu.width = 200;
     menu.margin_x = 250;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 25;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.95;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 30: Atardecer (naranjas y rojos)
+
 apply_sunset_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0.5, 0);      // Naranja atardecer para el encabezado
-    menu.active_color = (0.8, 0.4, 0);      // Naranja más oscuro para selección
-    menu.inactive_color = (0.8, 0.7, 0.8);  // Lila claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);       // Naranja claro para el texto del título
-    menu.bg_color = (0.1, 0.02, 0.1);       // Morado muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.9, 0.5, 0);      
+    menu.active_color = (0.8, 0.4, 0);      
+    menu.inactive_color = (0.8, 0.7, 0.8);  
+    menu.title_color = (1, 1, 1);       
+    menu.bg_color = (0.1, 0.02, 0.1);       
+    
+    
     menu.width = 195;
     menu.margin_x = 253;
     menu.margin_y = 180;
     menu.item_height = 21;
     menu.header_height = 28;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 31: Matrix (verde código sobre negro)
+
 apply_matrix_style(menu)
 {
-    // Colores
-    menu.header_color = (0, 0.5, 0);        // Verde código para el encabezado
-    menu.active_color = (0, 0.8, 0);        // Verde brillante para selección
-    menu.inactive_color = (0.5, 0.5, 0.5);  // Gris para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0, 0, 0);              // Negro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0, 0.5, 0);        
+    menu.active_color = (0, 0.8, 0);        
+    menu.inactive_color = (0.5, 0.5, 0.5);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0, 0, 0);              
+    
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 22;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.8;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 32: Steampunk (bronces y marrones)
+
 apply_steampunk_style(menu)
 {
-    // Colores
-    menu.header_color = (0.5, 0.3, 0.1);    // Marrón oscuro para el encabezado
-    menu.active_color = (0.8, 0.6, 0.2);    // Marrón brillante para selección
-    menu.inactive_color = (0.7, 0.5, 0.1);  // Marrón apagado para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.2, 0.1, 0.05);       // Marrón oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.5, 0.3, 0.1);    
+    menu.active_color = (0.8, 0.6, 0.2);    
+    menu.inactive_color = (0.7, 0.5, 0.1);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.2, 0.1, 0.05);       
+    
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 22;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.8;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 33: Luna de Sangre (rojo sangre y negro)
+
 apply_blood_moon_style(menu)
 {
-    // Colores
-    menu.header_color = (0.8, 0.2, 0);      // Naranja oscuro para el encabezado
-    menu.active_color = (1, 0.6, 0);        // Naranja brillante para selección
-    menu.inactive_color = (1, 0.8, 0.7);    // Beige claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.3, 0, 0);            // Rojo muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.8, 0.2, 0);      
+    menu.active_color = (1, 0.6, 0);        
+    menu.inactive_color = (1, 0.8, 0.7);    
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.3, 0, 0);            
+    
+    
     menu.width = 190;
     menu.margin_x = 255;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 26;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 34: Synthwave (rosa y azul neón)
+
 apply_synthwave_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0.1, 0.6);    // Fucsia neón para el encabezado
-    menu.active_color = (0, 0.9, 0.9);      // Cian neón para selección
-    menu.inactive_color = (0.85, 0.85, 0.9); // Gris azulado para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.05, 0, 0.1);         // Morado oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.9, 0.1, 0.6);    
+    menu.active_color = (0, 0.9, 0.9);      
+    menu.inactive_color = (0.85, 0.85, 0.9); 
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.05, 0, 0.1);         
+    
+    
     menu.width = 195;
     menu.margin_x = 253;
     menu.margin_y = 180;
     menu.item_height = 21;
     menu.header_height = 28;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 35: Cómic (colores vivos y bordes negros)
+
 apply_comic_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0.8, 0.9);    // Lavanda suave para el encabezado
-    menu.active_color = (0.8, 0.6, 0.8);    // Púrpura pastel para selección
-    menu.inactive_color = (0.9, 0.9, 0.9);  // Gris muy claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);    // Púrpura oscuro para el texto del título
-    menu.bg_color = (1, 0.95, 1);           // Blanco ligeramente púrpura para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.9, 0.8, 0.9);    
+    menu.active_color = (0.8, 0.6, 0.8);    
+    menu.inactive_color = (0.9, 0.9, 0.9);  
+    menu.title_color = (1, 1, 1);    
+    menu.bg_color = (1, 0.95, 1);           
+    
+    
     menu.width = 170;
     menu.margin_x = 265;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 22;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.9;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 36: Pixel Art (inspirado en gráficos 8-bit)
+
 apply_pixel_art_style(menu)
 {
-    // Colores
-    menu.header_color = (0.3, 0.3, 0.8);    // Azul pixel para el encabezado
-    menu.active_color = (1, 0.5, 0.1);      // Naranja pixelado para selección
-    menu.inactive_color = (0.7, 0.7, 0.7);  // Gris claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.1, 0.1, 0.2);        // Azul muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla con forma cuadrada para efecto pixel
+    menu.header_color = (0.3, 0.3, 0.8);    
+    menu.active_color = (1, 0.5, 0.1);      
+    menu.inactive_color = (0.7, 0.7, 0.7);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.1, 0.1, 0.2);        
+    
+    
     menu.width = 200;
     menu.margin_x = 250;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 24;
     
-    // Opacidad
-    menu.bg_alpha = 1.0;     // Sin transparencia para efecto pixel
+    
+    menu.bg_alpha = 1.0;     
     menu.header_alpha = 1.0;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 37: Graffiti (estilo urbano con colores de aerosol)
+
 apply_graffiti_style(menu)
 {
-    // Colores
-    menu.header_color = (0.2, 0.2, 0.2);    // Negro para el encabezado (como muro)
-    menu.active_color = (1, 0.2, 0.5);      // Rosa aerosol para selección
-    menu.inactive_color = (0.3, 0.9, 0.5);  // Verde aerosol para elementos no seleccionados
-    menu.title_color = (1, 1, 1);         // Amarillo brillante para el texto del título
-    menu.bg_color = (0.15, 0.15, 0.15);     // Gris oscuro para el fondo (como pared)
     
-    // Dimensiones - centrado en la pantalla con aspecto irregular
+    menu.header_color = (0.2, 0.2, 0.2);    
+    menu.active_color = (1, 0.2, 0.5);      
+    menu.inactive_color = (0.3, 0.9, 0.5);  
+    menu.title_color = (1, 1, 1);         
+    menu.bg_color = (0.15, 0.15, 0.15);     
+    
+    
     menu.width = 210;
     menu.margin_x = 245;
     menu.margin_y = 180;
     menu.item_height = 22;
     menu.header_height = 30;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.95;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 38: Vaporwave (estética retro de los 90s)
+
 apply_vaporwave_style(menu)
 {
-    // Colores
-    menu.header_color = (0.8, 0.3, 0.8);    // Púrpura para el encabezado
-    menu.active_color = (0, 0.9, 0.9);      // Cian neón para selección
-    menu.inactive_color = (0.9, 0.5, 0.9);  // Rosa claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);        // Rosa neón para el texto del título
-    menu.bg_color = (0.2, 0, 0.3);          // Púrpura oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.8, 0.3, 0.8);    
+    menu.active_color = (0, 0.9, 0.9);      
+    menu.inactive_color = (0.9, 0.5, 0.9);  
+    menu.title_color = (1, 1, 1);        
+    menu.bg_color = (0.2, 0, 0.3);          
+    
+    
     menu.width = 195;
     menu.margin_x = 253;
     menu.margin_y = 180;
     menu.item_height = 21;
     menu.header_height = 28;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.8;
     menu.header_alpha = 0.9;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 39: Bosque Encantado (tonos mágicos con verdes y púrpuras)
+
 apply_enchanted_forest_style(menu)
 {
-    // Colores
-    menu.header_color = (0.2, 0.6, 0.3);    // Verde bosque para el encabezado
-    menu.active_color = (0.6, 0.2, 0.8);    // Púrpura mágico para selección
-    menu.inactive_color = (0.7, 0.9, 0.7);  // Verde claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);      // Púrpura brillante para el texto del título
-    menu.bg_color = (0.1, 0.2, 0.15);       // Verde muy oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.2, 0.6, 0.3);    
+    menu.active_color = (0.6, 0.2, 0.8);    
+    menu.inactive_color = (0.7, 0.9, 0.7);  
+    menu.title_color = (1, 1, 1);      
+    menu.bg_color = (0.1, 0.2, 0.15);       
+    
+    
     menu.width = 185;
     menu.margin_x = 258;
     menu.margin_y = 180;
     menu.item_height = 19;
     menu.header_height = 26;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.9;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 40: Egipto Antiguo (dorados y azules profundos)
+
 apply_ancient_egypt_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0.7, 0.1);    // Dorado egipcio para el encabezado
-    menu.active_color = (0.1, 0.4, 0.7);    // Azul faraónico para selección
-    menu.inactive_color = (0.8, 0.7, 0.5);  // Arena para elementos no seleccionados
-    menu.title_color = (1, 1, 1);      // Dorado brillante para el texto del título
-    menu.bg_color = (0.4, 0.3, 0.2);        // Marrón arena para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.9, 0.7, 0.1);    
+    menu.active_color = (0.1, 0.4, 0.7);    
+    menu.inactive_color = (0.8, 0.7, 0.5);  
+    menu.title_color = (1, 1, 1);      
+    menu.bg_color = (0.4, 0.3, 0.2);        
+    
+    
     menu.width = 190;
     menu.margin_x = 255;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 27;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 43: Cristal Vidrio (cristalino transparente con refracciones)
+
 apply_crystal_glass_style(menu)
 {
-    // Colores
-    menu.header_color = (0.8, 0.95, 1);      // Azul cristalino para el encabezado
-    menu.active_color = (0.6, 0.85, 1);      // Azul hielo para selección
-    menu.inactive_color = (0.9, 0.95, 1);    // Blanco azulado para elementos no seleccionados
-    menu.title_color = (0.2, 0.4, 0.8);      // Azul profundo para el texto del título
-    menu.bg_color = (0.95, 0.98, 1);         // Blanco cristalino para el fondo
+    
+    menu.header_color = (0.8, 0.95, 1);      
+    menu.active_color = (0.6, 0.85, 1);      
+    menu.inactive_color = (0.9, 0.95, 1);    
+    menu.title_color = (0.2, 0.4, 0.8);      
+    menu.bg_color = (0.95, 0.98, 1);         
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 185;
     menu.margin_x = 258;
     menu.margin_y = 180;
     menu.item_height = 19;
     menu.header_height = 25;
 
-    // Opacidad - semitransparente para efecto cristalino
+    
     menu.bg_alpha = 0.7;
     menu.header_alpha = 0.85;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 44: Terciopelo Negro (terciopelo negro con acentos metálicos)
+
 apply_velvet_noir_style(menu)
 {
-    // Colores
-    menu.header_color = (0.1, 0.1, 0.15);    // Negro terciopelo para el encabezado
-    menu.active_color = (0.8, 0.7, 0.2);     // Oro metálico para selección
-    menu.inactive_color = (0.4, 0.4, 0.5);   // Gris azulado para elementos no seleccionados
-    menu.title_color = (0.9, 0.8, 0.3);      // Oro brillante para el texto del título
-    menu.bg_color = (0.05, 0.05, 0.08);      // Negro profundo para el fondo
+    
+    menu.header_color = (0.1, 0.1, 0.15);    
+    menu.active_color = (0.8, 0.7, 0.2);     
+    menu.inactive_color = (0.4, 0.4, 0.5);   
+    menu.title_color = (0.9, 0.8, 0.3);      
+    menu.bg_color = (0.05, 0.05, 0.08);      
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 190;
     menu.margin_x = 255;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 26;
 
-    // Opacidad
+    
     menu.bg_alpha = 0.95;
     menu.header_alpha = 1;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 45: Aurora Boreal (aurora boreal con cambios dinámicos)
+
 apply_aurora_borealis_style(menu)
 {
-    // Colores base - el resto se maneja dinámicamente
-    menu.header_color = (0.2, 0.8, 0.6);     // Verde aurora para empezar
-    menu.active_color = (0.8, 0.4, 1);       // Púrpura aurora para selección
-    menu.inactive_color = (0.9, 0.9, 1);     // Blanco azulado para elementos no seleccionados
-    menu.title_color = (0.6, 1, 0.8);        // Verde neón para el texto del título
-    menu.bg_color = (0.05, 0.1, 0.2);        // Azul noche para el fondo
+    
+    menu.header_color = (0.2, 0.8, 0.6);     
+    menu.active_color = (0.8, 0.4, 1);       
+    menu.inactive_color = (0.9, 0.9, 1);     
+    menu.title_color = (0.6, 1, 0.8);        
+    menu.bg_color = (0.05, 0.1, 0.2);        
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 195;
     menu.margin_x = 253;
     menu.margin_y = 180;
     menu.item_height = 21;
     menu.header_height = 28;
 
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.95;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 
-    // Iniciar efecto aurora si no está ya activo
+    
     if (!isDefined(menu.aurora_active))
     {
         menu.aurora_active = true;
@@ -1936,7 +1936,7 @@ apply_aurora_borealis_style(menu)
     }
 }
 
-// Efecto de aurora boreal para cambios dinámicos de colores
+
 aurora_effect(menu)
 {
     menu.user endon("disconnect");
@@ -1948,19 +1948,19 @@ aurora_effect(menu)
 
     while(isDefined(menu.aurora_active) && menu.aurora_active)
     {
-        // Incrementar el tono de color (0-360 en formato normalizado 0-1)
+        
         hue += 0.005;
         if (hue > 1) hue = 0;
 
-        // Convertir HSV a RGB para colores aurora
+        
         header_color = hsv_to_rgb(hue, 0.7, 0.9);
         selection_color = hsv_to_rgb((hue + 0.3) % 1, 0.8, 0.95);
 
-        // Actualizar colores
+        
         menu.header_color = header_color;
         menu.active_color = selection_color;
 
-        // Actualizar elementos visuales
+        
         if (isDefined(menu.header_bg))
         {
             menu.header_bg.color = header_color;
@@ -1970,207 +1970,207 @@ aurora_effect(menu)
         if (isDefined(menu.selection_bar))
             menu.selection_bar.color = selection_color;
 
-        wait 0.08; // Actualizar cada 80ms para efecto más suave
+        wait 0.08; 
     }
 }
 
-// Estilo 46: Mármol Lujo (mármol blanco con vetas doradas)
+
 apply_marble_luxe_style(menu)
 {
-    // Colores
-    menu.header_color = (0.95, 0.95, 0.9);   // Blanco mármol para el encabezado
-    menu.active_color = (0.9, 0.8, 0.4);     // Dorado veteado para selección
-    menu.inactive_color = (0.85, 0.85, 0.8); // Gris mármol para elementos no seleccionados
-    menu.title_color = (0.3, 0.25, 0.1);     // Marrón dorado para el texto del título
-    menu.bg_color = (0.98, 0.98, 0.95);      // Blanco crema para el fondo
+    
+    menu.header_color = (0.95, 0.95, 0.9);   
+    menu.active_color = (0.9, 0.8, 0.4);     
+    menu.inactive_color = (0.85, 0.85, 0.8); 
+    menu.title_color = (0.3, 0.25, 0.1);     
+    menu.bg_color = (0.98, 0.98, 0.95);      
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 24;
 
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 0.95;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 47: Neón Ciudad (neón urbano con reflejos)
+
 apply_neon_city_style(menu)
 {
-    // Colores
-    menu.header_color = (0.1, 0.1, 0.2);     // Azul noche urbana para el encabezado
-    menu.active_color = (1, 0.1, 0.8);       // Rosa neón intenso para selección
-    menu.inactive_color = (0.2, 0.8, 1);     // Cian neón para elementos no seleccionados
-    menu.title_color = (1, 0.5, 0);          // Naranja neón para el texto del título
-    menu.bg_color = (0.05, 0.05, 0.1);       // Azul muy oscuro para el fondo
+    
+    menu.header_color = (0.1, 0.1, 0.2);     
+    menu.active_color = (1, 0.1, 0.8);       
+    menu.inactive_color = (0.2, 0.8, 1);     
+    menu.title_color = (1, 0.5, 0);          
+    menu.bg_color = (0.05, 0.05, 0.1);       
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 200;
     menu.margin_x = 250;
     menu.margin_y = 180;
     menu.item_height = 22;
     menu.header_height = 30;
 
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 48: Flor Sakura (cerezo en flor rosa y blanco)
+
 apply_sakura_blossom_style(menu)
 {
-    // Colores
-    menu.header_color = (0.95, 0.8, 0.9);    // Rosa sakura suave para el encabezado
-    menu.active_color = (0.9, 0.6, 0.8);     // Rosa flor para selección
-    menu.inactive_color = (0.95, 0.9, 0.95); // Blanco rosado para elementos no seleccionados
-    menu.title_color = (0.7, 0.4, 0.6);      // Rosa profundo para el texto del título
-    menu.bg_color = (0.98, 0.95, 0.97);      // Blanco con tinte rosa para el fondo
+    
+    menu.header_color = (0.95, 0.8, 0.9);    
+    menu.active_color = (0.9, 0.6, 0.8);     
+    menu.inactive_color = (0.95, 0.9, 0.95); 
+    menu.title_color = (0.7, 0.4, 0.6);      
+    menu.bg_color = (0.98, 0.95, 0.97);      
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 175;
     menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 23;
 
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.9;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 49: Espacio Profundo (espacio profundo con estrellas)
+
 apply_deep_space_style(menu)
 {
-    // Colores
-    menu.header_color = (0.1, 0.1, 0.3);     // Azul espacio para el encabezado
-    menu.active_color = (0.8, 0.8, 1);       // Azul estrella para selección
-    menu.inactive_color = (0.5, 0.5, 0.7);   // Azul grisáceo para elementos no seleccionados
-    menu.title_color = (1, 1, 0.8);          // Blanco estelar para el texto del título
-    menu.bg_color = (0.02, 0.02, 0.08);      // Negro espacio para el fondo
+    
+    menu.header_color = (0.1, 0.1, 0.3);     
+    menu.active_color = (0.8, 0.8, 1);       
+    menu.inactive_color = (0.5, 0.5, 0.7);   
+    menu.title_color = (1, 1, 0.8);          
+    menu.bg_color = (0.02, 0.02, 0.08);      
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 190;
     menu.margin_x = 255;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 26;
 
-    // Opacidad
+    
     menu.bg_alpha = 0.95;
     menu.header_alpha = 1;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 50: Arrecife Coral (arrecife de coral submarino)
+
 apply_coral_reef_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0.6, 0.3);     // Coral naranja para el encabezado
-    menu.active_color = (0.1, 0.7, 0.8);     // Turquesa agua para selección
-    menu.inactive_color = (0.8, 0.9, 0.7);   // Verde agua para elementos no seleccionados
-    menu.title_color = (0.9, 0.4, 0.2);      // Coral rojo para el texto del título
-    menu.bg_color = (0.1, 0.3, 0.4);         // Azul océano para el fondo
+    
+    menu.header_color = (0.9, 0.6, 0.3);     
+    menu.active_color = (0.1, 0.7, 0.8);     
+    menu.inactive_color = (0.8, 0.9, 0.7);   
+    menu.title_color = (0.9, 0.4, 0.2);      
+    menu.bg_color = (0.1, 0.3, 0.4);         
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 185;
     menu.margin_x = 258;
     menu.margin_y = 180;
     menu.item_height = 19;
     menu.header_height = 25;
 
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.9;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 51: Púrpura Real (púrpura real con oro)
+
 apply_royal_purple_style(menu)
 {
-    // Colores
-    menu.header_color = (0.4, 0.1, 0.6);     // Púrpura real para el encabezado
-    menu.active_color = (0.9, 0.7, 0.1);     // Oro real para selección
-    menu.inactive_color = (0.6, 0.4, 0.7);   // Púrpura claro para elementos no seleccionados
-    menu.title_color = (0.95, 0.8, 0.2);     // Oro brillante para el texto del título
-    menu.bg_color = (0.2, 0.1, 0.3);         // Púrpura oscuro para el fondo
+    
+    menu.header_color = (0.4, 0.1, 0.6);     
+    menu.active_color = (0.9, 0.7, 0.1);     
+    menu.inactive_color = (0.6, 0.4, 0.7);   
+    menu.title_color = (0.95, 0.8, 0.2);     
+    menu.bg_color = (0.2, 0.1, 0.3);         
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 195;
     menu.margin_x = 253;
     menu.margin_y = 180;
     menu.item_height = 21;
     menu.header_height = 28;
 
-    // Opacidad
+    
     menu.bg_alpha = 0.9;
     menu.header_alpha = 1;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 52: Gradiente Amanecer (gradiente amanecer cálido)
+
 apply_sunrise_gradient_style(menu)
 {
-    // Colores
-    menu.header_color = (0.9, 0.5, 0.2);     // Naranja amanecer para el encabezado
-    menu.active_color = (1, 0.7, 0.3);       // Dorado sol para selección
-    menu.inactive_color = (0.95, 0.8, 0.6);  // Melocotón para elementos no seleccionados
-    menu.title_color = (0.2, 0.1, 0.05);     // Marrón oscuro para el texto del título
-    menu.bg_color = (0.98, 0.85, 0.7);       // Beige amanecer para el fondo
+    
+    menu.header_color = (0.9, 0.5, 0.2);     
+    menu.active_color = (1, 0.7, 0.3);       
+    menu.inactive_color = (0.95, 0.8, 0.6);  
+    menu.title_color = (0.2, 0.1, 0.05);     
+    menu.bg_color = (0.98, 0.85, 0.7);       
 
-    // Dimensiones - centrado en la pantalla
+    
     menu.width = 180;
     menu.margin_x = 260;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 24;
 
-    // Opacidad
+    
     menu.bg_alpha = 0.85;
     menu.header_alpha = 0.9;
 
-    // Desactivar bordes
+    
     menu.has_border = false;
 
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Función para detener el efecto aurora cuando se cambia de estilo
+
 stop_aurora_effect(menu)
 {
     if (isDefined(menu.aurora_active) && menu.aurora_active)
@@ -2180,58 +2180,58 @@ stop_aurora_effect(menu)
     }
 }
 
-// Estilo 41: Neón Retro (estilo de los 80s con colores neón intensos)
+
 apply_neon_retro_style(menu)
 {
-    // Colores
-    menu.header_color = (0, 0, 0);          // Negro para el encabezado
-    menu.active_color = (1, 0.1, 0.6);      // Rosa intenso para selección
-    menu.inactive_color = (0.1, 0.9, 0.9);  // Cian brillante para elementos no seleccionados
-    menu.title_color = (1, 1, 1);       // Rosa neón para el texto del título
-    menu.bg_color = (0.05, 0.05, 0.05);     // Negro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0, 0, 0);          
+    menu.active_color = (1, 0.1, 0.6);      
+    menu.inactive_color = (0.1, 0.9, 0.9);  
+    menu.title_color = (1, 1, 1);       
+    menu.bg_color = (0.05, 0.05, 0.05);     
+    
+    
     menu.width = 195;
     menu.margin_x = 253;
     menu.margin_y = 180;
     menu.item_height = 22;
     menu.header_height = 29;
     
-    // Opacidad
+    
     menu.bg_alpha = 0.95;
     menu.header_alpha = 1;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 }
 
-// Estilo 42: Holograma (estilo holográfico futurista)
+
 apply_hologram_style(menu)
 {
-    // Colores
-    menu.header_color = (0.1, 0.7, 0.9);    // Azul holográfico para el encabezado
-    menu.active_color = (0.3, 0.8, 1);      // Azul brillante para selección
-    menu.inactive_color = (0.6, 0.8, 0.9);  // Azul claro para elementos no seleccionados
-    menu.title_color = (1, 1, 1);           // Blanco para el texto del título
-    menu.bg_color = (0.1, 0.2, 0.3);        // Azul oscuro para el fondo
     
-    // Dimensiones - centrado en la pantalla
+    menu.header_color = (0.1, 0.7, 0.9);    
+    menu.active_color = (0.3, 0.8, 1);      
+    menu.inactive_color = (0.6, 0.8, 0.9);  
+    menu.title_color = (1, 1, 1);           
+    menu.bg_color = (0.1, 0.2, 0.3);        
+    
+    
     menu.width = 200;
     menu.margin_x = 250;
     menu.margin_y = 180;
     menu.item_height = 20;
     menu.header_height = 25;
     
-    // Opacidad - semitransparente para efecto holográfico
+    
     menu.bg_alpha = 0.6;
     menu.header_alpha = 0.8;
     
-    // Desactivar bordes
+    
     menu.has_border = false;
     
-    // Actualizar elementos visuales si ya existen
+    
     update_menu_visuals(menu);
 } 

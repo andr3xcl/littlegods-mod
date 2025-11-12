@@ -12,7 +12,7 @@ init()
     level endon("game_ended");
     level thread on_player_connect();
     level thread onPlayerSay();
-    level thread monitor_end_game(); // Monitorear fin de partida para resetear Night Mode
+    level thread monitor_end_game(); 
 }
 on_player_connect()
 {
@@ -31,7 +31,7 @@ on_players_spawned()
 {
     self endon( "disconnect" );
     
-    // Thread para resetear al desconectar o finalizar partida
+    
     self thread reset_night_mode_on_end();
     
     first_spawn = true;
@@ -43,7 +43,7 @@ on_players_spawned()
         self.fog = 0;
         self.definido_comandos = 0;
         
-        // Guardar valores por defecto en el primer spawn
+        
         if (first_spawn)
         {
             first_spawn = false;
@@ -53,12 +53,12 @@ on_players_spawned()
     }
 }
 
-// Función para guardar los DVars por defecto (valores estándar del juego)
+
 save_default_dvars()
 {
-    wait 0.5; // Esperar a que el juego cargue completamente
+    wait 0.5; 
     
-    // Establecer valores por defecto estándar del juego
+    
     if (!isDefined(level.default_r_exposureValue))
         level.default_r_exposureValue = 0;
     
@@ -69,22 +69,22 @@ save_default_dvars()
         level.default_r_sky_intensity_factor0 = 1;
 }
 
-// Función para resetear Night Mode al finalizar la partida o desconectar
+
 reset_night_mode_on_end()
 {
-    // Esperar a que termine la partida o el jugador se desconecte
+    
     self waittill_any( "disconnect", "death" );
     
-    // Resetear todos los DVars de Night Mode a valores por defecto
+    
     self reset_all_night_mode_dvars();
 }
 
-// También agregar listener para end_game a nivel de level
+
 monitor_end_game()
 {
     level waittill( "end_game" );
     
-    // Resetear para todos los jugadores
+    
     foreach(player in level.players)
     {
         if (isDefined(player))
@@ -94,15 +94,15 @@ monitor_end_game()
     }
 }
 
-// Función para resetear todos los DVars del Night Mode
+
 reset_all_night_mode_dvars()
 {
-    // Resetear DVars de color y exposición
+    
     self SetClientDvar("r_filmUseTweaks", 0);
     self SetClientDvar("r_bloomTweaks", 0);
     self SetClientDvar("r_exposureTweak", 0);
     
-    // Resetear valores a default (si se guardaron antes)
+    
     if (isDefined(level.default_r_exposureValue))
         self SetClientDvar("r_exposureValue", level.default_r_exposureValue);
     else
@@ -118,7 +118,7 @@ reset_all_night_mode_dvars()
     else
         self SetClientDvar("r_sky_intensity_factor0", 1);
     
-    // Resetear DVars de película/filtros
+    
     self SetClientDvar("r_filmTweakEnable", 0);
     self SetClientDvar("r_filmTweakInvert", 0);
     self SetClientDvar("r_filmTweakBrightness", 0);
@@ -127,7 +127,7 @@ reset_all_night_mode_dvars()
     self SetClientDvar("r_filmTweakLightTint", "1 1 1");
     self SetClientDvar("r_filmTweakDarkTint", "1 1 1");
     
-    // Resetear fog si estaba activado
+    
     if (isDefined(self.fog) && self.fog == 1)
     {
         self SetClientDvar("r_fog", "1");
@@ -137,7 +137,7 @@ reset_all_night_mode_dvars()
         self.fog = 0;
     }
     
-    // Resetear variables del jugador
+    
     self.nightfix = -1;
     self.night_mode_enabled = false;
 }
@@ -228,7 +228,7 @@ set_map_specific_exposure()
         self setclientdvar("r_exposureValue", 5);
     }
 }
-//FILTER ZM
+
 
 enable_dark_mode()
 {
@@ -818,9 +818,9 @@ enable_gray_night_mode()
     set_map_specific_exposure();
 }
 
-// ===== NUEVOS FILTROS NIGHT MODE =====
 
-// Cyberpunk Neon - Tema futurista con neones brillantes
+
+
 enable_cyberpunk_night_mode()
 {
     self endon("disconnect");
@@ -836,7 +836,7 @@ enable_cyberpunk_night_mode()
     self SetClientDvar("r_bloomTweaks", 1);
     self SetClientDvar("r_exposureTweak", 1);
 
-    // Colores cyberpunk - magenta, cyan, neones
+    
     self SetClientDvar("vc_rgbh", "0.8 0.2 1.0 0");
     self SetClientDvar("vc_yl", "0.2 0.8 1.0 0");
     self SetClientDvar("vc_yh", "1.0 0.4 0.8 0");
@@ -855,7 +855,7 @@ enable_cyberpunk_night_mode()
     set_map_specific_exposure();
 }
 
-// Underwater - Tema oceánico con tonos azules profundos
+
 enable_underwater_night_mode()
 {
     self endon("disconnect");
@@ -873,7 +873,7 @@ enable_underwater_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Tonos azules oceánicos
+    
     self SetClientDvar("vc_rgbh", "0.1 0.3 0.8 0");
     self SetClientDvar("vc_yl", "0.1 0.2 0.6 0");
     self SetClientDvar("vc_yh", "0.2 0.4 1.0 0");
@@ -892,7 +892,7 @@ enable_underwater_night_mode()
     self thread visual_fix();
 }
 
-// Desert Storm - Tema desértico con arena y tormenta
+
 enable_desert_storm_night_mode()
 {
     self endon("disconnect");
@@ -910,7 +910,7 @@ enable_desert_storm_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Tonos arena y tormenta - amarillos, naranjas, marrones
+    
     self SetClientDvar("vc_rgbh", "0.8 0.6 0.2 0");
     self SetClientDvar("vc_yl", "0.6 0.4 0.1 0");
     self SetClientDvar("vc_yh", "1.0 0.8 0.3 0");
@@ -929,7 +929,7 @@ enable_desert_storm_night_mode()
     self thread visual_fix();
 }
 
-// Mystic Forest - Tema bosque místico con verdes etéreos
+
 enable_mystic_forest_night_mode()
 {
     self endon("disconnect");
@@ -947,7 +947,7 @@ enable_mystic_forest_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Verdes místicos etéreos
+    
     self SetClientDvar("vc_rgbh", "0.1 0.6 0.2 0");
     self SetClientDvar("vc_yl", "0.1 0.4 0.1 0");
     self SetClientDvar("vc_yh", "0.2 0.8 0.3 0");
@@ -966,7 +966,7 @@ enable_mystic_forest_night_mode()
     self thread visual_fix();
 }
 
-// Volcano Lava - Tema volcánico con rojos intensos
+
 enable_volcano_lava_night_mode()
 {
     self endon("disconnect");
@@ -984,7 +984,7 @@ enable_volcano_lava_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Tonos rojos volcánicos intensos
+    
     self SetClientDvar("vc_rgbh", "1.0 0.2 0.1 0");
     self SetClientDvar("vc_yl", "0.8 0.1 0.1 0");
     self SetClientDvar("vc_yh", "1.0 0.4 0.2 0");
@@ -1003,7 +1003,7 @@ enable_volcano_lava_night_mode()
     self thread visual_fix();
 }
 
-// Crystal Cave - Tema cueva de cristal con azules y purpuras
+
 enable_crystal_cave_night_mode()
 {
     self endon("disconnect");
@@ -1021,7 +1021,7 @@ enable_crystal_cave_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Cristales azules y purpuras brillantes
+    
     self SetClientDvar("vc_rgbh", "0.3 0.5 1.0 0");
     self SetClientDvar("vc_yl", "0.2 0.3 0.8 0");
     self SetClientDvar("vc_yh", "0.4 0.6 1.0 0");
@@ -1040,7 +1040,7 @@ enable_crystal_cave_night_mode()
     self thread visual_fix();
 }
 
-// Haunted House - Tema casa embrujada con verdes fantasmales
+
 enable_haunted_house_night_mode()
 {
     self endon("disconnect");
@@ -1058,7 +1058,7 @@ enable_haunted_house_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Verdes fantasmales y grises
+    
     self SetClientDvar("vc_rgbh", "0.3 0.7 0.3 0");
     self SetClientDvar("vc_yl", "0.2 0.5 0.2 0");
     self SetClientDvar("vc_yh", "0.4 0.8 0.4 0");
@@ -1077,7 +1077,7 @@ enable_haunted_house_night_mode()
     self thread visual_fix();
 }
 
-// Carnival Circus - Tema carnaval con colores vibrantes
+
 enable_carnival_circus_night_mode()
 {
     self endon("disconnect");
@@ -1095,7 +1095,7 @@ enable_carnival_circus_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Colores carnaval - rojo, amarillo, azul vibrantes
+    
     self SetClientDvar("vc_rgbh", "1.0 0.8 0.2 0");
     self SetClientDvar("vc_yl", "0.8 0.2 0.8 0");
     self SetClientDvar("vc_yh", "1.0 1.0 0.4 0");
@@ -1114,7 +1114,7 @@ enable_carnival_circus_night_mode()
     self thread visual_fix();
 }
 
-// Alien Space - Tema alienígena espacial
+
 enable_alien_space_night_mode()
 {
     self endon("disconnect");
@@ -1132,7 +1132,7 @@ enable_alien_space_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Tonos alienígenas - verdes extraños, azules espaciales
+    
     self SetClientDvar("vc_rgbh", "0.2 0.9 0.6 0");
     self SetClientDvar("vc_yl", "0.1 0.7 0.4 0");
     self SetClientDvar("vc_yh", "0.3 1.0 0.8 0");
@@ -1151,7 +1151,7 @@ enable_alien_space_night_mode()
     self thread visual_fix();
 }
 
-// Coral Reef - Tema arrecife de coral con azules turquesa
+
 enable_coral_reef_night_mode()
 {
     self endon("disconnect");
@@ -1169,7 +1169,7 @@ enable_coral_reef_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Azules turquesa de arrecife
+    
     self SetClientDvar("vc_rgbh", "0.1 0.6 0.8 0");
     self SetClientDvar("vc_yl", "0.1 0.4 0.6 0");
     self SetClientDvar("vc_yh", "0.2 0.8 1.0 0");
@@ -1188,7 +1188,7 @@ enable_coral_reef_night_mode()
     self thread visual_fix();
 }
 
-// Northern Lights - Tema aurora boreal con verdes y azules
+
 enable_northern_lights_night_mode()
 {
     self endon("disconnect");
@@ -1206,7 +1206,7 @@ enable_northern_lights_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Auroras boreales - verdes, azules, purpuras
+    
     self SetClientDvar("vc_rgbh", "0.3 0.8 0.9 0");
     self SetClientDvar("vc_yl", "0.1 0.6 0.7 0");
     self SetClientDvar("vc_yh", "0.5 1.0 1.0 0");
@@ -1225,7 +1225,7 @@ enable_northern_lights_night_mode()
     self thread visual_fix();
 }
 
-// Toxic Waste - Tema residuos tóxicos con amarillos verdosos
+
 enable_toxic_waste_night_mode()
 {
     self endon("disconnect");
@@ -1243,7 +1243,7 @@ enable_toxic_waste_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Tóxicos - amarillos verdosos enfermizos
+    
     self SetClientDvar("vc_rgbh", "0.8 0.9 0.2 0");
     self SetClientDvar("vc_yl", "0.6 0.7 0.1 0");
     self SetClientDvar("vc_yh", "1.0 1.0 0.3 0");
@@ -1262,7 +1262,7 @@ enable_toxic_waste_night_mode()
     self thread visual_fix();
 }
 
-// Ancient Temple - Tema templo antiguo con dorados y marrones
+
 enable_ancient_temple_night_mode()
 {
     self endon("disconnect");
@@ -1280,7 +1280,7 @@ enable_ancient_temple_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Templo antiguo - dorados, marrones, ámbar
+    
     self SetClientDvar("vc_rgbh", "0.8 0.5 0.2 0");
     self SetClientDvar("vc_yl", "0.6 0.3 0.1 0");
     self SetClientDvar("vc_yh", "1.0 0.7 0.3 0");
@@ -1299,7 +1299,7 @@ enable_ancient_temple_night_mode()
     self thread visual_fix();
 }
 
-// Futuristic City - Tema ciudad futurista con azules y blancos
+
 enable_futuristic_city_night_mode()
 {
     self endon("disconnect");
@@ -1317,7 +1317,7 @@ enable_futuristic_city_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Ciudad futurista - azules fríos, blancos brillantes
+    
     self SetClientDvar("vc_rgbh", "0.7 0.8 1.0 0");
     self SetClientDvar("vc_yl", "0.5 0.6 0.8 0");
     self SetClientDvar("vc_yh", "0.9 1.0 1.0 0");
@@ -1336,7 +1336,7 @@ enable_futuristic_city_night_mode()
     self thread visual_fix();
 }
 
-// Dream World - Tema mundo de sueños con colores suaves psicodélicos
+
 enable_dream_world_night_mode()
 {
     self endon("disconnect");
@@ -1354,7 +1354,7 @@ enable_dream_world_night_mode()
     self SetClientDvar("vc_fbm", "0 0 0 0");
     self SetClientDvar("vc_fsm", "1 1 1 1");
 
-    // Sueños psicodélicos - mezclas de colores suaves
+    
     self SetClientDvar("vc_rgbh", "0.9 0.4 0.8 0");
     self SetClientDvar("vc_yl", "0.7 0.3 0.6 0");
     self SetClientDvar("vc_yh", "1.0 0.6 1.0 0");
@@ -1372,7 +1372,7 @@ enable_dream_world_night_mode()
     set_map_specific_exposure();
     self thread visual_fix();
 }
-disable_night_mode() //Desabilitar Night mode
+disable_night_mode() 
 {
 	self notify( "disable_nightmode" );
 	self.night = 0;
@@ -1442,15 +1442,15 @@ fog()
 	}
 }
 
-// Función auxiliar para aplicar fog desde el sistema de guardado
+
 toggle_fog_saved()
 {
 	self endon("disconnect");
 	wait 0.3;
 	
-	// Activar la niebla directamente sin toggle
+	
 	self.fog = 1;
-	self.fog_enabled = true; // Sincronizar con el estado del menú
+	self.fog_enabled = true; 
 	self SetClientDvar("r_fog", "0");
 	self SetClientDvar("scr_fog_disable", "1");
 	self SetClientDvar("r_fog_disable", "1");
@@ -1547,13 +1547,13 @@ helpcommand()
     }
     else if(self.definido_comandos == 0)
     {
-        //variable de encendido
+        
         self.definido_comandos = 1;
-        //Crear shader para el hudlemen de comandos
-        hud = create_simple_hud_element();hud.x = 0.1;hud.y = 0.1; hud.fontScale = 1; // Ajustar [eje x & eje y - tamaño del font] 
+        
+        hud = create_simple_hud_element();hud.x = 0.1;hud.y = 0.1; hud.fontScale = 1; 
 
         hud setText("^7Help command\n^3#^4night on ^7<-Active Night mode, default filter ^20\n^3#^4night d or disable ^7<- disable night\n^3#^4filter ^20^7 to ^235 ^7<- active filter\n^3#^4vanight ^7or ^3#^4valuenight ^24.5 ^7or ^210 ^7<-adjust dvar night");
-        wait(10); // Esperar 1 segundo
+        wait(10); 
         hud setText("^3#^4fog ^7<-desactive or active fog\n^3#^4bar top ^7<-Active bar health top\n^3#^4bar left ^7<-Active bar health left\n^3#^4bar off ^7<-desactive bar health");
         wait(10);
         hud destroy();
@@ -1568,7 +1568,7 @@ create_simple_hud_element()
     hudElem.elemtype = "icon";
     hudElem.font = "default";
     hudElem.fontscale = 1;
-    //hudElem.color = (1,1,1);
+    
     hudElem.alpha = 1;
     hudElem.alignx = "left";
     hudElem.aligny = "top";

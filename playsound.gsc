@@ -1,50 +1,50 @@
-// Sistema de sonidos para el menú
-// Gestiona sonidos de apertura, cierre y navegación del menú
+
+
 
 #include maps\mp\_utility;
 #include common_scripts\utility;
 #include maps\mp\gametypes_zm\_hud_util;
 
-// Inicialización del sistema de sonidos
+
 init()
 {
-    // Definir sonidos disponibles para apertura del menú
+    
     level.menu_open_sounds = [];
-    level.menu_open_sounds[0] = "Sin Sonido";                    // No sound
-    level.menu_open_sounds[1] = "fly_rgunmk2_magin";             // Sonido de recarga rápida
-    level.menu_open_sounds[2] = "fly_1911_slide_forward";        // Sonido de corredera adelante
-    level.menu_open_sounds[3] = "fly_1911_mag_in";               // Sonido de cargador entrando
-    level.menu_open_sounds[4] = "fly_assault_reload_npc_mag_in"; // Sonido de recarga assault
+    level.menu_open_sounds[0] = "Sin Sonido";                    
+    level.menu_open_sounds[1] = "fly_rgunmk2_magin";             
+    level.menu_open_sounds[2] = "fly_1911_slide_forward";        
+    level.menu_open_sounds[3] = "fly_1911_mag_in";               
+    level.menu_open_sounds[4] = "fly_assault_reload_npc_mag_in"; 
 
-    // Definir sonidos disponibles para cierre del menú
+    
     level.menu_close_sounds = [];
-    level.menu_close_sounds[0] = "Sin Sonido";                   // No sound
-    level.menu_close_sounds[1] = "fly_rgunmk2_magout";           // Sonido de eyección de cargador
-    level.menu_close_sounds[2] = "fly_1911_slide_back";          // Sonido de corredera atrás
-    level.menu_close_sounds[3] = "fly_1911_mag_out";             // Sonido de cargador saliendo
-    level.menu_close_sounds[4] = "fly_assault_reload_npc_mag_out"; // Sonido de eyección assault
-    level.menu_close_sounds[5] = "fly_beretta93r_slide_back";     // Sonido de corredera beretta atrás
+    level.menu_close_sounds[0] = "Sin Sonido";                   
+    level.menu_close_sounds[1] = "fly_rgunmk2_magout";           
+    level.menu_close_sounds[2] = "fly_1911_slide_back";          
+    level.menu_close_sounds[3] = "fly_1911_mag_out";             
+    level.menu_close_sounds[4] = "fly_assault_reload_npc_mag_out"; 
+    level.menu_close_sounds[5] = "fly_beretta93r_slide_back";     
 
-    // Definir sonidos disponibles para navegación/scroll del menú
+    
     level.menu_scroll_sounds = [];
-    level.menu_scroll_sounds[0] = "Sin Sonido";                   // No sound
-    level.menu_scroll_sounds[1] = "uin_main_nav";                 // Sonido de navegación principal
-    level.menu_scroll_sounds[2] = "fly_1911_slide_back";          // Sonido de corredera de pistola
-    level.menu_scroll_sounds[3] = "fly_1911_mag_in";              // Sonido de cargador entrando
-    level.menu_scroll_sounds[4] = "fly_beretta93r_hammer";         // Sonido de martillo beretta
+    level.menu_scroll_sounds[0] = "Sin Sonido";                   
+    level.menu_scroll_sounds[1] = "uin_main_nav";                 
+    level.menu_scroll_sounds[2] = "fly_1911_slide_back";          
+    level.menu_scroll_sounds[3] = "fly_1911_mag_in";              
+    level.menu_scroll_sounds[4] = "fly_beretta93r_hammer";         
 
-    // Definir sonidos disponibles para selección de opciones del menú
+    
     level.menu_select_sounds = [];
-    level.menu_select_sounds[0] = "Sin Sonido";                   // No sound
+    level.menu_select_sounds[0] = "Sin Sonido";                   
     level.menu_select_sounds[1] = "fly_1911_mag_out";       
-    level.menu_select_sounds[2] = "fly_beretta93r_hammer";        // Sonido de entrada/confirmación
+    level.menu_select_sounds[2] = "fly_beretta93r_hammer";        
 }
 
-// Reproducir sonido de apertura del menú
+
 play_menu_open_sound(player)
 {
     if (!isDefined(player.menu_open_sound_index))
-        player.menu_open_sound_index = 1; // Por defecto fly_rgunmk2_magin
+        player.menu_open_sound_index = 1; 
 
     if (player.menu_open_sound_index > 0)
     {
@@ -56,10 +56,10 @@ play_menu_open_sound(player)
     }
 }
 
-// Reproducir sonido de navegación/scroll del menú
+
 play_menu_scroll_sound(player)
 {
-    // Evitar sonidos demasiado frecuentes (máximo uno cada 0.1 segundos)
+    
     current_time = getTime();
     if (isDefined(player.last_scroll_sound_time) && (current_time - player.last_scroll_sound_time) < 100)
         return;
@@ -67,7 +67,7 @@ play_menu_scroll_sound(player)
     player.last_scroll_sound_time = current_time;
 
     if (!isDefined(player.menu_scroll_sound_index))
-        player.menu_scroll_sound_index = 1; // Por defecto uin_main_nav
+        player.menu_scroll_sound_index = 1; 
 
     if (player.menu_scroll_sound_index > 0)
     {
@@ -79,11 +79,11 @@ play_menu_scroll_sound(player)
     }
 }
 
-// Reproducir sonido de selección de opción del menú
+
 play_menu_select_sound(player)
 {
     if (!isDefined(player.menu_select_sound_index))
-        player.menu_select_sound_index = 1; // Por defecto uin_main_enter
+        player.menu_select_sound_index = 1; 
 
     if (player.menu_select_sound_index > 0)
     {
@@ -95,11 +95,11 @@ play_menu_select_sound(player)
     }
 }
 
-// Reproducir sonido de cierre del menú
+
 play_menu_close_sound(player)
 {
     if (!isDefined(player.menu_close_sound_index))
-        player.menu_close_sound_index = 1; // Por defecto fly_rgunmk2_magout
+        player.menu_close_sound_index = 1; 
 
     if (player.menu_close_sound_index > 0)
     {
@@ -111,22 +111,22 @@ play_menu_close_sound(player)
     }
 }
 
-// ========================================
-// FUNCIONES AUXILIARES
-// ========================================
 
-// Obtener el nombre del sonido de apertura según el índice y el idioma
+
+
+
+
 get_menu_open_sound_name(sound_index, lang_index)
 {
     if (!isDefined(sound_index))
         sound_index = 0;
 
     if (!isDefined(lang_index))
-        lang_index = 0; // Español por defecto
+        lang_index = 0; 
 
     sound_name = level.menu_open_sounds[sound_index];
 
-    if (lang_index == 0) // Español
+    if (lang_index == 0) 
     {
         switch(sound_index)
         {
@@ -138,7 +138,7 @@ get_menu_open_sound_name(sound_index, lang_index)
             default: return sound_name;
         }
     }
-    else // Inglés
+    else 
     {
         switch(sound_index)
         {
@@ -152,18 +152,18 @@ get_menu_open_sound_name(sound_index, lang_index)
     }
 }
 
-// Obtener el nombre del sonido de cierre según el índice y el idioma
+
 get_menu_close_sound_name(sound_index, lang_index)
 {
     if (!isDefined(sound_index))
         sound_index = 0;
 
     if (!isDefined(lang_index))
-        lang_index = 0; // Español por defecto
+        lang_index = 0; 
 
     sound_name = level.menu_close_sounds[sound_index];
 
-    if (lang_index == 0) // Español
+    if (lang_index == 0) 
     {
         switch(sound_index)
         {
@@ -176,7 +176,7 @@ get_menu_close_sound_name(sound_index, lang_index)
             default: return sound_name;
         }
     }
-    else // Inglés
+    else 
     {
         switch(sound_index)
         {
@@ -191,30 +191,30 @@ get_menu_close_sound_name(sound_index, lang_index)
     }
 }
 
-// Cambiar el sonido de apertura del menú
+
 change_menu_open_sound(player, new_sound_index)
 {
     player.menu_open_sound_index = new_sound_index;
 }
 
-// Cambiar el sonido de cierre del menú
+
 change_menu_close_sound(player, new_sound_index)
 {
     player.menu_close_sound_index = new_sound_index;
 }
 
-// Obtener el nombre del sonido de navegación/scroll según el índice y el idioma
+
 get_menu_scroll_sound_name(sound_index, lang_index)
 {
     if (!isDefined(sound_index))
         sound_index = 0;
 
     if (!isDefined(lang_index))
-        lang_index = 0; // Español por defecto
+        lang_index = 0; 
 
     sound_name = level.menu_scroll_sounds[sound_index];
 
-    if (lang_index == 0) // Español
+    if (lang_index == 0) 
     {
         switch(sound_index)
         {
@@ -226,7 +226,7 @@ get_menu_scroll_sound_name(sound_index, lang_index)
             default: return sound_name;
         }
     }
-    else // Inglés
+    else 
     {
         switch(sound_index)
         {
@@ -240,18 +240,18 @@ get_menu_scroll_sound_name(sound_index, lang_index)
     }
 }
 
-// Obtener el nombre del sonido de selección según el índice y el idioma
+
 get_menu_select_sound_name(sound_index, lang_index)
 {
     if (!isDefined(sound_index))
         sound_index = 0;
 
     if (!isDefined(lang_index))
-        lang_index = 0; // Español por defecto
+        lang_index = 0; 
 
     sound_name = level.menu_select_sounds[sound_index];
 
-    if (lang_index == 0) // Español
+    if (lang_index == 0) 
     {
         switch(sound_index)
         {
@@ -260,7 +260,7 @@ get_menu_select_sound_name(sound_index, lang_index)
             default: return sound_name;
         }
     }
-    else // Inglés
+    else 
     {
         switch(sound_index)
         {
@@ -271,13 +271,13 @@ get_menu_select_sound_name(sound_index, lang_index)
     }
 }
 
-// Cambiar el sonido de navegación/scroll del menú
+
 change_menu_scroll_sound(player, new_sound_index)
 {
     player.menu_scroll_sound_index = new_sound_index;
 }
 
-// Cambiar el sonido de selección del menú
+
 change_menu_select_sound(player, new_sound_index)
 {
     player.menu_select_sound_index = new_sound_index;

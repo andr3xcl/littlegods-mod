@@ -2,26 +2,26 @@
 #include common_scripts\utility;
 #include maps\mp\zombies\_zm_utility;
 
-//====================================================================================
-// SISTEMA DE GUARDADO DE ESTADÍSTICAS POR JUGADOR Y MAPA
-//====================================================================================
 
-// Función para guardar una partida reciente
+
+
+
+
 save_recent_match(player, map_name, round_number, kills, headshots, revives, downs, score)
 {
-    // Obtener GUID del jugador
+    
     player_guid = player getGuid();
 
-    // Crear directorio del jugador si no existe
+    
     directory = "scriptdata/recent/" + player_guid + "/";
 
-    // Obtener el número de la siguiente partida reciente
+    
     next_match_number = get_next_recent_match_number(player_guid, map_name);
 
-    // Crear nombre del archivo: mapa_recent_X.txt
+    
     filename = directory + map_name + "_recent_" + next_match_number + ".txt";
 
-    // Actualizar el archivo de índice
+    
     update_match_index(player_guid, map_name, next_match_number);
 
     file = fs_fopen(filename, "write");
@@ -32,14 +32,14 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
         return;
     }
 
-    // Obtener datos del jugador
+    
     player_name = player.name;
     if (!isDefined(player_name) || player_name == "")
         player_name = "Unknown Player";
 
     current_time = getTime();
 
-    // Escribir datos de la partida reciente
+    
     fs_write(file, "================================\n");
     fs_write(file, "PARTIDA RECIENTE #" + next_match_number + "\n");
     fs_write(file, "================================\n");
@@ -60,51 +60,51 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
 
     fs_fclose(file);
 
-    // Mensaje de confirmación
+    
     if (isDefined(player) && isPlayer(player))
     {
         player iPrintlnBold("^2Partida reciente guardada (#" + next_match_number + ")");
     }
 }
 
-// Función para guardar estadísticas del jugador al morir (para compatibilidad)
+
 save_player_round_data(player, map_name, round_number, kills, headshots, revives, downs, score)
 {
-    // Usar la nueva función de partidas recientes
+    
     save_recent_match(player, map_name, round_number, kills, headshots, revives, downs, score);
 }
 
-// Función para obtener el siguiente número de partida reciente
+
 get_next_recent_match_number(player_guid, map_name)
 {
-    // Leer el archivo de índice para este mapa
+    
     index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "_index.txt";
 
     if (!fs_testfile(index_filename))
     {
-        // Si no existe el archivo de índice, es la primera partida
+        
         return 1;
     }
 
-    // Leer el último número usado
+    
     file = fs_fopen(index_filename, "read");
     if (!isDefined(file))
     {
-        return 1; // Si no puede leer, asumir primera partida
+        return 1; 
     }
 
     file_size = fs_length(file);
     content = fs_read(file, file_size);
     fs_fclose(file);
 
-    // El contenido debería ser solo el número
+    
     last_number = int(content);
 
-    // Retornar el siguiente número
+    
     return last_number + 1;
 }
 
-// Función para actualizar el archivo de índice
+
 update_match_index(player_guid, map_name, match_number)
 {
     index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "_index.txt";
@@ -112,27 +112,27 @@ update_match_index(player_guid, map_name, match_number)
     file = fs_fopen(index_filename, "write");
     if (!isDefined(file))
     {
-        // Si no puede crear el archivo de índice, no hay problema
-        // La próxima vez asumirá que es la primera partida
+        
+        
         return;
     }
 
-    // Escribir el número actual
+    
     fs_write(file, "" + match_number);
     fs_fclose(file);
 }
 
-// Función para mostrar las partidas recientes de un jugador
+
 show_recent_matches(player, map_name)
 {
     player_guid = player getGuid();
 
-    // Leer el archivo de índice para saber cuántas partidas hay
+    
     index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "_index.txt";
 
     if (!fs_testfile(index_filename))
     {
-        // No hay partidas para este mapa
+        
         if (isDefined(player.langLEN) && player.langLEN == 0)
             player iPrintlnBold("^3No hay partidas recientes en " + get_map_display_name(map_name));
         else
@@ -140,7 +140,7 @@ show_recent_matches(player, map_name)
         return;
     }
 
-    // Leer el último número
+    
     file = fs_fopen(index_filename, "read");
     if (!isDefined(file))
     {
@@ -157,7 +157,7 @@ show_recent_matches(player, map_name)
 
     last_match_number = int(content);
 
-    // Crear lista de archivos existentes (del último hacia atrás, máximo 5)
+    
     files = [];
     for (i = last_match_number; i > 0 && files.size < 5; i--)
     {
@@ -177,13 +177,13 @@ show_recent_matches(player, map_name)
         return;
     }
 
-    // Mostrar header
+    
     if (isDefined(player.langLEN) && player.langLEN == 0)
         player iPrintlnBold("^6=== PARTIDAS RECIENTES: " + get_map_display_name(map_name) + " (" + files.size + ") ===");
     else
         player iPrintlnBold("^6=== RECENT MATCHES: " + get_map_display_name(map_name) + " (" + files.size + ") ===");
 
-    // Mostrar cada partida (máximo 5 para no spam)
+    
     display_count = min(files.size, 5);
 
     for (i = 0; i < display_count; i++)
@@ -201,7 +201,7 @@ show_recent_matches(player, map_name)
         content = fs_read(file, file_size);
         fs_fclose(file);
 
-        // Extraer información básica
+        
         lines = strTok(content, "\n");
         round_info = "";
         score_info = "";
@@ -223,9 +223,9 @@ show_recent_matches(player, map_name)
             }
         }
 
-        wait 0.2; // Evitar spam
+        wait 0.2; 
 
-        // Extraer el número del nombre del archivo
+        
         parts = strTok(files[i], "_");
         match_num = int(getSubStr(parts[2], 0, parts[2].size - 4));
 
@@ -248,7 +248,7 @@ show_recent_matches(player, map_name)
     }
 }
 
-// Función auxiliar para obtener nombre del mapa
+
 get_map_display_name(map_code)
 {
     switch (map_code)
@@ -263,7 +263,7 @@ get_map_display_name(map_code)
     }
 }
 
-// Función para cargar datos de un jugador (simplificada)
+
 load_player_round_data(player_guid, map_name)
 {
     filename = map_name + "_" + player_guid + ".txt";
@@ -284,7 +284,7 @@ load_player_round_data(player_guid, map_name)
     content = fs_read(file, file_size);
     fs_fclose(file);
     
-    // Crear datos básicos del jugador (solo verificamos si existe el archivo)
+    
     player_data = [];
     player_data["exists"] = true;
     player_data["guid"] = player_guid;
@@ -293,11 +293,11 @@ load_player_round_data(player_guid, map_name)
     return player_data;
 }
 
-// Función para verificar el tipo de resultado de ronda
-// Retorna: 0 = peor que record, 1 = igual que record, 2 = nuevo record, 3 = primer record
+
+
 check_round_result(player, map_name, current_round)
 {
-    // Usar la misma lógica de GUID que save_player_round_data
+    
     player_guid = player getGuid();
 
     if (!isDefined(player_guid) || player_guid == "" || player_guid == "0")
@@ -314,20 +314,20 @@ check_round_result(player, map_name, current_round)
 
     filename = map_name + "_" + player_guid + ".txt";
 
-    // Si no existe el archivo, es el primer record
+    
     if (!fs_testfile(filename))
-        return 3; // Primer record
+        return 3; 
 
-    // Leer el archivo existente para obtener la ronda guardada
+    
     file = fs_fopen(filename, "read");
     if (!isDefined(file))
-        return 3; // Si no puede leer, asumir que es primer record
+        return 3; 
 
     file_size = fs_length(file);
     content = fs_read(file, file_size);
     fs_fclose(file);
     
-    // Buscar la línea con "Ronda Alcanzada:"
+    
     lines = strTok(content, "\n");
     saved_round = 0;
 
@@ -341,23 +341,23 @@ check_round_result(player, map_name, current_round)
         }
     }
 
-    // Determinar el tipo de resultado
+    
     if (current_round > saved_round)
-        return 2; // Nuevo record
+        return 2; 
     else if (current_round == saved_round)
-        return 1; // Igual que record
+        return 1; 
     else
-        return 0; // Peor que record
+        return 0; 
 }
 
-// Función para verificar si el jugador superó su record personal (simplificada) - mantiene compatibilidad
+
 check_personal_record(player, map_name, current_round)
 {
     result = check_round_result(player, map_name, current_round);
-    return (result == 2 || result == 3); // Nuevo record o primer record
+    return (result == 2 || result == 3); 
 }
 
-// Función para listar todos los archivos de estadísticas
+
 list_all_stats_files()
 {
     files = fs_listfiles("*.txt");
@@ -377,7 +377,7 @@ list_all_stats_files()
     }
 }
 
-// Función para mostrar estadísticas de un jugador específico (simplificada)
+
 show_player_stats(player_guid, map_name)
 {
     filename = map_name + "_" + player_guid + ".txt";
@@ -407,9 +407,9 @@ show_player_stats(player_guid, map_name)
     self iPrintlnBold("^3Archivo existe y contiene datos");
 }
 
-//====================================================================================
-// SISTEMA DE BANCO GLOBAL
-//====================================================================================
+
+
+
 
 get_bank_balance(player)
 {
@@ -460,14 +460,14 @@ bank_deposit(player, amount)
             player iPrintlnBold("^1Error al acceder al banco");
         else
             player iPrintlnBold("^1Error accessing bank");
-        // Devolver puntos al jugador
+        
         player.score += amount;
         return;
     }
 
     current_time = getTime();
 
-    // Escribir datos del banco
+    
     fs_write(file, "================================\n");
     fs_write(file, "CUENTA BANCARIA\n");
     fs_write(file, "================================\n");
@@ -491,7 +491,7 @@ bank_deposit(player, amount)
 
 get_bank_balance_with_id(player_id)
 {
-    filename = "bank/" + player_id + ".txt"; // directory path
+    filename = "bank/" + player_id + ".txt"; 
 
 
     if (!fs_testfile(filename))
@@ -516,7 +516,7 @@ get_bank_balance_with_id(player_id)
         line = lines[i];
         if (isSubStr(line, "Balance: "))
         {
-            balance_str = getSubStr(line, 9); // "Balance: " tiene 9 caracteres
+            balance_str = getSubStr(line, 9); 
             return int(balance_str);
         }
     }
@@ -551,10 +551,10 @@ bank_withdraw(player, amount)
         return;
     }
 
-    // Obtener identificador del jugador (GUID directo)
+    
     player_id = player getGuid();
 
-    // Obtener balance actual usando el mismo player_id
+    
     current_balance = get_bank_balance_with_id(player_id);
 
     if (current_balance < amount)
@@ -568,13 +568,13 @@ bank_withdraw(player, amount)
 
     filename = "bank/" + player_id + ".txt";
 
-    // Calcular nuevo balance
+    
     new_balance = current_balance - amount;
 
-    // Agregar puntos al jugador
+    
     player.score += amount;
 
-    // Actualizar archivo
+    
     file = fs_fopen(filename, "write");
 
     if (!isDefined(file))
@@ -583,15 +583,15 @@ bank_withdraw(player, amount)
             player iPrintlnBold("^1Error al acceder al banco");
         else
             player iPrintlnBold("^1Error accessing bank");
-        // Quitar puntos del jugador
+        
         player.score -= amount;
         return;
     }
 
-    // Obtener fecha/hora
+    
     current_time = getTime();
 
-    // Escribir datos actualizados
+    
     fs_write(file, "================================\n");
     fs_write(file, "CUENTA BANCARIA\n");
     fs_write(file, "================================\n");
@@ -615,7 +615,7 @@ bank_withdraw(player, amount)
 
 bank_withdraw_all(player)
 {
-    // Obtener identificador del jugador (GUID directo)
+    
     player_id = player getGuid();
 
     current_balance = get_bank_balance_with_id(player_id);
@@ -632,51 +632,51 @@ bank_withdraw_all(player)
     bank_withdraw(player, current_balance);
 }
 
-//====================================================================================
-// SISTEMA DE GUARDADO DE CONFIGURACIÓN DEL MENÚ
-//====================================================================================
 
-// Función para guardar la configuración del menú del jugador
+
+
+
+
 save_menu_config(player)
 {
     return save_menu_config_selective(player, true, true, true);
 }
 
-// Función para guardar solo la configuración de settings
+
 save_settings_only(player)
 {
     return save_menu_config_selective(player, true, false, false);
 }
 
-// Función para guardar solo la configuración de nightmode
+
 save_nightmode_only(player)
 {
     return save_menu_config_selective(player, false, true, false);
 }
 
-// Función para guardar solo la configuración de map
+
 save_map_only(player)
 {
     return save_menu_config_selective(player, false, false, true);
 }
 
-// Función interna para guardar configuración selectivamente
+
 save_menu_config_selective(player, save_settings, save_nightmode, save_map)
 {
-    // Obtener GUID del jugador
+    
     player_guid = player getGuid();
 
-    // Crear nombre del archivo: scriptdata/menu/guid.txt
+    
     filename = "scriptdata/menu/" + player_guid + ".txt";
 
-    // Leer configuración existente si el archivo existe
+    
     existing_settings = spawnStruct();
     existing_nightmode = spawnStruct();
     existing_map = spawnStruct();
     
     if (fs_testfile(filename))
     {
-        // Leer archivo existente
+        
         file_read = fs_fopen(filename, "read");
         if (isDefined(file_read))
         {
@@ -684,7 +684,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
             content = fs_read(file_read, file_size);
             fs_fclose(file_read);
 
-            // Parsear contenido existente
+            
             lines = strTok(content, "\n");
             foreach (line in lines)
             {
@@ -696,7 +696,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
                         key = parts[0];
                         value = parts[1];
 
-                        // Guardar valores de settings
+                        
                         if (key == "language") existing_settings.language = value;
                         else if (key == "menu_style") existing_settings.menu_style = value;
                         else if (key == "sector_style") existing_settings.sector_style = value;
@@ -704,12 +704,12 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
                         else if (key == "font_position_index") existing_settings.font_position_index = value;
                         else if (key == "font_animation") existing_settings.font_animation = value;
                         else if (key == "transparency_index") existing_settings.transparency_index = value;
-                        // Guardar valores de nightmode
+                        
                         else if (key == "night_mode_enabled") existing_nightmode.night_mode_enabled = value;
                         else if (key == "night_mode_filter") existing_nightmode.night_mode_filter = value;
                         else if (key == "night_mode_darkness") existing_nightmode.night_mode_darkness = value;
                         else if (key == "fog_enabled") existing_nightmode.fog_enabled = value;
-                        // Guardar valores de map
+                        
                         else if (key == "perk_unlimited") existing_map.perk_unlimited = value;
                         else if (key == "third_person") existing_map.third_person = value;
                     }
@@ -718,7 +718,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
         }
     }
 
-    // Abrir archivo para escritura
+    
     file = fs_fopen(filename, "write");
 
     if (!isDefined(file))
@@ -727,15 +727,15 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
         return false;
     }
 
-    // Obtener nombre del jugador
+    
     player_name = player.name;
     if (!isDefined(player_name) || player_name == "")
         player_name = "Unknown Player";
 
-    // Obtener fecha/hora
+    
     current_time = getTime();
 
-    // Escribir cabecera del archivo
+    
     fs_write(file, "================================\n");
     fs_write(file, "CONFIGURACION DEL MENU\n");
     fs_write(file, "================================\n");
@@ -745,7 +745,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     fs_write(file, "\n");
     fs_write(file, "CONFIGURACION GUARDADA:\n");
 
-    // Escribir configuración de settings (usar valores existentes si no se está guardando)
+    
     if (save_settings)
     {
         lang_value = isDefined(player.langLEN) ? player.langLEN : 0;
@@ -758,7 +758,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     }
     else
     {
-        // Usar valores existentes del archivo
+        
         lang_value = isDefined(existing_settings.language) ? int(existing_settings.language) : 0;
         menu_style = isDefined(existing_settings.menu_style) ? int(existing_settings.menu_style) : 0;
         sector_style = isDefined(existing_settings.sector_style) ? int(existing_settings.sector_style) : 0;
@@ -776,14 +776,14 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     fs_write(file, "font_animation=" + font_animation + "\n");
     fs_write(file, "transparency_index=" + transparency_index + "\n");
 
-    // ========================================
-    // LITTLEGODS MOD - NIGHTMODE
-    // ========================================
+    
+    
+    
     fs_write(file, "\n");
-    fs_write(file, "// LITTLEGODS MOD - NIGHTMODE //\n");
+    fs_write(file, "
     fs_write(file, "\n");
 
-    // Escribir configuración de nightmode (usar valores existentes si no se está guardando)
+    
     if (save_nightmode)
     {
         night_mode_enabled = isDefined(player.night_mode_enabled) ? player.night_mode_enabled : false;
@@ -793,7 +793,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     }
     else
     {
-        // Usar valores existentes del archivo
+        
         night_mode_enabled = isDefined(existing_nightmode.night_mode_enabled) ? string_to_bool(existing_nightmode.night_mode_enabled) : false;
         night_mode_filter = isDefined(existing_nightmode.night_mode_filter) ? int(existing_nightmode.night_mode_filter) : 0;
         night_mode_darkness = isDefined(existing_nightmode.night_mode_darkness) ? int(existing_nightmode.night_mode_darkness) : 0;
@@ -805,15 +805,15 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     fs_write(file, "night_mode_darkness=" + night_mode_darkness + "\n");
     fs_write(file, "fog_enabled=" + (fog_enabled ? "1" : "0") + "\n");
 
-    // ========================================
-    // LITTLEGODS MOD - MAP
-    // ========================================
+    
+    
+    
     fs_write(file, "\n");
-    fs_write(file, "// LITTLEGODS MOD - MAP //\n");
+    fs_write(file, "
     fs_write(file, "\n");
 
-    // Escribir configuración de map (usar valores existentes si no se está guardando)
-    // Nota: save_map se pasa como tercer parámetro en la función
+    
+    
     if (isDefined(save_map) && save_map)
     {
         perk_unlimited = isDefined(player.perk_unlimite_active) ? player.perk_unlimite_active : false;
@@ -821,7 +821,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     }
     else
     {
-        // Usar valores existentes del archivo
+        
         perk_unlimited = isDefined(existing_map.perk_unlimited) ? string_to_bool(existing_map.perk_unlimited) : false;
         third_person = isDefined(existing_map.third_person) ? string_to_bool(existing_map.third_person) : false;
     }
@@ -834,7 +834,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
 
     fs_fclose(file);
 
-    // Mensaje de confirmación
+    
     if (isDefined(player) && isPlayer(player))
     {
         player iPrintlnBold("^2Configuración guardada exitosamente");
@@ -843,19 +843,19 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     return true;
 }
 
-// Función para cargar la configuración del menú del jugador
+
 load_menu_config(player)
 {
-    // Obtener GUID del jugador
+    
     player_guid = player getGuid();
 
-    // Crear nombre del archivo: scriptdata/menu/guid.txt
+    
     filename = "scriptdata/menu/" + player_guid + ".txt";
 
-    // Verificar si el archivo existe
+    
     if (!fs_testfile(filename))
     {
-        // No hay configuración guardada, usar valores por defecto
+        
         return false;
     }
 
@@ -863,7 +863,7 @@ load_menu_config(player)
 
     if (!isDefined(file))
     {
-        // Error al leer archivo
+        
         return false;
     }
 
@@ -871,22 +871,22 @@ load_menu_config(player)
     content = fs_read(file, file_size);
     fs_fclose(file);
 
-    // Parsear el contenido del archivo línea por línea
+    
     lines = strTok(content, "\n");
 
     foreach (line in lines)
     {
-        // Solo procesar líneas que contienen "="
+        
         if (isSubStr(line, "="))
         {
-            // Dividir la línea en clave y valor
+            
             parts = strTok(line, "=");
             if (parts.size >= 2)
             {
                 key = parts[0];
                 value = parts[1];
 
-                // Aplicar configuración según la clave
+                
                 switch (key)
                 {
                     case "language":
@@ -895,7 +895,7 @@ load_menu_config(player)
 
                     case "menu_style":
                         player.menu_style_index = int(value);
-                        // Aplicar el estilo del menú si está disponible
+                        
                         if (isDefined(player.apply_menu_style))
                         {
                             player thread [[player.apply_menu_style]](int(value));
@@ -922,9 +922,9 @@ load_menu_config(player)
                         player.transparency_index = int(value);
                         break;
 
-                    // ========================================
-                    // LITTLEGODS MOD - NIGHTMODE
-                    // ========================================
+                    
+                    
+                    
                     case "night_mode_enabled":
                         player.night_mode_enabled = string_to_bool(value);
                         break;
@@ -941,9 +941,9 @@ load_menu_config(player)
                         player.fog_enabled = string_to_bool(value);
                         break;
 
-                    // ========================================
-                    // LITTLEGODS MOD - MAP
-                    // ========================================
+                    
+                    
+                    
                     case "perk_unlimited":
                         player.perk_unlimite_active = string_to_bool(value);
                         break;
@@ -956,48 +956,48 @@ load_menu_config(player)
         }
     }
 
-    // Esperar un poco para que el jugador spawne
+    
     wait 0.5;
 
-    // Aplicar Night Mode si estaba activado
+    
     if (isDefined(player.night_mode_enabled) && player.night_mode_enabled)
     {
-        // Aplicar el filtro guardado
+        
         if (isDefined(player.night_mode_filter))
         {
             player thread scripts\zm\night_mode::night_mode_toggle(player.night_mode_filter);
         }
     }
     
-    // Aplicar la niebla si estaba activada (independiente del Night Mode)
+    
     if (isDefined(player.fog_enabled) && player.fog_enabled)
     {
         wait 0.2;
         player thread scripts\zm\night_mode::toggle_fog_saved();
     }
 
-    // Aplicar configuración de Map
-    // Perk Unlimited - se aplica automáticamente al cargar la variable
+    
+    
     if (isDefined(player.perk_unlimite_active) && player.perk_unlimite_active)
     {
         wait 0.2;
         player thread scripts\zm\funciones::apply_perk_unlimited_saved();
     }
 
-    // Third Person - se aplica automáticamente al cargar la variable
+    
     if (isDefined(player.TPP) && player.TPP)
     {
         wait 0.2;
         player thread scripts\zm\funciones::apply_third_person_saved();
     }
 
-    // Mensaje de confirmación silencioso (solo para debug)
-    // player iPrintlnBold("^3Configuración cargada desde archivo");
+    
+    
 
     return true;
 }
 
-// Función auxiliar para convertir string a bool
+
 string_to_bool(str)
 {
     if (str == "1" || tolower(str) == "true")
@@ -1006,28 +1006,28 @@ string_to_bool(str)
         return false;
 }
 
-// Función para verificar si existe configuración guardada
+
 has_saved_config(player)
 {
-    // Obtener GUID del jugador
+    
     player_guid = player getGuid();
 
     filename = "scriptdata/menu/" + player_guid + ".txt";
     return fs_testfile(filename);
 }
 
-// Función para eliminar configuración guardada (reset a valores por defecto)
+
 delete_menu_config(player)
 {
-    // Obtener GUID del jugador
+    
     player_guid = player getGuid();
 
     filename = "scriptdata/menu/" + player_guid + ".txt";
 
     if (fs_testfile(filename))
     {
-        // En GSC no hay función directa para eliminar archivos
-        // Una solución es sobrescribir con contenido vacío o marcar como eliminado
+        
+        
         file = fs_fopen(filename, "write");
         if (isDefined(file))
         {
