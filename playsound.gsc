@@ -1,6 +1,4 @@
 
-
-
 #include maps\mp\_utility;
 #include common_scripts\utility;
 #include maps\mp\gametypes_zm\_hud_util;

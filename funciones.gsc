@@ -50,12 +50,16 @@ onPlayerSpawned()
     for(;;)
     {
         self waittill("spawned_player");
-        
-        
+
+
         if(!isDefined(self.godmode_enabled))
         {
             self.godmode_enabled = false;
         }
+
+        
+        self thread scripts\zm\menu::monitor_sv_cheats_activation();
+
     }
 }
 
@@ -3032,6 +3036,455 @@ disable_zombies_monitor()
 
         wait 0.1;
     }
+}
+
+
+
+
+
+
+spawn_box_at_player()
+{
+    self endon("disconnect");
+
+    if (!isDefined(level._zombiemode_box_locations) || level._zombiemode_box_locations.size <= 0)
+    {
+        self iPrintlnBold("^1No hay ubicaciones de caja en este mapa.");
+        return;
+    }
+
+    if (!isDefined(level.chests) || level.chests.size <= 0)
+    {
+        self iPrintlnBold("^1No hay caja activa actualmente.");
+        return;
+    }
+
+    chest = level.chests[0];
+
+    
+    closest_index = -1;
+    closest_distance = 999999;
+
+    for (i = 0; i < level._zombiemode_box_locations.size; i++)
+    {
+        loc = level._zombiemode_box_locations[i];
+        if (isDefined(loc) && isDefined(loc.origin))
+        {
+            dist = distance(self.origin, loc.origin);
+            if (dist < closest_distance)
+            {
+                closest_distance = dist;
+                closest_index = i;
+            }
+        }
+    }
+
+    if (closest_index == -1)
+    {
+        self iPrintlnBold("^1No se encontró estructura cercana.");
+        return;
+    }
+
+    
+    level.chest_index = closest_index;
+
+    
+    target = level._zombiemode_box_locations[closest_index];
+
+    
+    if (isDefined(chest.move_to_new_location))
+    {
+        chest thread [[chest.move_to_new_location]]();
+        self iPrintlnBold("^2Moviendo caja misteriosa a estructura cercana...");
+    }
+    else
+    {
+        
+        chest.origin = target.origin;
+        chest.angles = target.angles;
+        self iPrintlnBold("^2Caja movida manualmente a la estructura cercana.");
+    }
+
+    self playLocalSound("uin_positive_feedback");
+}
+
+
+teleport_to_active_box()
+{
+    self endon("disconnect");
+
+    if (isDefined(self.is_teleporting_to_box))
+    {
+        wait 0.1;
+        return;
+    }
+
+    self.is_teleporting_to_box = true;
+
+    
+    closest_box = undefined;
+    closest_distance = 999999;
+
+    if (isDefined(level.chests) && level.chests.size > 0)
+    {
+        foreach(chest in level.chests)
+        {
+            if (isDefined(chest) && isDefined(chest.origin) && isDefined(chest.chest_box))
+            {
+                
+                distance = distance(self.origin, chest.origin);
+                if (distance < closest_distance)
+                {
+                    closest_distance = distance;
+                    closest_box = chest;
+                }
+            }
+        }
+    }
+
+    if (isDefined(closest_box))
+    {
+        
+        box_angles = closest_box.angles;
+        if (!isDefined(box_angles))
+            box_angles = (0, 0, 0);
+
+        backward = AnglesToForward(box_angles) * -1; 
+        teleport_pos = closest_box.origin + backward * 100 + (0, 0, 0);
+
+        
+        trace = bulletTrace(teleport_pos + (0, 0, 50), teleport_pos - (0, 0, 50), false, self);
+        if (trace["fraction"] < 1)
+            teleport_pos = trace["position"] + (0, 0, 10);
+
+        self setOrigin(teleport_pos);
+        self setPlayerAngles(box_angles + (0, 180, 0)); 
+
+        if (self.langLEN == 0)
+            self iPrintlnBold("^2Teletransportado a la Caja Misteriosa activa!");
+        else
+            self iPrintlnBold("^2Teleported to the active Mystery Box!");
+
+        self playLocalSound("uin_positive_feedback");
+    }
+    else
+    {
+        if (self.langLEN == 0)
+            self iPrintlnBold("^1No hay ninguna Caja Misteriosa activa actualmente");
+        else
+            self iPrintlnBold("^1No Mystery Box is currently active");
+
+        self playLocalSound("menu_error");
+    }
+
+    wait 0.5;
+    self.is_teleporting_to_box = undefined;
+}
+
+change_box_price(new_price)
+{
+    self endon("disconnect");
+
+    if (isDefined(self.is_changing_price))
+    {
+        wait 0.1;
+        return;
+    }
+
+    self.is_changing_price = true;
+
+    if (!isDefined(new_price) || new_price < 0)
+        new_price = 950; 
+
+    
+    level.zombie_treasure_chest_cost = new_price;
+
+    if (isDefined(level.chests))
+    {
+        foreach(chest in level.chests)
+        {
+            if (isDefined(chest))
+                chest.zombie_cost = new_price;
+        }
+    }
+
+    if (self.langLEN == 0)
+        self iPrintlnBold("^2Precio de Caja Misteriosa: ^5" + new_price + " puntos");
+    else
+        self iPrintlnBold("^2Mystery Box Price: ^5" + new_price + " points");
+
+    self playLocalSound("uin_positive_feedback");
+
+    wait 0.2;
+    self.is_changing_price = undefined;
+}
+
+increase_box_price()
+{
+    self endon("disconnect");
+
+    if (isDefined(self.is_adjusting_price))
+    {
+        wait 0.1;
+        return;
+    }
+
+    self.is_adjusting_price = true;
+
+    current_price = 950;
+    if (isDefined(level.zombie_treasure_chest_cost))
+        current_price = level.zombie_treasure_chest_cost;
+
+    
+    if (!isDefined(self.box_price_change_amount))
+        self.box_price_change_amount = 50;
+
+    new_price = current_price + self.box_price_change_amount;
+    if (new_price > 10000)
+        new_price = 10000; 
+
+
+    self change_box_price(new_price);
+
+    
+    self thread update_mystery_box_menu_display();
+
+    wait 0.2;
+    self.is_adjusting_price = undefined;
+}
+
+decrease_box_price()
+{
+    self endon("disconnect");
+
+    if (isDefined(self.is_adjusting_price))
+    {
+        wait 0.1;
+        return;
+    }
+
+    self.is_adjusting_price = true;
+
+    current_price = 950;
+    if (isDefined(level.zombie_treasure_chest_cost))
+        current_price = level.zombie_treasure_chest_cost;
+
+    
+    if (!isDefined(self.box_price_change_amount))
+        self.box_price_change_amount = 50;
+
+    new_price = current_price - self.box_price_change_amount;
+    if (new_price < 0)
+        new_price = 0; 
+
+
+    self change_box_price(new_price);
+
+    
+    self thread update_mystery_box_menu_display();
+
+    wait 0.2;
+    self.is_adjusting_price = undefined;
+}
+
+set_box_price_950()
+{
+    self change_box_price(950);
+    self thread update_mystery_box_menu_display();
+}
+
+set_box_price_500()
+{
+    self change_box_price(500);
+    self thread update_mystery_box_menu_display();
+}
+
+set_box_price_0()
+{
+    self change_box_price(0);
+    self thread update_mystery_box_menu_display();
+}
+
+toggle_box_visibility()
+{
+    self endon("disconnect");
+
+    if (isDefined(self.is_toggling_box_visibility))
+    {
+        wait 0.1;
+        return;
+    }
+
+    self.is_toggling_box_visibility = true;
+
+    if (!isDefined(self.box_visible))
+        self.box_visible = true;
+
+    self.box_visible = !self.box_visible;
+
+    if (isDefined(level.chests))
+    {
+        foreach(chest in level.chests)
+        {
+            if (isDefined(chest))
+            {
+                if (isDefined(chest.chest_box))
+                {
+                    if (self.box_visible)
+                        chest.chest_box show();
+                    else
+                        chest.chest_box hide();
+                }
+
+                if (isDefined(chest.chest_lid))
+                {
+                    if (self.box_visible)
+                        chest.chest_lid show();
+                    else
+                        chest.chest_lid hide();
+                }
+            }
+        }
+    }
+
+    status = self.box_visible ? "ON" : "OFF";
+
+    if (self.langLEN == 0)
+        self iPrintlnBold("^2Visibilidad Caja: ^5" + status);
+    else
+        self iPrintlnBold("^2Box Visibility: ^5" + status);
+
+    self playLocalSound("uin_positive_feedback");
+
+    
+    self thread update_mystery_box_menu_display();
+
+    wait 0.2;
+    self.is_toggling_box_visibility = undefined;
+}
+
+move_box_to_location(target_pos, target_angles)
+{
+    if (!isDefined(level.chests) || level.chests.size == 0)
+        return;
+
+    chest = level.chests[0]; 
+
+    if (isDefined(chest))
+    {
+        
+        if (isDefined(chest.chest_box))
+        {
+            chest.chest_box setOrigin(target_pos);
+            chest.chest_box.angles = target_angles;
+        }
+
+        if (isDefined(chest.chest_lid))
+        {
+            chest.chest_lid setOrigin(target_pos + (0, 0, 20));
+            chest.chest_lid.angles = target_angles;
+        }
+
+        
+        chest.origin = target_pos;
+        chest.angles = target_angles;
+
+        
+        if (isDefined(chest.unitrigger_stub))
+        {
+            chest.unitrigger_stub.origin = target_pos + (0, 0, 30);
+            if (isDefined(chest.unitrigger_stub.trigger))
+                chest.unitrigger_stub.trigger.origin = target_pos + (0, 0, 30);
+        }
+
+        
+        if (isDefined(chest.move_to_new_location))
+            chest thread [[chest.move_to_new_location]]();
+    }
+}
+
+update_mystery_box_menu_display()
+{
+    if (isDefined(self.is_updating_mystery_box_display))
+        return;
+
+    self.is_updating_mystery_box_display = true;
+
+    wait 0.1; 
+
+    if (isDefined(self.menu_current))
+    {
+        
+        current_price = 950;
+        if (isDefined(level.zombie_treasure_chest_cost))
+            current_price = level.zombie_treasure_chest_cost;
+
+        
+        if (self.menu_current.items.size > 0)
+        {
+            if (self.langLEN == 0)
+                self.menu_current.items[0].item setText("Precio Actual: " + current_price + " puntos");
+            else
+                self.menu_current.items[0].item setText("Current Price: " + current_price + " points");
+        }
+
+        
+        if (self.menu_current.items.size > 1)
+        {
+            if (!isDefined(self.box_price_change_amount))
+                self.box_price_change_amount = 50;
+
+            if (self.langLEN == 0)
+                self.menu_current.items[1].item setText("Cambiar: " + self.box_price_change_amount + " puntos");
+            else
+                self.menu_current.items[1].item setText("Change: " + self.box_price_change_amount + " points");
+        }
+    }
+
+    self.is_updating_mystery_box_display = undefined;
+}
+
+box_fire_sale()
+{
+    self endon("disconnect");
+
+    if (isDefined(self.is_activating_fire_sale))
+    {
+        wait 0.1;
+        return;
+    }
+
+    self.is_activating_fire_sale = true;
+
+    
+    player_angles = self getPlayerAngles();
+    forward = AnglesToForward(player_angles);
+    spawn_pos = self.origin + forward * 100 + (0, 0, 10);
+
+    
+    powerup = level thread maps\mp\zombies\_zm_powerups::specific_powerup_drop("fire_sale", spawn_pos);
+
+    if (isDefined(powerup))
+    {
+        if (self.langLEN == 0)
+            self iPrintlnBold("^2¡FIRE SALE ACTIVADO enfrente!");
+        else
+            self iPrintlnBold("^2FIRE SALE ACTIVATED in front!");
+
+        self playLocalSound("zmb_fire_sale_activate");
+    }
+    else
+    {
+        if (self.langLEN == 0)
+            self iPrintlnBold("^1Error al spawnear Fire Sale");
+        else
+            self iPrintlnBold("^1Error spawning Fire Sale");
+
+        self playLocalSound("menu_error");
+    }
+
+    wait 1.0;
+    self.is_activating_fire_sale = undefined;
 }
 
 

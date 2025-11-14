@@ -23,10 +23,41 @@ TopRound()
     level.current_game_map = getDvar("ui_zm_mapstartlocation");
 
     
+    foreach (player in level.players)
+    {
+        if (isDefined(player) && isPlayer(player))
+        {
+            scripts\zm\sqllocal::init_weapon_tracking(player);
+            scripts\zm\sqllocal::init_perks_tracking(player);
+        }
+    }
+    
+    
+    level thread monitor_new_players();
+
+    
     level waittill("end_game");
 
     
     process_all_players_stats();
+}
+
+
+monitor_new_players()
+{
+    level endon("end_game");
+    
+    while (true)
+    {
+        level waittill("connected", player);
+        
+        if (isDefined(player) && isPlayer(player))
+        {
+            player waittill("spawned_player");
+            scripts\zm\sqllocal::init_weapon_tracking(player);
+            scripts\zm\sqllocal::init_perks_tracking(player);
+        }
+    }
 }
 
 

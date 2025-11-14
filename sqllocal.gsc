@@ -7,21 +7,41 @@
 
 
 
-save_recent_match(player, map_name, round_number, kills, headshots, revives, downs, score)
+save_recent_match(player, map_name, round_number, kills, headshots, revives, downs, score, most_used_weapon, all_weapons_data, all_perks_data)
 {
-    
+
+    if ((isDefined(player.developer_mode_unlocked) && player.developer_mode_unlocked) ||
+        getDvarInt("sv_cheats") == 1)
+    {
+
+        return;
+    }
+
+
+    if (!isDefined(player) || !isPlayer(player))
+    {
+        return;
+    }
+
+
+    if (isDefined(player.sessionstate) && player.sessionstate == "spectator")
+    {
+        return;
+    }
+
+
     player_guid = player getGuid();
 
-    
+
     directory = "scriptdata/recent/" + player_guid + "/";
 
-    
+
     next_match_number = get_next_recent_match_number(player_guid, map_name);
 
-    
+
     filename = directory + map_name + "_recent_" + next_match_number + ".txt";
 
-    
+
     update_match_index(player_guid, map_name, next_match_number);
 
     file = fs_fopen(filename, "write");
@@ -32,14 +52,17 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
         return;
     }
 
-    
+
     player_name = player.name;
     if (!isDefined(player_name) || player_name == "")
         player_name = "Unknown Player";
 
-    current_time = getTime();
 
     
+    if (!isDefined(most_used_weapon) || most_used_weapon == "")
+        most_used_weapon = "None";
+
+
     fs_write(file, "================================\n");
     fs_write(file, "PARTIDA RECIENTE #" + next_match_number + "\n");
     fs_write(file, "================================\n");
@@ -54,13 +77,67 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
     fs_write(file, "Revives: " + revives + "\n");
     fs_write(file, "Downs: " + downs + "\n");
     fs_write(file, "Score Total: " + score + "\n");
-    fs_write(file, "\n");
-    fs_write(file, "Fecha/Hora: " + current_time + "\n");
+    fs_write(file, "Arma Mas Usada: " + most_used_weapon + "\n");
+
+    
+    if (isDefined(all_weapons_data) && all_weapons_data.size > 0)
+    {
+        fs_write(file, "\nARMAS USADAS EN LA PARTIDA:\n");
+
+        
+        weapons_sorted = [];
+        foreach (weapon_name, kill_count in all_weapons_data)
+        {
+            weapons_sorted[weapons_sorted.size] = weapon_name + ":" + kill_count;
+        }
+
+        for (i = 0; i < weapons_sorted.size - 1; i++)
+        {
+            for (j = i + 1; j < weapons_sorted.size; j++)
+            {
+                weapon_i = strTok(weapons_sorted[i], ":");
+                weapon_j = strTok(weapons_sorted[j], ":");
+
+                kills_i = int(weapon_i[1]);
+                kills_j = int(weapon_j[1]);
+
+                if (kills_j > kills_i)
+                {
+                    temp = weapons_sorted[i];
+                    weapons_sorted[i] = weapons_sorted[j];
+                    weapons_sorted[j] = temp;
+                }
+            }
+        }
+
+        
+        for (i = 0; i < weapons_sorted.size && i < 10; i++) 
+        {
+            weapon_data = strTok(weapons_sorted[i], ":");
+            weapon_name = weapon_data[0];
+            kill_count = weapon_data[1];
+            fs_write(file, weapon_name + ": " + kill_count + " kills\n");
+        }
+    }
+
+    
+    if (isDefined(all_perks_data) && all_perks_data.size > 0)
+    {
+        fs_write(file, "\nPERKS USADOS EN LA PARTIDA:\n");
+
+        
+        foreach (perk_name, obtained_count in all_perks_data)
+        {
+            perk_display_name = get_perk_display_name(perk_name);
+            fs_write(file, perk_display_name + ": " + obtained_count + " uso" + (obtained_count > 1 ? "s" : "") + "\n");
+        }
+    }
+
     fs_write(file, "================================\n");
 
     fs_fclose(file);
 
-    
+
     if (isDefined(player) && isPlayer(player))
     {
         player iPrintlnBold("^2Partida reciente guardada (#" + next_match_number + ")");
@@ -71,7 +148,67 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
 save_player_round_data(player, map_name, round_number, kills, headshots, revives, downs, score)
 {
     
-    save_recent_match(player, map_name, round_number, kills, headshots, revives, downs, score);
+    most_used_weapon = get_most_used_weapon(player);
+    all_weapons_data = get_all_weapons_used(player);
+    all_perks_data = get_all_perks_used(player);
+
+
+    save_recent_match(player, map_name, round_number, kills, headshots, revives, downs, score, most_used_weapon, all_weapons_data, all_perks_data);
+}
+
+
+get_most_used_weapon(player)
+{
+    if (!isDefined(player.weapon_kills) || player.weapon_kills.size == 0)
+        return "None";
+    
+    most_used = "None";
+    max_kills = 0;
+    
+    
+    foreach (weapon_name, kill_count in player.weapon_kills)
+    {
+        if (kill_count > max_kills)
+        {
+            max_kills = kill_count;
+            most_used = weapon_name;
+        }
+    }
+    
+    
+    if (most_used != "None")
+    {
+        most_used = format_weapon_name(most_used);
+    }
+    
+    return most_used + " (" + max_kills + " kills)";
+}
+
+
+get_all_weapons_used(player)
+{
+    if (!isDefined(player.weapon_kills) || player.weapon_kills.size == 0)
+        return undefined;
+
+    
+    weapons_used = [];
+    foreach (weapon_name, kill_count in player.weapon_kills)
+    {
+        if (kill_count > 0)
+        {
+            weapons_used[weapon_name] = kill_count;
+        }
+    }
+
+    return weapons_used;
+}
+
+
+format_weapon_name(weapon_name)
+{
+    
+    
+    return weapon_name;
 }
 
 
@@ -125,6 +262,17 @@ update_match_index(player_guid, map_name, match_number)
 
 show_recent_matches(player, map_name)
 {
+    
+    if ((isDefined(player.developer_mode_unlocked) && player.developer_mode_unlocked) ||
+        getDvarInt("sv_cheats") == 1)
+    {
+        if (isDefined(player.langLEN) && player.langLEN == 0)
+            player iPrintlnBold("^1Las estadísticas están deshabilitadas en Developer Mode o con sv_cheats activado");
+        else
+            player iPrintlnBold("^1Statistics are disabled in Developer Mode or when sv_cheats is enabled");
+        return;
+    }
+
     player_guid = player getGuid();
 
     
@@ -298,6 +446,13 @@ load_player_round_data(player_guid, map_name)
 check_round_result(player, map_name, current_round)
 {
     
+    if ((isDefined(player.developer_mode_unlocked) && player.developer_mode_unlocked) ||
+        getDvarInt("sv_cheats") == 1)
+    {
+        return -1;
+    }
+
+    
     player_guid = player getGuid();
 
     if (!isDefined(player_guid) || player_guid == "" || player_guid == "0")
@@ -360,6 +515,17 @@ check_personal_record(player, map_name, current_round)
 
 list_all_stats_files()
 {
+    
+    if ((isDefined(self.developer_mode_unlocked) && self.developer_mode_unlocked) ||
+        getDvarInt("sv_cheats") == 1)
+    {
+        if (isDefined(self.langLEN) && self.langLEN == 0)
+            self iPrintlnBold("^1Las estadísticas están deshabilitadas en Developer Mode o con sv_cheats activado");
+        else
+            self iPrintlnBold("^1Statistics are disabled in Developer Mode or when sv_cheats is enabled");
+        return;
+    }
+
     files = fs_listfiles("*.txt");
 
     if (!isDefined(files) || files.size == 0)
@@ -380,6 +546,17 @@ list_all_stats_files()
 
 show_player_stats(player_guid, map_name)
 {
+    
+    if ((isDefined(self.developer_mode_unlocked) && self.developer_mode_unlocked) ||
+        getDvarInt("sv_cheats") == 1)
+    {
+        if (isDefined(self.langLEN) && self.langLEN == 0)
+            self iPrintlnBold("^1Las estadísticas están deshabilitadas en Developer Mode o con sv_cheats activado");
+        else
+            self iPrintlnBold("^1Statistics are disabled in Developer Mode or when sv_cheats is enabled");
+        return;
+    }
+
     filename = map_name + "_" + player_guid + ".txt";
 
     if (!fs_testfile(filename))
@@ -704,6 +881,14 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
                         else if (key == "font_position_index") existing_settings.font_position_index = value;
                         else if (key == "font_animation") existing_settings.font_animation = value;
                         else if (key == "transparency_index") existing_settings.transparency_index = value;
+                        else if (key == "menu_select_button_index") existing_settings.menu_select_button_index = value;
+                        else if (key == "menu_down_button_index") existing_settings.menu_down_button_index = value;
+                        else if (key == "menu_up_button_index") existing_settings.menu_up_button_index = value;
+                        else if (key == "menu_cancel_button_index") existing_settings.menu_cancel_button_index = value;
+                        else if (key == "menu_open_sound_index") existing_settings.menu_open_sound_index = value;
+                        else if (key == "menu_close_sound_index") existing_settings.menu_close_sound_index = value;
+                        else if (key == "menu_scroll_sound_index") existing_settings.menu_scroll_sound_index = value;
+                        else if (key == "menu_select_sound_index") existing_settings.menu_select_sound_index = value;
                         
                         else if (key == "night_mode_enabled") existing_nightmode.night_mode_enabled = value;
                         else if (key == "night_mode_filter") existing_nightmode.night_mode_filter = value;
@@ -755,6 +940,14 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
         font_position = isDefined(player.font_position_index) ? player.font_position_index : 0;
         font_animation = isDefined(player.font_animation_index) ? player.font_animation_index : 0;
         transparency_index = isDefined(player.transparency_index) ? player.transparency_index : 0;
+        menu_select_button_index = isDefined(player.menu_select_button_index) ? player.menu_select_button_index : 0;
+        menu_down_button_index = isDefined(player.menu_down_button_index) ? player.menu_down_button_index : 0;
+        menu_up_button_index = isDefined(player.menu_up_button_index) ? player.menu_up_button_index : 0;
+        menu_cancel_button_index = isDefined(player.menu_cancel_button_index) ? player.menu_cancel_button_index : 1;
+        menu_open_sound_index = isDefined(player.menu_open_sound_index) ? player.menu_open_sound_index : 1;
+        menu_close_sound_index = isDefined(player.menu_close_sound_index) ? player.menu_close_sound_index : 1;
+        menu_scroll_sound_index = isDefined(player.menu_scroll_sound_index) ? player.menu_scroll_sound_index : 1;
+        menu_select_sound_index = isDefined(player.menu_select_sound_index) ? player.menu_select_sound_index : 1;
     }
     else
     {
@@ -766,6 +959,14 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
         font_position = isDefined(existing_settings.font_position_index) ? int(existing_settings.font_position_index) : 0;
         font_animation = isDefined(existing_settings.font_animation) ? int(existing_settings.font_animation) : 0;
         transparency_index = isDefined(existing_settings.transparency_index) ? int(existing_settings.transparency_index) : 0;
+        menu_select_button_index = isDefined(existing_settings.menu_select_button_index) ? int(existing_settings.menu_select_button_index) : 0;
+        menu_down_button_index = isDefined(existing_settings.menu_down_button_index) ? int(existing_settings.menu_down_button_index) : 0;
+        menu_up_button_index = isDefined(existing_settings.menu_up_button_index) ? int(existing_settings.menu_up_button_index) : 0;
+        menu_cancel_button_index = isDefined(existing_settings.menu_cancel_button_index) ? int(existing_settings.menu_cancel_button_index) : 1;
+        menu_open_sound_index = isDefined(existing_settings.menu_open_sound_index) ? int(existing_settings.menu_open_sound_index) : 1;
+        menu_close_sound_index = isDefined(existing_settings.menu_close_sound_index) ? int(existing_settings.menu_close_sound_index) : 1;
+        menu_scroll_sound_index = isDefined(existing_settings.menu_scroll_sound_index) ? int(existing_settings.menu_scroll_sound_index) : 1;
+        menu_select_sound_index = isDefined(existing_settings.menu_select_sound_index) ? int(existing_settings.menu_select_sound_index) : 1;
     }
 
     fs_write(file, "language=" + lang_value + "\n");
@@ -775,6 +976,14 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     fs_write(file, "font_position_index=" + font_position + "\n");
     fs_write(file, "font_animation=" + font_animation + "\n");
     fs_write(file, "transparency_index=" + transparency_index + "\n");
+    fs_write(file, "menu_select_button_index=" + menu_select_button_index + "\n");
+    fs_write(file, "menu_down_button_index=" + menu_down_button_index + "\n");
+    fs_write(file, "menu_up_button_index=" + menu_up_button_index + "\n");
+    fs_write(file, "menu_cancel_button_index=" + menu_cancel_button_index + "\n");
+    fs_write(file, "menu_open_sound_index=" + menu_open_sound_index + "\n");
+    fs_write(file, "menu_close_sound_index=" + menu_close_sound_index + "\n");
+    fs_write(file, "menu_scroll_sound_index=" + menu_scroll_sound_index + "\n");
+    fs_write(file, "menu_select_sound_index=" + menu_select_sound_index + "\n");
 
     
     
@@ -922,9 +1131,42 @@ load_menu_config(player)
                         player.transparency_index = int(value);
                         break;
 
-                    
-                    
-                    
+                    case "menu_select_button_index":
+                        player.menu_select_button_index = int(value);
+                        break;
+
+                    case "menu_down_button_index":
+                        player.menu_down_button_index = int(value);
+                        break;
+
+                    case "menu_up_button_index":
+                        player.menu_up_button_index = int(value);
+                        break;
+
+                    case "menu_cancel_button_index":
+                        player.menu_cancel_button_index = int(value);
+                        break;
+
+                    case "menu_open_sound_index":
+                        player.menu_open_sound_index = int(value);
+                        break;
+
+                    case "menu_close_sound_index":
+                        player.menu_close_sound_index = int(value);
+                        break;
+
+                    case "menu_scroll_sound_index":
+                        player.menu_scroll_sound_index = int(value);
+                        break;
+
+                    case "menu_select_sound_index":
+                        player.menu_select_sound_index = int(value);
+                        break;
+
+
+
+
+
                     case "night_mode_enabled":
                         player.night_mode_enabled = string_to_bool(value);
                         break;
@@ -1040,4 +1282,198 @@ delete_menu_config(player)
 
     player iPrintlnBold("^1No se pudo eliminar la configuración");
     return false;
+}
+
+
+
+
+init_weapon_tracking(player)
+{
+    if (!isDefined(player.weapon_kills))
+    {
+        player.weapon_kills = [];
+    }
+    
+    
+    player thread track_weapon_kills_callback();
+}
+
+
+track_weapon_kills_callback()
+{
+    self endon("disconnect");
+    level endon("end_game");
+
+    
+    wait 1;
+
+    
+    self.weapon_tracking_last_kills = 0;
+    if (isDefined(self.pers["kills"]))
+        self.weapon_tracking_last_kills = self.pers["kills"];
+
+    
+    while (true)
+    {
+        wait 0.05; 
+
+        
+        current_kills = 0;
+        if (isDefined(self.pers["kills"]))
+            current_kills = self.pers["kills"];
+
+        
+        if (current_kills > self.weapon_tracking_last_kills)
+        {
+            
+            current_weapon = self getCurrentWeapon();
+
+            
+            if (!isDefined(current_weapon) || current_weapon == "none" || current_weapon == "")
+            {
+                
+                if (isDefined(self.primaryweapon) && self.primaryweapon != "none")
+                    current_weapon = self.primaryweapon;
+                
+                else if (isDefined(self.secondaryweapon) && self.secondaryweapon != "none")
+                    current_weapon = self.secondaryweapon;
+            }
+
+            
+            if (isDefined(current_weapon) && current_weapon != "none" && current_weapon != "")
+            {
+                
+                if (!isDefined(self.weapon_kills[current_weapon]))
+                {
+                    self.weapon_kills[current_weapon] = 0;
+                }
+
+                
+                kills_diff = current_kills - self.weapon_tracking_last_kills;
+                self.weapon_kills[current_weapon] += kills_diff;
+
+            }
+
+            
+            self.weapon_tracking_last_kills = current_kills;
+        }
+    }
+}
+
+
+get_all_perks_used(player)
+{
+    if (!isDefined(player.perks_used) || player.perks_used.size == 0)
+        return undefined;
+
+    
+    perks_used = [];
+    foreach (perk_name, obtained in player.perks_used)
+    {
+        if (obtained > 0)
+        {
+            perks_used[perk_name] = obtained;
+        }
+    }
+
+    return perks_used;
+}
+
+
+init_perks_tracking(player)
+{
+    if (!isDefined(player.perks_used))
+    {
+        player.perks_used = [];
+    }
+
+    
+    perk_names = [];
+    perk_names[0] = "specialty_armorvest";
+    perk_names[1] = "specialty_quickrevive";
+    perk_names[2] = "specialty_fastreload";
+    perk_names[3] = "specialty_rof";
+    perk_names[4] = "specialty_longersprint";
+    perk_names[5] = "specialty_flakjacket";
+    perk_names[6] = "specialty_deadshot";
+    perk_names[7] = "specialty_additionalprimaryweapon";
+    perk_names[8] = "specialty_grenadepulldeath";
+    perk_names[9] = "specialty_finalstand";
+
+    foreach (perk_name in perk_names)
+    {
+        if (!isDefined(player.perks_used[perk_name]))
+        {
+            player.perks_used[perk_name] = 0;
+        }
+    }
+
+    
+    player thread track_perks_usage_callback();
+}
+
+
+get_perk_display_name(perk_name)
+{
+    switch (perk_name)
+    {
+        case "specialty_armorvest": return "Juggernog";
+        case "specialty_quickrevive": return "Quick Revive";
+        case "specialty_fastreload": return "Speed Cola";
+        case "specialty_rof": return "Double Tap";
+        case "specialty_longersprint": return "Stamin-Up";
+        case "specialty_flakjacket": return "PhD Flopper";
+        case "specialty_deadshot": return "Deadshot Daiquiri";
+        case "specialty_additionalprimaryweapon": return "Mule Kick";
+        case "specialty_grenadepulldeath": return "Electric Cherry";
+        case "specialty_finalstand": return "Who's Who";
+        default: return perk_name;
+    }
+}
+
+
+track_perks_usage_callback()
+{
+    self endon("disconnect");
+    level endon("end_game");
+
+    
+    wait 2;
+
+    
+    perk_list = [];
+    perk_list[0] = "specialty_armorvest";
+    perk_list[1] = "specialty_quickrevive";
+    perk_list[2] = "specialty_fastreload";
+    perk_list[3] = "specialty_rof";
+    perk_list[4] = "specialty_longersprint";
+    perk_list[5] = "specialty_flakjacket";
+    perk_list[6] = "specialty_deadshot";
+    perk_list[7] = "specialty_additionalprimaryweapon";
+    perk_list[8] = "specialty_grenadepulldeath";
+    perk_list[9] = "specialty_finalstand";
+
+    
+    while (true)
+    {
+        wait 1; 
+
+        
+        foreach (perk_name in perk_list)
+        {
+            if (self hasPerk(perk_name))
+            {
+                
+                if (!isDefined(self.perks_used[perk_name]) || self.perks_used[perk_name] == 0)
+                {
+                    
+                    if (!isDefined(self.perks_used[perk_name]))
+                    {
+                        self.perks_used[perk_name] = 0;
+                    }
+                    self.perks_used[perk_name] = 1;
+                }
+            }
+        }
+    }
 }
