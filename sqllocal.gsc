@@ -11,7 +11,8 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
 {
 
     if ((isDefined(player.developer_mode_unlocked) && player.developer_mode_unlocked) ||
-        getDvarInt("sv_cheats") == 1)
+        (isDefined(player.partida_alterada_sv_cheats) && player.partida_alterada_sv_cheats) ||
+        (isDefined(level.partida_alterada_global) && level.partida_alterada_global))
     {
 
         return;
@@ -264,7 +265,8 @@ show_recent_matches(player, map_name)
 {
     
     if ((isDefined(player.developer_mode_unlocked) && player.developer_mode_unlocked) ||
-        getDvarInt("sv_cheats") == 1)
+        (isDefined(player.partida_alterada_sv_cheats) && player.partida_alterada_sv_cheats) ||
+        (isDefined(level.partida_alterada_global) && level.partida_alterada_global))
     {
         if (isDefined(player.langLEN) && player.langLEN == 0)
             player iPrintlnBold("^1Las estadísticas están deshabilitadas en Developer Mode o con sv_cheats activado");
@@ -447,7 +449,8 @@ check_round_result(player, map_name, current_round)
 {
     
     if ((isDefined(player.developer_mode_unlocked) && player.developer_mode_unlocked) ||
-        getDvarInt("sv_cheats") == 1)
+        (isDefined(player.partida_alterada_sv_cheats) && player.partida_alterada_sv_cheats) ||
+        (isDefined(level.partida_alterada_global) && level.partida_alterada_global))
     {
         return -1;
     }
@@ -517,7 +520,8 @@ list_all_stats_files()
 {
     
     if ((isDefined(self.developer_mode_unlocked) && self.developer_mode_unlocked) ||
-        getDvarInt("sv_cheats") == 1)
+        (isDefined(self.partida_alterada_sv_cheats) && self.partida_alterada_sv_cheats) ||
+        (isDefined(level.partida_alterada_global) && level.partida_alterada_global))
     {
         if (isDefined(self.langLEN) && self.langLEN == 0)
             self iPrintlnBold("^1Las estadísticas están deshabilitadas en Developer Mode o con sv_cheats activado");
@@ -548,7 +552,8 @@ show_player_stats(player_guid, map_name)
 {
     
     if ((isDefined(self.developer_mode_unlocked) && self.developer_mode_unlocked) ||
-        getDvarInt("sv_cheats") == 1)
+        (isDefined(self.partida_alterada_sv_cheats) && self.partida_alterada_sv_cheats) ||
+        (isDefined(level.partida_alterada_global) && level.partida_alterada_global))
     {
         if (isDefined(self.langLEN) && self.langLEN == 0)
             self iPrintlnBold("^1Las estadísticas están deshabilitadas en Developer Mode o con sv_cheats activado");

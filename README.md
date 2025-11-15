@@ -5,7 +5,7 @@
 
 # LITTLEGODS MOD MENU – [RELEASE]
 
-![Version](https://img.shields.io/badge/VERSION-3.5.0-6E00FF?style=for-the-badge&logo=starship&logoColor=white)
+![Version](https://img.shields.io/badge/VERSION-3.9.0-6E00FF?style=for-the-badge&logo=starship&logoColor=white)
 ![Game](https://img.shields.io/badge/COD_BO2-ZOMBIES-2E0854?style=for-the-badge&logo=activision&logoColor=white)
 ![Script](https://img.shields.io/badge/GSC_SCRIPT-9932CC?style=for-the-badge&logo=codeigniter&logoColor=white)
 ![Platform](https://img.shields.io/badge/PLATFORM-Plutonium-9400D3?style=for-the-badge&logo=atom&logoColor=white)

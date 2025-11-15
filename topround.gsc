@@ -69,10 +69,12 @@ process_all_players_stats()
     {
         if (isDefined(player) && isPlayer(player))
         {
-            
-            if (isDefined(player.developer_mode_unlocked) && player.developer_mode_unlocked)
+
+            // No guardar estadísticas si está en developer mode o la partida está alterada globalmente
+            if ((isDefined(player.developer_mode_unlocked) && player.developer_mode_unlocked) ||
+                (isDefined(level.partida_alterada_global) && level.partida_alterada_global))
             {
-                continue; 
+                continue;
             }
 
             

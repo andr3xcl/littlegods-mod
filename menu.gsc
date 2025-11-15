@@ -493,17 +493,19 @@ menu_listener()
     }
 }
 
-open_main_menu()
+open_main_menu(is_returning)
 {
     self endon("disconnect");
     self endon("destroy_all_menus");
 
     
-    if(!isDefined(self.font_animation_index))
-        self.font_animation_index = 5; 
+    if (!isDefined(is_returning) || !is_returning)
+    {
+        scripts\zm\playsound::play_menu_open_sound(self);
+    }
 
-    
-    scripts\zm\playsound::play_menu_open_sound(self);
+    if(!isDefined(self.font_animation_index))
+        self.font_animation_index = 5;
     
     
     title = (self.langLEN == 0) ? "MENÚ DE MODS" : "MODS MENU";
@@ -978,19 +980,19 @@ menu_go_back()
         switch(parent_type)
         {
             case "main":
-                self thread open_main_menu();
+                self thread open_main_menu(true); 
                 break;
             
             case "settings":
-                self thread open_settings_menu();
+                self thread open_settings_menu(true); 
                 break;
-            
+
             case "developer":
-                self thread open_developer_menu();
+                self thread open_developer_menu(true); 
                 break;
-            
+
             case "player":
-                self thread open_player_menu();
+                self thread open_player_menu(true); 
                 break;
             
             case "zombie":
@@ -1033,7 +1035,7 @@ menu_go_back()
                 break;
 
             default:
-                self thread open_main_menu();
+                self thread open_main_menu(true); 
                 break;
         }
     }
@@ -2024,6 +2026,8 @@ menu_control(menu)
                 self menu_go_back();
 
                 
+                scripts\zm\playsound::play_menu_cancel_sound(self);
+
                 while ((self.menu_cancel_button_index == 0 && self stancebuttonpressed()) ||
                        (self.menu_cancel_button_index == 1 && self meleebuttonpressed()))
                     wait 0.05;
@@ -2098,11 +2102,20 @@ menu_select_item()
         }
     }
 
-    
+
     if (isDefined(item) && isDefined(item.func) && isDefined(item.item) && item.item.alpha != 0 && !is_option_blocked)
     {
         
-        scripts\zm\playsound::play_menu_select_sound(self.user);
+        is_sound_option = (item.func == ::cycle_menu_open_sound ||
+                          item.func == ::cycle_menu_close_sound ||
+                          item.func == ::cycle_menu_scroll_sound ||
+                          item.func == ::cycle_menu_select_sound ||
+                          item.func == ::cycle_menu_cancel_sound);
+
+        if (!is_sound_option)
+        {
+            scripts\zm\playsound::play_menu_select_sound(self.user);
+        }
 
         
         self.user.menu_current = self;
@@ -3329,12 +3342,11 @@ custom_configbar()
 }
 
 
-open_settings_menu()
+open_settings_menu(is_returning)
 {
     self endon("disconnect");
     self endon("destroy_all_menus");
-    
-    
+
     self notify("destroy_current_menu");
     wait 0.1;
     
@@ -3374,6 +3386,9 @@ open_settings_menu()
 
     if(!isDefined(self.menu_select_sound_index))
         self.menu_select_sound_index = 2;
+
+    if(!isDefined(self.menu_cancel_sound_index))
+        self.menu_cancel_sound_index = 1; 
 
     if(!isDefined(self.menu_select_button_index))
         self.menu_select_button_index = 0; 
@@ -3598,11 +3613,11 @@ open_map_menu()
         add_menu_item(menu, "Tercera Persona: " + thirdperson_status, scripts\zm\funciones::ThirdPerson);
 
 
-        if (!self.developer_mode_unlocked && getDvarInt("sv_cheats") != 1)
+        if (!self.developer_mode_unlocked && (!isDefined(level.partida_alterada_global) || !level.partida_alterada_global))
         add_menu_item(menu, "Partidas Recientes", ::open_recent_matches_menu);
 
 
-        if (!self.developer_mode_unlocked && getDvarInt("sv_cheats") != 1)
+        if (!self.developer_mode_unlocked && (!isDefined(level.partida_alterada_global) || !level.partida_alterada_global))
             add_menu_item(menu, "Banco", ::open_bank_menu);
 
 
@@ -3622,11 +3637,11 @@ open_map_menu()
         add_menu_item(menu, "Third Person: " + thirdperson_status, scripts\zm\funciones::ThirdPerson);
 
 
-        if (!self.developer_mode_unlocked && getDvarInt("sv_cheats") != 1)
+        if (!self.developer_mode_unlocked && (!isDefined(level.partida_alterada_global) || !level.partida_alterada_global))
         add_menu_item(menu, "Recent Matches", ::open_recent_matches_menu);
 
 
-        if (!self.developer_mode_unlocked && getDvarInt("sv_cheats") != 1)
+        if (!self.developer_mode_unlocked && (!isDefined(level.partida_alterada_global) || !level.partida_alterada_global))
             add_menu_item(menu, "Bank", ::open_bank_menu);
 
 
@@ -3663,12 +3678,11 @@ open_map_menu()
 
 
 
-open_developer_menu()
+open_developer_menu(is_returning)
 {
     self endon("disconnect");
     self endon("destroy_all_menus");
-    
-    
+
     self notify("destroy_current_menu");
     wait 0.1;
     
@@ -4175,12 +4189,12 @@ open_sound_settings_menu()
         scrollSoundName = scripts\zm\playsound::get_menu_scroll_sound_name(self.menu_scroll_sound_index, self.langLEN);
         add_menu_item(menu, "Navegación: " + scrollSoundName, ::cycle_menu_scroll_sound);
 
-        
+
         selectSoundName = scripts\zm\playsound::get_menu_select_sound_name(self.menu_select_sound_index, self.langLEN);
         add_menu_item(menu, "Selección: " + selectSoundName, ::cycle_menu_select_sound);
 
-        
-        add_menu_item(menu, "Probar Sonidos", ::test_menu_sounds);
+        cancelSoundName = scripts\zm\playsound::get_menu_cancel_sound_name(self.menu_cancel_sound_index, self.langLEN);
+        add_menu_item(menu, "Cancelar: " + cancelSoundName, ::cycle_menu_cancel_sound);
 
         
         add_menu_item(menu, "Volver", ::open_settings_menu);
@@ -4200,12 +4214,12 @@ open_sound_settings_menu()
         scrollSoundName = scripts\zm\playsound::get_menu_scroll_sound_name(self.menu_scroll_sound_index, self.langLEN);
         add_menu_item(menu, "Navigation: " + scrollSoundName, ::cycle_menu_scroll_sound);
 
-        
+
         selectSoundName = scripts\zm\playsound::get_menu_select_sound_name(self.menu_select_sound_index, self.langLEN);
         add_menu_item(menu, "Selection: " + selectSoundName, ::cycle_menu_select_sound);
 
-        
-        add_menu_item(menu, "Test Sounds", ::test_menu_sounds);
+        cancelSoundName = scripts\zm\playsound::get_menu_cancel_sound_name(self.menu_cancel_sound_index, self.langLEN);
+        add_menu_item(menu, "Cancel: " + cancelSoundName, ::cycle_menu_cancel_sound);
 
         
         add_menu_item(menu, "Back", ::open_settings_menu);
@@ -4347,7 +4361,11 @@ cycle_menu_open_sound()
         }
     }
 
+    scripts\zm\playsound::change_menu_open_sound(self, self.menu_open_sound_index);
+
     
+    scripts\zm\playsound::play_menu_open_sound(self);
+
     wait 0.2;
     self.is_cycling_open_sound = undefined;
 }
@@ -4390,7 +4408,11 @@ cycle_menu_close_sound()
         }
     }
 
+    scripts\zm\playsound::change_menu_close_sound(self, self.menu_close_sound_index);
+
     
+    scripts\zm\playsound::play_menu_close_sound(self);
+
     wait 0.2;
     self.is_cycling_close_sound = undefined;
 }
@@ -4410,8 +4432,8 @@ cycle_menu_scroll_sound()
     
     self.menu_scroll_sound_index += 1;
 
-    
-    if (self.menu_scroll_sound_index >= 5)
+
+    if (self.menu_scroll_sound_index >= 7)
         self.menu_scroll_sound_index = 0;
 
     
@@ -4433,7 +4455,11 @@ cycle_menu_scroll_sound()
         }
     }
 
+    scripts\zm\playsound::change_menu_scroll_sound(self, self.menu_scroll_sound_index);
+
     
+    scripts\zm\playsound::play_menu_scroll_sound(self);
+
     wait 0.2;
     self.is_cycling_scroll_sound = undefined;
 }
@@ -4454,8 +4480,8 @@ cycle_menu_select_sound()
     
     self.menu_select_sound_index += 1;
 
-    
-    if (self.menu_select_sound_index >= 3)
+
+    if (self.menu_select_sound_index >= 4)
         self.menu_select_sound_index = 0;
 
     
@@ -4477,9 +4503,58 @@ cycle_menu_select_sound()
         }
     }
 
+    scripts\zm\playsound::change_menu_select_sound(self, self.menu_select_sound_index);
+
     
+    scripts\zm\playsound::play_menu_select_sound(self);
     wait 0.2;
     self.is_cycling_select_sound = undefined;
+}
+
+
+cycle_menu_cancel_sound()
+{
+
+    if (isDefined(self.is_cycling_cancel_sound))
+    {
+        wait 0.1;
+        return;
+    }
+
+    self.is_cycling_cancel_sound = true;
+
+    if (!isDefined(self.menu_cancel_sound_index))
+        self.menu_cancel_sound_index = 1; 
+
+    self.menu_cancel_sound_index += 1;
+
+    if (self.menu_cancel_sound_index >= level.menu_cancel_sounds.size)
+        self.menu_cancel_sound_index = 0;
+
+    cancelSoundName = scripts\zm\playsound::get_menu_cancel_sound_name(self.menu_cancel_sound_index, self.langLEN);
+
+    if (isDefined(self.menu_current))
+    {
+        for (i = 0; i < self.menu_current.items.size; i++)
+        {
+            if (self.menu_current.items[i].func == ::cycle_menu_cancel_sound)
+            {
+                if (self.langLEN == 0)
+                    self.menu_current.items[i].item setText("Cancelar: " + cancelSoundName);
+                else
+                    self.menu_current.items[i].item setText("Cancel: " + cancelSoundName);
+                break;
+            }
+        }
+    }
+
+    scripts\zm\playsound::change_menu_cancel_sound(self, self.menu_cancel_sound_index);
+
+    
+    scripts\zm\playsound::play_menu_cancel_sound(self);
+
+    wait 0.2;
+    self.is_cycling_cancel_sound = undefined;
 }
 
 
@@ -6003,45 +6078,6 @@ cycle_zombie_counter_alpha()
     }
 }
 
-test_menu_sounds()
-{
-    
-    if (isDefined(self.is_testing_sounds))
-    {
-        wait 0.1;
-        return;
-    }
-
-    self.is_testing_sounds = true;
-
-    
-    scripts\zm\playsound::play_menu_open_sound(self);
-
-    
-    wait 1.0;
-
-    
-    if (isDefined(self.user))
-        scripts\zm\playsound::play_menu_scroll_sound(self.user);
-    else
-        scripts\zm\playsound::play_menu_scroll_sound(self);
-
-    
-    wait 1.0;
-
-    
-    scripts\zm\playsound::play_menu_select_sound(self);
-
-    
-    wait 1.0;
-
-    
-    scripts\zm\playsound::play_menu_close_sound(self);
-
-    
-    wait 0.5;
-    self.is_testing_sounds = undefined;
-}
 
 
 
@@ -7973,7 +8009,7 @@ update_bank_menu_display()
 
 
 
-open_player_menu()
+open_player_menu(is_returning)
 {
     self endon("disconnect");
     self endon("destroy_all_menus");
@@ -8053,6 +8089,8 @@ open_player_menu()
 
         
         add_menu_item(menu, "Perks", ::open_perks_menu);
+
+        add_menu_item(menu, "Mods advanced", ::open_advanced_mods_menu);
 
         
         if (map == "tomb")
@@ -9173,9 +9211,9 @@ monitor_sv_cheats_activation()
     level endon("end_game");
 
     
-    
+    if (!isDefined(self.partida_alterada_sv_cheats))
+        self.partida_alterada_sv_cheats = false;
 
-    
     wait 3;
 
     
@@ -9188,52 +9226,75 @@ monitor_sv_cheats_activation()
         current_sv_cheats_state = getDvarInt("sv_cheats");
 
         
-        // Si sv_cheats cambió de 0 a 1 o de 1 a 0
-        if ((last_sv_cheats_state == 0 && current_sv_cheats_state == 1) ||
-            (last_sv_cheats_state == 1 && current_sv_cheats_state == 0))
+        
+        if (last_sv_cheats_state == 0 && current_sv_cheats_state == 1)
         {
             
             
 
+            // Marcar que la partida está alterada para TODOS los jugadores
+            level.partida_alterada_global = true;
+            self.partida_alterada_sv_cheats = true;
+
             
-            // Notificar al jugador sobre el cambio
+            if (!isDefined(self.developer_mode_unlocked) || !self.developer_mode_unlocked)
+            {
+                self.developer_mode_unlocked = true;
+            }
+
+            
             if (isDefined(self.langLEN) && self.langLEN == 0)
             {
-                if (current_sv_cheats_state == 1)
-                {
-                    self iPrintlnBold("^2sv_cheats activado - Developer menu abierto automáticamente");
-                }
-                else
-                {
-                    self iPrintlnBold("^1sv_cheats desactivado - Developer menu abierto automáticamente");
-                }
+                self iPrintlnBold("^2sv_cheats activado - Developer menu abierto automáticamente");
+                self iPrintlnBold("^3¡Partida alterada! Estadísticas y banco deshabilitados");
             }
             else
             {
-                if (current_sv_cheats_state == 1)
-                {
-                    self iPrintlnBold("^2sv_cheats enabled - Developer menu opened automatically");
-                }
-                else
-                {
-                    self iPrintlnBold("^1sv_cheats disabled - Developer menu opened automatically");
-                }
+                self iPrintlnBold("^2sv_cheats enabled - Developer menu opened automatically");
+                self iPrintlnBold("^3Match altered! Statistics and bank disabled");
             }
 
 
-            // Cerrar cualquier menú abierto antes de abrir el developer
+            
             if (isDefined(self.menu_open) && self.menu_open)
             {
                 self notify("destroy_current_menu");
                 wait 0.2;
             }
 
-            // Abrir el menú developer automáticamente
+            
             wait 0.5;
-            self thread open_main_menu();
+            self thread open_main_menu(true); 
+        }
+        
+        else if (last_sv_cheats_state == 1 && current_sv_cheats_state == 0)
+        {
+            
+            self.developer_mode_unlocked = false;
+
+            
+            if (isDefined(self.langLEN) && self.langLEN == 0)
+            {
+                self iPrintlnBold("^1sv_cheats desactivado - Developer mode deshabilitado");
+                self iPrintlnBold("^3¡Partida alterada permanentemente! Estadísticas y banco siguen deshabilitados");
+            }
+            else
+            {
+                self iPrintlnBold("^1sv_cheats disabled - Developer mode disabled");
+                self iPrintlnBold("^3Match permanently altered! Statistics and bank remain disabled");
+            }
+
+            if (isDefined(self.menu_open) && self.menu_open)
+            {
+                self notify("destroy_current_menu");
+                wait 0.2;
+            }
+
+            
+            wait 0.5;
+            self thread open_main_menu(true); 
         }
 
-        
         last_sv_cheats_state = current_sv_cheats_state;
     }
 }

@@ -25,17 +25,26 @@ init()
 
     
     level.menu_scroll_sounds = [];
-    level.menu_scroll_sounds[0] = "Sin Sonido";                   
-    level.menu_scroll_sounds[1] = "uin_main_nav";                 
-    level.menu_scroll_sounds[2] = "fly_1911_slide_back";          
-    level.menu_scroll_sounds[3] = "fly_1911_mag_in";              
-    level.menu_scroll_sounds[4] = "fly_beretta93r_hammer";         
+    level.menu_scroll_sounds[0] = "Sin Sonido";
+    level.menu_scroll_sounds[1] = "uin_main_nav";
+    level.menu_scroll_sounds[2] = "fly_1911_slide_back";
+    level.menu_scroll_sounds[3] = "fly_1911_mag_in";
+    level.menu_scroll_sounds[4] = "fly_beretta93r_hammer";
+    level.menu_scroll_sounds[5] = "cac_grid_nav";
+    level.menu_scroll_sounds[6] = "uin_loadout_nav";         
 
-    
+
     level.menu_select_sounds = [];
-    level.menu_select_sounds[0] = "Sin Sonido";                   
-    level.menu_select_sounds[1] = "fly_1911_mag_out";       
-    level.menu_select_sounds[2] = "fly_beretta93r_hammer";        
+    level.menu_select_sounds[0] = "Sin Sonido";
+    level.menu_select_sounds[1] = "fly_1911_mag_out";
+    level.menu_select_sounds[2] = "fly_beretta93r_hammer";
+    level.menu_select_sounds[3] = "cac_grid_equip_item";
+
+    level.menu_cancel_sounds = [];
+    level.menu_cancel_sounds[0] = "Sin Sonido";
+    level.menu_cancel_sounds[1] = "cac_screen_fade";
+    level.menu_cancel_sounds[2] = "fly_equipment_pickup_plr";
+    level.menu_cancel_sounds[3] = "cac_screen_hpan";
 }
 
 
@@ -212,7 +221,7 @@ get_menu_scroll_sound_name(sound_index, lang_index)
 
     sound_name = level.menu_scroll_sounds[sound_index];
 
-    if (lang_index == 0) 
+    if (lang_index == 0)
     {
         switch(sound_index)
         {
@@ -221,6 +230,8 @@ get_menu_scroll_sound_name(sound_index, lang_index)
             case 2: return "Corredera Pistola";
             case 3: return "Cargador Entrando";
             case 4: return "Martillo Beretta";
+            case 5: return "Grid Nav";
+            case 6: return "Loadout Nav";
             default: return sound_name;
         }
     }
@@ -233,6 +244,8 @@ get_menu_scroll_sound_name(sound_index, lang_index)
             case 2: return "Pistol Slide";
             case 3: return "Mag In";
             case 4: return "Beretta Hammer";
+            case 5: return "Grid Nav";
+            case 6: return "Loadout Nav";
             default: return sound_name;
         }
     }
@@ -249,21 +262,23 @@ get_menu_select_sound_name(sound_index, lang_index)
 
     sound_name = level.menu_select_sounds[sound_index];
 
-    if (lang_index == 0) 
+    if (lang_index == 0)
     {
         switch(sound_index)
         {
             case 0: return "Sin Sonido";
             case 1: return "Confirmación";
+            case 3: return "Equip Item";
             default: return sound_name;
         }
     }
-    else 
+    else
     {
         switch(sound_index)
         {
             case 0: return "No Sound";
             case 1: return "Confirmation";
+            case 3: return "Equip Item";
             default: return sound_name;
         }
     }
@@ -279,4 +294,59 @@ change_menu_scroll_sound(player, new_sound_index)
 change_menu_select_sound(player, new_sound_index)
 {
     player.menu_select_sound_index = new_sound_index;
+}
+
+
+// Funciones para sonidos de cancel
+play_menu_cancel_sound(player)
+{
+    if (!isDefined(player.menu_cancel_sound_index))
+        player.menu_cancel_sound_index = 1; // Default to first sound
+
+    if (player.menu_cancel_sound_index > 0)
+    {
+        sound_alias = level.menu_cancel_sounds[player.menu_cancel_sound_index];
+        if (isDefined(sound_alias) && sound_alias != "Sin Sonido")
+        {
+            player playLocalSound(sound_alias);
+        }
+    }
+}
+
+
+get_menu_cancel_sound_name(index, lang)
+{
+    if (index >= 0 && index < level.menu_cancel_sounds.size)
+    {
+        sound_name = level.menu_cancel_sounds[index];
+        switch(lang)
+        {
+            case 0: // Español
+                switch(index)
+                {
+                    case 0: return "Sin Sonido";
+                    case 1: return "Fade Screen";
+                    case 2: return "Pickup Equipment";
+                    case 3: return "Screen Pan";
+                    default: return sound_name;
+                }
+            case 1: // Inglés
+            default:
+                switch(index)
+                {
+                    case 0: return "No Sound";
+                    case 1: return "Screen Fade";
+                    case 2: return "Equipment Pickup";
+                    case 3: return "Screen Pan";
+                    default: return sound_name;
+                }
+        }
+    }
+    return "Unknown";
+}
+
+
+change_menu_cancel_sound(player, new_sound_index)
+{
+    player.menu_cancel_sound_index = new_sound_index;
 }
