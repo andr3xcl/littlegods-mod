@@ -7,6 +7,200 @@
 
 
 
+replace_string(str, find, replace)
+{
+    result = "";
+    for (i = 0; i < str.size; i++)
+    {
+        char = str[i];
+        if (char == find)
+            result += replace;
+        else
+            result += char;
+    }
+    return result;
+}
+
+bigint_add(a, b)
+{
+    
+    a = "" + a;
+    b = "" + b;
+
+    res = "";
+    carry = 0;
+    
+    i = a.size - 1;
+    j = b.size - 1;
+
+    while (i >= 0 || j >= 0 || carry > 0)
+    {
+        digitA = 0;
+        if (i >= 0)
+        {
+            digitA = int(a[i]);
+            i--;
+        }
+
+        digitB = 0;
+        if (j >= 0)
+        {
+            digitB = int(b[j]);
+            j--;
+        }
+
+        sum = digitA + digitB + carry;
+        carry = int(sum / 10);
+        res = (sum % 10) + res;
+    }
+
+    return res;
+}
+
+bigint_sub(a, b)
+{
+    
+    a = "" + a;
+    b = "" + b;
+
+    res = "";
+    borrow = 0;
+
+    i = a.size - 1;
+    j = b.size - 1;
+
+    while (i >= 0)
+    {
+        digitA = int(a[i]);
+        digitB = 0;
+        
+        if (j >= 0)
+        {
+            digitB = int(b[j]);
+            j--;
+        }
+
+        digitA -= borrow;
+
+        if (digitA < digitB)
+        {
+            digitA += 10;
+            borrow = 1;
+        }
+        else
+        {
+            borrow = 0;
+        }
+
+        res = (digitA - digitB) + res;
+        i--;
+    }
+
+    
+    while (res.size > 1 && res[0] == "0")
+    {
+        res = getSubStr(res, 1);
+    }
+
+    return res;
+}
+
+bigint_compare(a, b)
+{
+    a = "" + a;
+    b = "" + b;
+
+    if (a.size > b.size) return 1;
+    if (a.size < b.size) return -1;
+
+    for (i = 0; i < a.size; i++)
+    {
+        if (int(a[i]) > int(b[i])) return 1;
+        if (int(a[i]) < int(b[i])) return -1;
+    }
+
+    return 0;
+}
+
+replace_line(content, prefix, new_line)
+{
+    lines = strTok(content, "\n");
+    result = "";
+
+    for (i = 0; i < lines.size; i++)
+    {
+        line = lines[i];
+        if (isSubStr(line, prefix))
+        {
+            result += new_line;
+        }
+        else
+        {
+            result += line;
+        }
+
+        if (i < lines.size - 1)
+            result += "\n";
+    }
+
+    return result;
+}
+
+get_player_guid_by_name(player_name)
+{
+    
+    foreach (player in level.players)
+    {
+        if (isDefined(player) && isDefined(player.name) &&
+            toLower(player.name) == toLower(player_name))
+        {
+            return player getGuid();
+        }
+    }
+
+    
+    
+    safe_name = player_name;
+
+    
+    safe_name = replace_string(safe_name, " ", "_");
+    safe_name = replace_string(safe_name, "[", "");
+    safe_name = replace_string(safe_name, "]", "");
+    safe_name = replace_string(safe_name, "{", "");
+    safe_name = replace_string(safe_name, "}", "");
+    safe_name = replace_string(safe_name, "(", "");
+    safe_name = replace_string(safe_name, ")", "");
+    safe_name = replace_string(safe_name, "<", "");
+    safe_name = replace_string(safe_name, ">", "");
+    safe_name = replace_string(safe_name, "|", "");
+    safe_name = replace_string(safe_name, ":", "");
+    safe_name = replace_string(safe_name, "*", "");
+    safe_name = replace_string(safe_name, "?", "");
+    safe_name = replace_string(safe_name, "\"", "");
+    safe_name = replace_string(safe_name, "'", "");
+
+    filename = "guids/" + safe_name + ".txt";
+
+    if (fs_testfile(filename))
+    {
+        file = fs_fopen(filename, "read");
+        if (isDefined(file))
+        {
+            file_size = fs_length(file);
+            guid = fs_read(file, file_size);
+            fs_fclose(file);
+
+            
+            guid = replace_string(guid, "\n", "");
+            guid = replace_string(guid, "\r", "");
+
+            return guid;
+        }
+    }
+
+    return undefined;
+}
+
 save_recent_match(player, map_name, round_number, kills, headshots, revives, downs, score, most_used_weapon, all_weapons_data, all_perks_data)
 {
 
@@ -34,7 +228,7 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
     player_guid = player getGuid();
 
 
-    directory = "scriptdata/recent/" + player_guid + "/";
+    directory = "scriptdata/recent/" + player_guid + "/" + map_name + "/";
 
 
     next_match_number = get_next_recent_match_number(player_guid, map_name);
@@ -71,6 +265,21 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
     fs_write(file, "GUID: " + player_guid + "\n");
     fs_write(file, "Mapa: " + map_name + "\n");
     fs_write(file, "Ronda Alcanzada: " + round_number + "\n");
+
+    time = int(getTime() / 1000);
+    hours = int(time / 3600);
+    minutes = int((time % 3600) / 60);
+    seconds = time % 60;
+    
+    time_str = "";
+    if (hours < 10) time_str += "0";
+    time_str += hours + ":";
+    if (minutes < 10) time_str += "0";
+    time_str += minutes + ":";
+    if (seconds < 10) time_str += "0";
+    time_str += seconds;
+
+    fs_write(file, "Duracion: " + time_str + "\n");
     fs_write(file, "\n");
     fs_write(file, "ESTADISTICAS DE LA PARTIDA:\n");
     fs_write(file, "Kills: " + kills + "\n");
@@ -117,7 +326,28 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
             weapon_data = strTok(weapons_sorted[i], ":");
             weapon_name = weapon_data[0];
             kill_count = weapon_data[1];
-            fs_write(file, weapon_name + ": " + kill_count + " kills\n");
+            
+            display_line = weapon_name + ": " + kill_count + " kills";
+            
+            if (isDefined(player.weapon_last_kill_time) && isDefined(player.weapon_last_kill_time[weapon_name]))
+            {
+                time = int(player.weapon_last_kill_time[weapon_name] / 1000);
+                hours = int(time / 3600);
+                minutes = int((time % 3600) / 60);
+                seconds = time % 60;
+                
+                time_str = "";
+                if (hours < 10) time_str += "0";
+                time_str += hours + ":";
+                if (minutes < 10) time_str += "0";
+                time_str += minutes + ":";
+                if (seconds < 10) time_str += "0";
+                time_str += seconds;
+                
+                display_line += " (Last Kill: " + time_str + ")";
+            }
+            
+            fs_write(file, display_line + "\n");
         }
     }
 
@@ -132,6 +362,17 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
             perk_display_name = get_perk_display_name(perk_name);
             fs_write(file, perk_display_name + ": " + obtained_count + " uso" + (obtained_count > 1 ? "s" : "") + "\n");
         }
+    }
+
+    if (isDefined(player.bank_transaction_history) && player.bank_transaction_history.size > 0)
+    {
+        fs_write(file, "\nTRANSACCIONES BANCARIAS:\n");
+        fs_write(file, "--------------------------------\n");
+        foreach (transaction in player.bank_transaction_history)
+        {
+            fs_write(file, transaction + "\n");
+        }
+        fs_write(file, "--------------------------------\n");
     }
 
     fs_write(file, "================================\n");
@@ -216,7 +457,7 @@ format_weapon_name(weapon_name)
 get_next_recent_match_number(player_guid, map_name)
 {
     
-    index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "_index.txt";
+    index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + map_name + "_index.txt";
 
     if (!fs_testfile(index_filename))
     {
@@ -245,7 +486,7 @@ get_next_recent_match_number(player_guid, map_name)
 
 update_match_index(player_guid, map_name, match_number)
 {
-    index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "_index.txt";
+    index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + map_name + "_index.txt";
 
     file = fs_fopen(index_filename, "write");
     if (!isDefined(file))
@@ -278,7 +519,7 @@ show_recent_matches(player, map_name)
     player_guid = player getGuid();
 
     
-    index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "_index.txt";
+    index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + map_name + "_index.txt";
 
     if (!fs_testfile(index_filename))
     {
@@ -311,7 +552,7 @@ show_recent_matches(player, map_name)
     files = [];
     for (i = last_match_number; i > 0 && files.size < 5; i--)
     {
-        filename = "scriptdata/recent/" + player_guid + "/" + map_name + "_recent_" + i + ".txt";
+        filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + map_name + "_recent_" + i + ".txt";
         if (fs_testfile(filename))
         {
             files[files.size] = map_name + "_recent_" + i + ".txt";
@@ -338,7 +579,7 @@ show_recent_matches(player, map_name)
 
     for (i = 0; i < display_count; i++)
     {
-        filename = "scriptdata/recent/" + player_guid + "/" + files[i];
+        filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + files[i];
 
         if (!fs_testfile(filename))
             continue;
@@ -356,6 +597,7 @@ show_recent_matches(player, map_name)
         round_info = "";
         score_info = "";
         time_info = "";
+        duration_info = "";
 
         foreach (line in lines)
         {
@@ -371,6 +613,10 @@ show_recent_matches(player, map_name)
             {
                 time_info = getSubStr(line, 11);
             }
+            else if (isSubStr(line, "Duracion:"))
+            {
+                duration_info = getSubStr(line, 10);
+            }
         }
 
         wait 0.2; 
@@ -381,11 +627,19 @@ show_recent_matches(player, map_name)
 
         if (isDefined(player.langLEN) && player.langLEN == 0)
         {
-            player iPrintln("^7#" + match_num + " ^2Ronda: ^7" + round_info + " ^3Score: ^7" + score_info);
+            display_str = "^7#" + match_num + " ^2Ronda: ^7" + round_info;
+            if (duration_info != "")
+                display_str += " ^5Tiempo: ^7" + duration_info;
+            display_str += " ^3Score: ^7" + score_info;
+            player iPrintln(display_str);
         }
         else
         {
-            player iPrintln("^7#" + match_num + " ^2Round: ^7" + round_info + " ^3Score: ^7" + score_info);
+            display_str = "^7#" + match_num + " ^2Round: ^7" + round_info;
+            if (duration_info != "")
+                display_str += " ^5Time: ^7" + duration_info;
+            display_str += " ^3Score: ^7" + score_info;
+            player iPrintln(display_str);
         }
     }
 
@@ -590,6 +844,55 @@ show_player_stats(player_guid, map_name)
 }
 
 
+show_recent_match_details(player, map_name, match_number)
+{
+    player_guid = player getGuid();
+    filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + map_name + "_recent_" + match_number + ".txt";
+
+    if (!fs_testfile(filename))
+    {
+        if (isDefined(player.langLEN) && player.langLEN == 0)
+            player iPrintlnBold("^3Partida reciente #" + match_number + " no encontrada");
+        else
+            player iPrintlnBold("^3Recent match #" + match_number + " not found");
+        return;
+    }
+
+    file = fs_fopen(filename, "read");
+
+    if (!isDefined(file))
+    {
+        if (isDefined(player.langLEN) && player.langLEN == 0)
+            player iPrintlnBold("^1Error al leer partida reciente");
+        else
+            player iPrintlnBold("^1Error reading recent match");
+        return;
+    }
+
+    file_size = fs_length(file);
+    content = fs_read(file, file_size);
+    fs_fclose(file);
+
+    
+    if (isDefined(player.langLEN) && player.langLEN == 0)
+        player iPrintlnBold("^6=== DETALLES PARTIDA RECIENTE #" + match_number + " ===");
+    else
+        player iPrintlnBold("^6=== RECENT MATCH DETAILS #" + match_number + " ===");
+
+    
+    lines = strTok(content, "\n");
+
+    foreach (line in lines)
+    {
+        if (line != "")
+        {
+            wait 0.1; 
+            player iPrintln("^7" + line);
+        }
+    }
+}
+
+
 
 
 
@@ -598,6 +901,37 @@ get_bank_balance(player)
     player_id = player getGuid();
 
     return get_bank_balance_with_id(player_id);
+}
+
+
+
+log_bank_transaction(player, type, amount, detail)
+{
+    if (!isDefined(player.bank_transaction_history))
+    {
+        player.bank_transaction_history = [];
+    }
+
+    
+    
+    time = int(getTime() / 1000);
+    
+    
+    hours = int(time / 3600);
+    minutes = int((time % 3600) / 60);
+    seconds = time % 60;
+    
+    time_str = "";
+    if (hours < 10) time_str += "0";
+    time_str += hours + ":";
+    if (minutes < 10) time_str += "0";
+    time_str += minutes + ":";
+    if (seconds < 10) time_str += "0";
+    time_str += seconds;
+
+    log_entry = "[" + time_str + "] " + type + ": " + amount + " - " + detail;
+    
+    player.bank_transaction_history[player.bank_transaction_history.size] = log_entry;
 }
 
 bank_deposit(player, amount)
@@ -628,14 +962,14 @@ bank_deposit(player, amount)
     current_balance = get_bank_balance_with_id(player_id);
 
 
-    new_balance = current_balance + amount;
+    new_balance = bigint_add(current_balance, amount);
 
 
     player.score -= amount;
 
 
     file = fs_fopen(filename, "write");
-
+    
     if (!isDefined(file))
     {
         if (player.langLEN == 0)
@@ -646,7 +980,7 @@ bank_deposit(player, amount)
         player.score += amount;
         return;
     }
-
+    
     current_time = getTime();
 
     
@@ -662,30 +996,31 @@ bank_deposit(player, amount)
     fs_write(file, "Fecha/Hora: " + current_time + "\n");
     fs_write(file, "Balance: " + new_balance + "\n");
     fs_write(file, "================================\n");
-
+    
     fs_fclose(file);
-
+    
     if (player.langLEN == 0)
         player iPrintlnBold("^2Depositaste ^7" + amount + "^2 puntos. Balance: ^7" + new_balance);
     else
         player iPrintlnBold("^2Deposited ^7" + amount + "^2 points. Balance: ^7" + new_balance);
+
+    log_bank_transaction(player, "DEPOSIT", amount, "Balance: " + new_balance);
 }
 
 get_bank_balance_with_id(player_id)
 {
     filename = "bank/" + player_id + ".txt"; 
 
-
     if (!fs_testfile(filename))
     {
-        return 0;
+        return "0"; 
     }
 
     file = fs_fopen(filename, "read");
 
     if (!isDefined(file))
     {
-        return 0;
+        return "0"; 
     }
 
     file_size = fs_length(file);
@@ -699,11 +1034,13 @@ get_bank_balance_with_id(player_id)
         if (isSubStr(line, "Balance: "))
         {
             balance_str = getSubStr(line, 9); 
-            return int(balance_str);
+            
+            
+            return balance_str; 
         }
     }
 
-    return 0;
+    return "0"; 
 }
 
 bank_deposit_all(player)
@@ -734,12 +1071,35 @@ bank_withdraw(player, amount)
     }
 
     
+    score_limit = 1000000;
+    if (player.score >= score_limit)
+    {
+        if (player.langLEN == 0)
+            player iPrintlnBold("^1Ya has llegado al límite de puntos (1,000,000)");
+        else
+            player iPrintlnBold("^1Max points reached (1,000,000)");
+        return;
+    }
+
+    if (player.score + amount > score_limit)
+    {
+        amount = score_limit - player.score;
+        if (player.langLEN == 0)
+            player iPrintlnBold("^3Ajustando retiro para llegar al límite de puntos");
+        else
+            player iPrintlnBold("^3Adjusting withdrawal to reach point limit");
+    }
+
+    
     player_id = player getGuid();
 
     
+    
     current_balance = get_bank_balance_with_id(player_id);
 
-    if (current_balance < amount)
+    
+    
+    if (bigint_compare(current_balance, amount) == -1)
     {
         if (player.langLEN == 0)
             player iPrintlnBold("^1No tienes suficientes puntos en el banco");
@@ -751,7 +1111,7 @@ bank_withdraw(player, amount)
     filename = "bank/" + player_id + ".txt";
 
     
-    new_balance = current_balance - amount;
+    new_balance = bigint_sub(current_balance, amount);
 
     
     player.score += amount;
@@ -769,7 +1129,7 @@ bank_withdraw(player, amount)
         player.score -= amount;
         return;
     }
-
+    
     
     current_time = getTime();
 
@@ -793,16 +1153,19 @@ bank_withdraw(player, amount)
         player iPrintlnBold("^2Retiraste ^7" + amount + "^2 puntos. Balance restante: ^7" + new_balance);
     else
         player iPrintlnBold("^2Withdrew ^7" + amount + "^2 points. Remaining balance: ^7" + new_balance);
+
+    log_bank_transaction(player, "WITHDRAW", amount, "Balance: " + new_balance);
 }
 
 bank_withdraw_all(player)
 {
     
+    
     player_id = player getGuid();
 
     current_balance = get_bank_balance_with_id(player_id);
 
-    if (current_balance <= 0)
+    if (current_balance == "0")
     {
         if (player.langLEN == 0)
             player iPrintlnBold("^1No tienes puntos en el banco");
@@ -811,8 +1174,202 @@ bank_withdraw_all(player)
         return;
     }
 
-    bank_withdraw(player, current_balance);
+    amount_to_withdraw = 0;
+    limit = 1000000;
+
+    
+    if (bigint_compare(current_balance, limit) == 1)
+    {
+        amount_to_withdraw = limit;
+    }
+    else
+    {
+        amount_to_withdraw = int(current_balance);
+    }
+
+    bank_withdraw(player, amount_to_withdraw);
 }
+
+
+bank_pay_player(payer, receiver_name, amount)
+{
+    if (!isDefined(amount) || amount <= 0)
+    {
+        if (payer.langLEN == 0)
+            payer iPrintlnBold("^1Cantidad inválida");
+        else
+            payer iPrintlnBold("^1Invalid amount");
+        return;
+    }
+
+    if (payer.score < amount)
+    {
+        if (payer.langLEN == 0)
+            payer iPrintlnBold("^1No tienes suficientes puntos");
+        else
+            payer iPrintlnBold("^1Not enough points");
+        return;
+    }
+
+    
+    receiver = undefined;
+    foreach (player in level.players)
+    {
+        if (isDefined(player) && isDefined(player.name) &&
+            toLower(player.name) == toLower(receiver_name))
+        {
+            receiver = player;
+            break;
+        }
+    }
+
+    if (!isDefined(receiver))
+    {
+        if (payer.langLEN == 0)
+            payer iPrintlnBold("^1Jugador '" + receiver_name + "' no encontrado");
+        else
+            payer iPrintlnBold("^1Player '" + receiver_name + "' not found");
+        return;
+    }
+
+    if (receiver == payer)
+    {
+        if (payer.langLEN == 0)
+            payer iPrintlnBold("^1No puedes pagarte a ti mismo");
+        else
+            payer iPrintlnBold("^1You can't pay yourself");
+        return;
+    }
+
+    
+    payer.score -= amount;
+    receiver.score += amount;
+
+    
+    if (payer.langLEN == 0)
+    {
+        payer iPrintlnBold("^2Pagaste ^7" + amount + "^2 puntos a ^7" + receiver.name);
+        receiver iPrintlnBold("^3Recibiste ^7" + amount + "^3 puntos de ^7" + payer.name);
+    }
+    else
+    {
+        payer iPrintlnBold("^2Paid ^7" + amount + "^2 points to ^7" + receiver.name);
+        receiver iPrintlnBold("^3Received ^7" + amount + "^3 points from ^7" + payer.name);
+    }
+
+    log_bank_transaction(payer, "TRANSFER_SENT", amount, "To: " + receiver.name);
+    log_bank_transaction(receiver, "TRANSFER_RECEIVED", amount, "From: " + payer.name);
+}
+
+
+bank_pay_to_guid(payer, target_guid, amount)
+{
+    if (!isDefined(amount) || amount <= 0)
+    {
+        if (payer.langLEN == 0)
+            payer iPrintlnBold("^1Cantidad inválida");
+        else
+            payer iPrintlnBold("^1Invalid amount");
+        return;
+    }
+
+    if (payer.score < amount)
+    {
+        if (payer.langLEN == 0)
+            payer iPrintlnBold("^1No tienes suficientes puntos");
+        else
+            payer iPrintlnBold("^1Not enough points");
+        return;
+    }
+
+    
+    payer_guid_str = "" + payer getGuid();
+    target_guid_str = "" + target_guid;
+    if (target_guid_str == payer_guid_str)
+    {
+        if (payer.langLEN == 0)
+            payer iPrintlnBold("^1No puedes depositar a tu propio banco");
+        else
+            payer iPrintlnBold("^1You can't deposit to your own bank");
+        return;
+    }
+
+    
+    filename = "bank/" + target_guid + ".txt";
+    if (!fs_testfile(filename))
+    {
+        if (payer.langLEN == 0)
+            payer iPrintlnBold("^1El banco del jugador no existe");
+        else
+            payer iPrintlnBold("^1Player's bank doesn't exist");
+        return;
+    }
+
+    
+    existing_file = fs_fopen(filename, "read");
+    if (!isDefined(existing_file))
+    {
+        if (payer.langLEN == 0)
+            payer iPrintlnBold("^1Error al acceder al banco del jugador");
+        else
+            payer iPrintlnBold("^1Error accessing player's bank");
+        return;
+    }
+
+    file_size = fs_length(existing_file);
+    content = fs_read(existing_file, file_size);
+    fs_fclose(existing_file);
+
+    
+    player_name = "Jugador " + target_guid; 
+    lines = strTok(content, "\n");
+    for (i = 0; i < lines.size; i++)
+    {
+        line = lines[i];
+        if (isSubStr(line, "Jugador: "))
+        {
+            player_name = getSubStr(line, 9); 
+            break;
+        }
+    }
+
+    
+    current_balance = get_bank_balance_with_id(target_guid);
+    new_balance = bigint_add(current_balance, amount);
+
+    
+    updated_content = replace_line(content, "Balance:", "Balance: " + new_balance);
+
+    
+    file = fs_fopen(filename, "write");
+    if (isDefined(file))
+    {
+        fs_write(file, updated_content);
+        fs_fclose(file);
+    }
+    else
+    {
+        if (payer.langLEN == 0)
+            payer iPrintlnBold("^1Error al guardar en el banco del jugador");
+        else
+            payer iPrintlnBold("^1Error saving to player's bank");
+        return;
+    }
+
+    
+    payer.score -= amount;
+
+    
+    if (payer.langLEN == 0)
+        payer iPrintlnBold("^2Depositaste ^7" + amount + "^2 puntos al banco de ^7" + player_name);
+    else
+        payer iPrintlnBold("^2Deposited ^7" + amount + "^2 points to ^7" + player_name + "'s bank");
+
+    log_bank_transaction(payer, "TRANSFER_SENT_GUID", amount, "To GUID: " + target_guid);
+}
+
+
+
 
 
 
@@ -894,6 +1451,14 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
                         else if (key == "menu_close_sound_index") existing_settings.menu_close_sound_index = value;
                         else if (key == "menu_scroll_sound_index") existing_settings.menu_scroll_sound_index = value;
                         else if (key == "menu_select_sound_index") existing_settings.menu_select_sound_index = value;
+                        else if (key == "custom_menu_width") existing_settings.custom_menu_width = value;
+                        else if (key == "custom_menu_margin_x") existing_settings.custom_menu_margin_x = value;
+                        else if (key == "custom_menu_margin_y") existing_settings.custom_menu_margin_y = value;
+                        else if (key == "custom_menu_item_height") existing_settings.custom_menu_item_height = value;
+                        else if (key == "custom_menu_header_height") existing_settings.custom_menu_header_height = value;
+                        else if (key == "background_shader_index") existing_settings.background_shader_index = value;
+                        else if (key == "header_shader_index") existing_settings.header_shader_index = value;
+                        else if (key == "selection_shader_index") existing_settings.selection_shader_index = value;
                         
                         else if (key == "night_mode_enabled") existing_nightmode.night_mode_enabled = value;
                         else if (key == "night_mode_filter") existing_nightmode.night_mode_filter = value;
@@ -953,6 +1518,14 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
         menu_close_sound_index = isDefined(player.menu_close_sound_index) ? player.menu_close_sound_index : 1;
         menu_scroll_sound_index = isDefined(player.menu_scroll_sound_index) ? player.menu_scroll_sound_index : 1;
         menu_select_sound_index = isDefined(player.menu_select_sound_index) ? player.menu_select_sound_index : 1;
+        custom_menu_width = isDefined(player.custom_menu_width) ? player.custom_menu_width : 175;
+        custom_menu_margin_x = isDefined(player.custom_menu_margin_x) ? player.custom_menu_margin_x : 0;
+        custom_menu_margin_y = isDefined(player.custom_menu_margin_y) ? player.custom_menu_margin_y : 40;
+        custom_menu_item_height = isDefined(player.custom_menu_item_height) ? player.custom_menu_item_height : 18;
+        custom_menu_header_height = isDefined(player.custom_menu_header_height) ? player.custom_menu_header_height : 36;
+        background_shader_index = isDefined(player.background_shader_index) ? player.background_shader_index : -1;
+        header_shader_index = isDefined(player.header_shader_index) ? player.header_shader_index : -1;
+        selection_shader_index = isDefined(player.selection_shader_index) ? player.selection_shader_index : -1;
     }
     else
     {
@@ -972,6 +1545,14 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
         menu_close_sound_index = isDefined(existing_settings.menu_close_sound_index) ? int(existing_settings.menu_close_sound_index) : 1;
         menu_scroll_sound_index = isDefined(existing_settings.menu_scroll_sound_index) ? int(existing_settings.menu_scroll_sound_index) : 1;
         menu_select_sound_index = isDefined(existing_settings.menu_select_sound_index) ? int(existing_settings.menu_select_sound_index) : 1;
+        custom_menu_width = isDefined(existing_settings.custom_menu_width) ? int(existing_settings.custom_menu_width) : 175;
+        custom_menu_margin_x = isDefined(existing_settings.custom_menu_margin_x) ? int(existing_settings.custom_menu_margin_x) : 0;
+        custom_menu_margin_y = isDefined(existing_settings.custom_menu_margin_y) ? int(existing_settings.custom_menu_margin_y) : 40;
+        custom_menu_item_height = isDefined(existing_settings.custom_menu_item_height) ? int(existing_settings.custom_menu_item_height) : 18;
+        custom_menu_header_height = isDefined(existing_settings.custom_menu_header_height) ? int(existing_settings.custom_menu_header_height) : 36;
+        background_shader_index = isDefined(existing_settings.background_shader_index) ? int(existing_settings.background_shader_index) : -1;
+        header_shader_index = isDefined(existing_settings.header_shader_index) ? int(existing_settings.header_shader_index) : -1;
+        selection_shader_index = isDefined(existing_settings.selection_shader_index) ? int(existing_settings.selection_shader_index) : -1;
     }
 
     fs_write(file, "language=" + lang_value + "\n");
@@ -989,6 +1570,14 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     fs_write(file, "menu_close_sound_index=" + menu_close_sound_index + "\n");
     fs_write(file, "menu_scroll_sound_index=" + menu_scroll_sound_index + "\n");
     fs_write(file, "menu_select_sound_index=" + menu_select_sound_index + "\n");
+    fs_write(file, "custom_menu_width=" + custom_menu_width + "\n");
+    fs_write(file, "custom_menu_margin_x=" + custom_menu_margin_x + "\n");
+    fs_write(file, "custom_menu_margin_y=" + custom_menu_margin_y + "\n");
+    fs_write(file, "custom_menu_item_height=" + custom_menu_item_height + "\n");
+    fs_write(file, "custom_menu_header_height=" + custom_menu_header_height + "\n");
+    fs_write(file, "background_shader_index=" + background_shader_index + "\n");
+    fs_write(file, "header_shader_index=" + header_shader_index + "\n");
+    fs_write(file, "selection_shader_index=" + selection_shader_index + "\n");
 
     
     
@@ -1168,6 +1757,38 @@ load_menu_config(player)
                         player.menu_select_sound_index = int(value);
                         break;
 
+                    case "custom_menu_width":
+                        player.custom_menu_width = int(value);
+                        break;
+
+                    case "custom_menu_margin_x":
+                        player.custom_menu_margin_x = int(value);
+                        break;
+
+                    case "custom_menu_margin_y":
+                        player.custom_menu_margin_y = int(value);
+                        break;
+
+                    case "custom_menu_item_height":
+                        player.custom_menu_item_height = int(value);
+                        break;
+
+                    case "custom_menu_header_height":
+                        player.custom_menu_header_height = int(value);
+                        break;
+
+                    case "background_shader_index":
+                        player.background_shader_index = int(value);
+                        break;
+
+                    case "header_shader_index":
+                        player.header_shader_index = int(value);
+                        break;
+
+                    case "selection_shader_index":
+                        player.selection_shader_index = int(value);
+                        break;
+
 
 
 
@@ -1299,6 +1920,11 @@ init_weapon_tracking(player)
         player.weapon_kills = [];
     }
     
+    if (!isDefined(player.weapon_last_kill_time))
+    {
+        player.weapon_last_kill_time = [];
+    }
+    
     
     player thread track_weapon_kills_callback();
 }
@@ -1356,6 +1982,9 @@ track_weapon_kills_callback()
                 
                 kills_diff = current_kills - self.weapon_tracking_last_kills;
                 self.weapon_kills[current_weapon] += kills_diff;
+                
+                
+                self.weapon_last_kill_time[current_weapon] = getTime();
 
             }
 

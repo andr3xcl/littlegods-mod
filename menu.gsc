@@ -25,6 +25,7 @@
 #include scripts\zm\style_edge_animation;
 #include scripts\zm\style_font_position;
 #include scripts\zm\style_font_animation;
+#include scripts\zm\style_shaders_menu;
 #include scripts\zm\funciones;
 #include scripts\zm\weapon;
 #include scripts\zm\sqllocal;
@@ -394,6 +395,10 @@ onPlayerSpawned()
             
             self.selector_style_index = 14; 
             self.edge_animation_style_index = 0; 
+            
+            if (!isDefined(self.menu_glow_enabled))
+                self.menu_glow_enabled = false;
+
 
            
             
@@ -1162,11 +1167,21 @@ create_menu(title, player)
         menu.title_text.alignX = "center"; 
     }
 
-    menu.title_text.y = menu.y_offset + 3; 
-    menu.title_text.fontscale = 1.5; 
-    menu.title_text.alpha = 1; 
-    menu.title_text.color = (1, 1, 1); 
-    menu.title_text.sort = 2; 
+    menu.title_text.y = menu.y_offset + 3;
+    menu.title_text.fontscale = 1.5;
+
+    
+    hide_title = scripts\zm\style_shaders_menu::should_hide_title_for_logo_shader(player);
+    menu.title_text.alpha = hide_title ? 0 : 1;
+    menu.title_text.color = (1, 1, 1);
+    menu.title_text.sort = 2;
+    
+    if (isDefined(player.menu_glow_enabled) && player.menu_glow_enabled)
+    {
+        menu.title_text.glowAlpha = 1;
+        menu.title_text.glowColor = (1, 1, 1);
+    }
+    
     menu.title_text setText(title);
 
     
@@ -1226,14 +1241,16 @@ create_menu(title, player)
 
     if (isDefined(menu.title_text))
     {
-        menu.title_text.alpha = 1; 
-        menu.title_text.sort = 2; 
+        
+        hide_title = scripts\zm\style_shaders_menu::should_hide_title_for_logo_shader(menu.user);
+        menu.title_text.alpha = hide_title ? 0 : 1;
+        menu.title_text.sort = 2;
     }
 
     if (isDefined(menu.title_shadow))
     {
-        menu.title_shadow.alpha = 0.4; 
-        menu.title_shadow.sort = 0; 
+        menu.title_shadow.alpha = hide_title ? 0 : 0.4;
+        menu.title_shadow.sort = 0;
     }
 
     
@@ -1290,6 +1307,12 @@ add_menu_item(menu, text, func, is_menu_flag)
     
     item.item.fontscale = 1.2;
     item.item.alpha = 1;
+
+    if (isDefined(menu.user.menu_glow_enabled) && menu.user.menu_glow_enabled)
+    {
+        item.item.glowAlpha = 1;
+        item.item.glowColor = (1, 1, 1);
+    }
     
     
     if (menu.items.size == 0)
@@ -1313,6 +1336,11 @@ show_menu(menu)
     total_height = menu.header_height + (menu.item_height * menu.items.size);
     menu.background setShader("white", menu.width, total_height);
     
+    
+    if (isDefined(menu.user))
+    {
+        menu = scripts\zm\style_shaders_menu::apply_menu_shaders(menu);
+    }
     
     
     if (!isDefined(menu.selected) || menu.selected < 0 || menu.selected >= menu.items.size || menu.items[menu.selected].item.alpha == 0)
@@ -1366,6 +1394,13 @@ show_menu(menu)
     }
     
     menu.selection_bar setShader("white", menu.width, menu.item_height);
+    
+    
+    if (isDefined(menu.user) && isDefined(menu.user.selection_shader_index) && menu.user.selection_shader_index >= 0)
+    {
+        shader_name = scripts\zm\style_shaders_menu::get_selector_shader_by_index(menu.user.selection_shader_index);
+        menu.selection_bar setShader(shader_name, menu.width, menu.item_height);
+    }
     
     
     is_option_blocked = false;
@@ -1600,6 +1635,13 @@ menu_scroll_up()
     self.selection_bar.y = self.background.y + self.header_height + (self.item_height * self.selected);
 
     
+    if (isDefined(self.user) && isDefined(self.user.selection_shader_index) && self.user.selection_shader_index >= 0)
+    {
+        shader_name = scripts\zm\style_shaders_menu::get_selector_shader_by_index(self.user.selection_shader_index);
+        self.selection_bar setShader(shader_name, self.width, self.item_height);
+    }
+
+    
     if (isDefined(self.selector_style_index) && self.selector_style_index > 0)
     {
         scripts\zm\style_selector::update_selector_position(self);
@@ -1755,6 +1797,13 @@ menu_scroll_down()
 
     
     self.selection_bar.y = self.background.y + self.header_height + (self.item_height * self.selected);
+
+    
+    if (isDefined(self.user) && isDefined(self.user.selection_shader_index) && self.user.selection_shader_index >= 0)
+    {
+        shader_name = scripts\zm\style_shaders_menu::get_selector_shader_by_index(self.user.selection_shader_index);
+        self.selection_bar setShader(shader_name, self.width, self.item_height);
+    }
 
     
     if (isDefined(self.selector_style_index) && self.selector_style_index > 0)
@@ -2332,6 +2381,24 @@ toggle_healthbar()
         }
         return;
     }
+
+    
+    if (!self.healthbar_enabled && scripts\zm\style_shaders_menu::has_active_shaders(self))
+    {
+        if (self.langLEN == 0)
+        {
+            self iPrintlnBold("^1No se puede activar la barra de vida");
+            self iPrintlnBold("^1Desactiva los shaders del menú primero");
+            self playsound("menu_error");
+        }
+        else
+        {
+            self iPrintlnBold("^1Cannot enable health bar");
+            self iPrintlnBold("^1Disable menu shaders first");
+            self playsound("menu_error");
+        }
+        return;
+    }
     
     
     if (!self.healthbar_enabled && self.healthbarzombie_enabled)
@@ -2612,6 +2679,24 @@ toggle_healthbarzombie()
         {
             self iPrintlnBold("^1Cannot enable zombie bar");
             self iPrintlnBold("^1Disable menu borders first");
+            self playsound("menu_error");
+        }
+        return;
+    }
+
+    
+    if (!self.healthbarzombie_enabled && scripts\zm\style_shaders_menu::has_active_shaders(self))
+    {
+        if (self.langLEN == 0)
+        {
+            self iPrintlnBold("^1No se puede activar la barra zombie");
+            self iPrintlnBold("^1Desactiva los shaders del menú primero");
+            self playsound("menu_error");
+        }
+        else
+        {
+            self iPrintlnBold("^1Cannot enable zombie bar");
+            self iPrintlnBold("^1Disable menu shaders first");
             self playsound("menu_error");
         }
         return;
@@ -3150,14 +3235,16 @@ update_settings_menu_texts()
         if (isDefined(self.menu_current.items[1]))
         {
             styleName = get_style_name(self.menu_style_index, self.langLEN);
-            self.menu_current.items[1].item setText("Estilo Menú: " + styleName);
+            count_str = " (" + (self.menu_style_index + 1) + "/" + level.menu_styles.size + ")";
+            self.menu_current.items[1].item setText("Estilo Menú: " + styleName + count_str);
         }
 
         
         if (isDefined(self.menu_current.items[2]))
         {
             selectorStyleName = scripts\zm\style_selector::get_selector_style_name(self.selector_style_index, self.langLEN);
-            self.menu_current.items[2].item setText("Estilo Selector: " + selectorStyleName);
+            count_str = " (" + (self.selector_style_index + 1) + "/" + level.selector_styles.size + ")";
+            self.menu_current.items[2].item setText("Estilo Selector: " + selectorStyleName + count_str);
         }
 
         
@@ -3191,26 +3278,39 @@ update_settings_menu_texts()
         
         if (isDefined(self.menu_current.items[7]))
         {
-            self.menu_current.items[7].item setText("Controles del Menú");
+            glow_status = self.menu_glow_enabled ? "ON" : "OFF";
+            self.menu_current.items[7].item setText("Brillo Menú: " + glow_status);
         }
 
-        
         if (isDefined(self.menu_current.items[8]))
         {
-            self.menu_current.items[8].item setText("Sonidos");
+            self.menu_current.items[8].item setText("Dimensiones del Menú");
         }
 
-        
         if (isDefined(self.menu_current.items[9]))
         {
-            self.menu_current.items[9].item setText("Guardar Configuración");
+            self.menu_current.items[9].item setText("Shaders del Menú");
         }
 
-        
         if (isDefined(self.menu_current.items[10]))
-            self.menu_current.items[10].item setText("Volver");
+        {
+            self.menu_current.items[10].item setText("Controles del Menú");
+        }
+
         if (isDefined(self.menu_current.items[11]))
-            self.menu_current.items[11].item setText("Cerrar Menú");
+        {
+            self.menu_current.items[11].item setText("Sonidos");
+        }
+
+        if (isDefined(self.menu_current.items[12]))
+        {
+            self.menu_current.items[12].item setText("Guardar Configuración");
+        }
+
+        if (isDefined(self.menu_current.items[13]))
+            self.menu_current.items[13].item setText("Volver");
+        if (isDefined(self.menu_current.items[14]))
+            self.menu_current.items[14].item setText("Cerrar Menú");
     }
     else 
     {
@@ -3225,14 +3325,16 @@ update_settings_menu_texts()
         if (isDefined(self.menu_current.items[1]))
         {
             styleName = get_style_name(self.menu_style_index, self.langLEN);
-            self.menu_current.items[1].item setText("Menu Style: " + styleName);
+            count_str = " (" + (self.menu_style_index + 1) + "/" + level.menu_styles.size + ")";
+            self.menu_current.items[1].item setText("Menu Style: " + styleName + count_str);
         }
 
         
         if (isDefined(self.menu_current.items[2]))
         {
             selectorStyleName = scripts\zm\style_selector::get_selector_style_name(self.selector_style_index, self.langLEN);
-            self.menu_current.items[2].item setText("Selector Style: " + selectorStyleName);
+            count_str = " (" + (self.selector_style_index + 1) + "/" + level.selector_styles.size + ")";
+            self.menu_current.items[2].item setText("Selector Style: " + selectorStyleName + count_str);
         }
 
         
@@ -3266,26 +3368,39 @@ update_settings_menu_texts()
         
         if (isDefined(self.menu_current.items[7]))
         {
-            self.menu_current.items[7].item setText("Menu Controls");
+            glow_status = self.menu_glow_enabled ? "ON" : "OFF";
+            self.menu_current.items[7].item setText("Menu Glow: " + glow_status);
         }
 
-        
         if (isDefined(self.menu_current.items[8]))
         {
-            self.menu_current.items[8].item setText("Sound");
+            self.menu_current.items[8].item setText("Menu Dimensions");
         }
 
-        
         if (isDefined(self.menu_current.items[9]))
         {
-            self.menu_current.items[9].item setText("Save Configuration");
+            self.menu_current.items[9].item setText("Menu Shaders");
         }
 
-        
         if (isDefined(self.menu_current.items[10]))
-            self.menu_current.items[10].item setText("Back");
+        {
+            self.menu_current.items[10].item setText("Menu Controls");
+        }
+
         if (isDefined(self.menu_current.items[11]))
-            self.menu_current.items[11].item setText("Close Menu");
+        {
+            self.menu_current.items[11].item setText("Sound");
+        }
+
+        if (isDefined(self.menu_current.items[12]))
+        {
+            self.menu_current.items[12].item setText("Save Configuration");
+        }
+
+        if (isDefined(self.menu_current.items[13]))
+            self.menu_current.items[13].item setText("Back");
+        if (isDefined(self.menu_current.items[14]))
+            self.menu_current.items[14].item setText("Close Menu");
     }
 }
 
@@ -3434,6 +3549,12 @@ open_settings_menu(is_returning)
         transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
         add_menu_item(menu, transparencyName, ::cycle_transparency);
 
+        glow_status = self.menu_glow_enabled ? "ON" : "OFF";
+        add_menu_item(menu, "Brillo Menú: " + glow_status, ::toggle_menu_glow);
+
+        add_menu_item(menu, "Dimensiones del Menú", ::open_menu_dimensions_settings);
+
+        add_menu_item(menu, "Shaders del Menú", ::open_menu_shaders_settings);
 
         add_menu_item(menu, "Controles del Menú", ::open_menu_controls_settings);
 
@@ -3478,6 +3599,12 @@ open_settings_menu(is_returning)
         transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
         add_menu_item(menu, transparencyName, ::cycle_transparency);
 
+        glow_status = self.menu_glow_enabled ? "ON" : "OFF";
+        add_menu_item(menu, "Menu Glow: " + glow_status, ::toggle_menu_glow);
+
+        add_menu_item(menu, "Menu Dimensions", ::open_menu_dimensions_settings);
+
+        add_menu_item(menu, "Menu Shaders", ::open_menu_shaders_settings);
 
         add_menu_item(menu, "Menu Controls", ::open_menu_controls_settings);
 
@@ -3834,6 +3961,18 @@ cycle_transparency()
     self.is_cycling_transparency = undefined;
 }
 
+toggle_menu_glow()
+{
+    self.menu_glow_enabled = !self.menu_glow_enabled;
+    
+    if (self.langLEN == 0)
+        self iPrintln("^2Brillo del Menú: " + (self.menu_glow_enabled ? "ACTIVADO" : "DESACTIVADO"));
+    else
+        self iPrintln("^2Menu Glow: " + (self.menu_glow_enabled ? "ENABLED" : "DISABLED"));
+        
+    self thread open_settings_menu();
+}
+
 
 save_menu_configuration()
 {
@@ -3996,11 +4135,37 @@ cycle_menu_style()
         self.menu_current = apply_menu_style(self.menu_current, self.menu_style_index);
         
         
+        self.menu_current = scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+        
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+        
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+        
         if (isDefined(self.selector_style_index))
         {
             self.menu_current = scripts\zm\style_selector::apply_selector_style(self.menu_current, self.selector_style_index);
             scripts\zm\style_selector::update_selector_visuals(self.menu_current);
             scripts\zm\style_selector::update_selector_position(self.menu_current);
+        }
+        
+        
+        if (isDefined(self.menu_current.items))
+        {
+            for (i = 0; i < self.menu_current.items.size; i++)
+            {
+                if (isDefined(self.menu_current.items[i].item))
+                {
+                    if (i == self.menu_current.selected)
+                        self.menu_current.items[i].item.color = (1, 1, 1);
+                    else
+                        self.menu_current.items[i].item.color = self.menu_current.inactive_color;
+                }
+            }
         }
         
         
@@ -4036,10 +4201,11 @@ cycle_menu_style()
         {
             if (self.menu_current.items[i].func == ::cycle_menu_style)
             {
+                count_str = " (" + (self.menu_style_index + 1) + "/" + level.menu_styles.size + ")";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Estilo Menú: " + styleName);
+                    self.menu_current.items[i].item setText("Estilo Menú: " + styleName + count_str);
                 else
-                    self.menu_current.items[i].item setText("Menu Style: " + styleName);
+                    self.menu_current.items[i].item setText("Menu Style: " + styleName + count_str);
                 break;
             }
         }
@@ -4097,10 +4263,11 @@ cycle_selector_style()
         {
             if (self.menu_current.items[i].func == ::cycle_selector_style)
             {
+                count_str = " (" + (self.selector_style_index + 1) + "/" + level.selector_styles.size + ")";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Estilo Selector: " + selectorStyleName);
+                    self.menu_current.items[i].item setText("Estilo Selector: " + selectorStyleName + count_str);
                 else
-                    self.menu_current.items[i].item setText("Selector Style: " + selectorStyleName);
+                    self.menu_current.items[i].item setText("Selector Style: " + selectorStyleName + count_str);
                 break;
             }
         }
@@ -4901,13 +5068,13 @@ toggle_player_health_display()
     healthbarzombie_active = self.healthbarzombie_enabled;
     legacy_mods_active = are_legacy_mods_active();
 
-    if (!level.player_health_display.enabled && (borders_active || healthbar_active || healthbarzombie_active))
+    if (!level.player_health_display.enabled && (borders_active || healthbar_active || healthbarzombie_active || scripts\zm\style_shaders_menu::has_active_shaders(self)))
     {
         
         if (self.langLEN == 0)
-            self iPrintLnBold("^1No se puede activar mientras las barras de vida o bordes están activos");
+            self iPrintLnBold("^1No se puede activar mientras las barras de vida, bordes o shaders están activos");
         else
-            self iPrintLnBold("^1Cannot activate while health bars or borders are active");
+            self iPrintLnBold("^1Cannot activate while health bars, borders or shaders are active");
         return;
     }
 
@@ -4951,13 +5118,13 @@ toggle_zombie_health_display()
     healthbar_active = self.healthbar_enabled;
     healthbarzombie_active = self.healthbarzombie_enabled;
 
-    if (!level.zombie_health_display.enabled && (borders_active || healthbar_active || healthbarzombie_active))
+    if (!level.zombie_health_display.enabled && (borders_active || healthbar_active || healthbarzombie_active || scripts\zm\style_shaders_menu::has_active_shaders(self)))
     {
         
         if (self.langLEN == 0)
-            self iPrintLnBold("^1No se puede activar mientras las barras de vida o bordes están activos");
+            self iPrintLnBold("^1No se puede activar mientras las barras de vida, bordes o shaders están activos");
         else
-            self iPrintLnBold("^1Cannot activate while health bars or borders are active");
+            self iPrintLnBold("^1Cannot activate while health bars, borders or shaders are active");
         return;
     }
 
@@ -4994,13 +5161,13 @@ toggle_zombie_counter_display()
     healthbar_active = self.healthbar_enabled;
     healthbarzombie_active = self.healthbarzombie_enabled;
 
-    if (!level.zombie_counter_display.enabled && (borders_active || healthbar_active || healthbarzombie_active))
+    if (!level.zombie_counter_display.enabled && (borders_active || healthbar_active || healthbarzombie_active || scripts\zm\style_shaders_menu::has_active_shaders(self)))
     {
-        
+
         if (self.langLEN == 0)
-            self iPrintLnBold("^1No se puede activar mientras las barras de vida o bordes están activos");
+            self iPrintLnBold("^1No se puede activar mientras las barras de vida, bordes o shaders están activos");
         else
-            self iPrintLnBold("^1Cannot activate while health bars or borders are active");
+            self iPrintLnBold("^1Cannot activate while health bars, borders or shaders are active");
         return;
     }
 
@@ -6133,6 +6300,16 @@ cycle_edge_animation_style()
     self.is_cycling_edge_animation = true;
 
     
+    if (scripts\zm\style_shaders_menu::has_active_shaders(self))
+    {
+        if (self.langLEN == 0)
+            self iPrintlnBold("^1No se puede activar animación de borde mientras hay shaders activos");
+        else
+            self iPrintlnBold("^1Cannot activate edge animation while shaders are active");
+        self.is_cycling_edge_animation = undefined;
+        return;
+    }
+    
     legacy_mods_active = are_legacy_mods_active();
     
     
@@ -7057,7 +7234,7 @@ open_recent_matches_menu()
             }
 
             
-            match_filename = "scriptdata/recent/" + player_guid + "/" + recent_files[display_index];
+            match_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + recent_files[display_index];
             if (fs_testfile(match_filename))
             {
                 file = fs_fopen(match_filename, "read");
@@ -7102,6 +7279,7 @@ open_recent_matches_menu()
                     add_menu_item(menu, "Estadísticas", ::open_recent_stats_menu);
                     add_menu_item(menu, "Uso de Armas", ::open_weapon_usage_menu);
                     add_menu_item(menu, "Perks Usados", ::open_perks_usage_menu);
+                    add_menu_item(menu, "Transacciones Bancarias", ::open_bank_transactions_menu);
                     }
                 }
 
@@ -7150,7 +7328,7 @@ open_recent_matches_menu()
             }
 
             
-            match_filename = "scriptdata/recent/" + player_guid + "/" + recent_files[display_index];
+            match_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + recent_files[display_index];
             if (fs_testfile(match_filename))
             {
                 file = fs_fopen(match_filename, "read");
@@ -7195,6 +7373,7 @@ open_recent_matches_menu()
                     add_menu_item(menu, "Statistics", ::open_recent_stats_menu);
                     add_menu_item(menu, "Weapon Usage", ::open_weapon_usage_menu);
                     add_menu_item(menu, "Perks Used", ::open_perks_usage_menu);
+                    add_menu_item(menu, "Bank Transactions", ::open_bank_transactions_menu);
                     }
                 }
 
@@ -7234,7 +7413,7 @@ open_recent_matches_menu()
 get_recent_match_files(player_guid, map_name)
 {
     
-    index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "_index.txt";
+    index_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + map_name + "_index.txt";
 
     if (!fs_testfile(index_filename))
     {
@@ -7259,7 +7438,7 @@ get_recent_match_files(player_guid, map_name)
     for (i = last_match_number; i > 0; i--)
     {
         filename = map_name + "_recent_" + i + ".txt";
-        full_path = "scriptdata/recent/" + player_guid + "/" + filename;
+        full_path = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + filename;
 
         if (fs_testfile(full_path))
         {
@@ -7360,7 +7539,7 @@ open_weapon_usage_menu()
         if (display_index >= recent_files.size)
             display_index = 0;
 
-        match_filename = "scriptdata/recent/" + player_guid + "/" + recent_files[display_index];
+        match_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + recent_files[display_index];
 
         if (fs_testfile(match_filename))
         {
@@ -7393,7 +7572,19 @@ open_weapon_usage_menu()
                         {
                             weapon_name = parts[0];
                             kills_part = strTok(parts[1], " ")[0];
-                            all_weapons[all_weapons.size] = weapon_name + ": " + kills_part + " kills";
+                            
+                            display_str = weapon_name + ": " + kills_part + " kills";
+                            
+                            if (isSubStr(line, "(Last Kill:"))
+                            {
+                                time_parts = strTok(line, "(");
+                                if (time_parts.size >= 2)
+                                {
+                                    display_str += " (" + time_parts[time_parts.size - 1];
+                                }
+                            }
+                            
+                            all_weapons[all_weapons.size] = display_str;
                         }
                     }
                     else if (isSubStr(line, "================================") && in_weapons_section)
@@ -7516,7 +7707,7 @@ open_recent_stats_menu()
         if (display_index >= recent_files.size)
             display_index = 0;
 
-        match_filename = "scriptdata/recent/" + player_guid + "/" + recent_files[display_index];
+        match_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + recent_files[display_index];
 
         if (fs_testfile(match_filename))
         {
@@ -7535,6 +7726,7 @@ open_recent_stats_menu()
                 headshots = "0";
                 revives = "0";
                 downs = "0";
+                duration = "N/A";
 
                 foreach (line in lines)
                 {
@@ -7550,6 +7742,8 @@ open_recent_stats_menu()
                         revives = getSubStr(line, 9);
                     else if (isSubStr(line, "Downs:"))
                         downs = getSubStr(line, 7);
+                    else if (isSubStr(line, "Duracion:"))
+                        duration = getSubStr(line, 10);
                 }
 
                 
@@ -7557,6 +7751,7 @@ open_recent_stats_menu()
                 {
                     add_menu_item(menu, "Ronda: " + round_num, ::do_nothing);
                     add_menu_item(menu, "Score: " + score, ::do_nothing);
+                    add_menu_item(menu, "Duración: " + duration, ::do_nothing);
                     add_menu_item(menu, "", ::do_nothing);
                     add_menu_item(menu, "Kills: " + kills, ::do_nothing);
                     add_menu_item(menu, "Headshots: " + headshots, ::do_nothing);
@@ -7567,6 +7762,7 @@ open_recent_stats_menu()
                 {
                     add_menu_item(menu, "Round: " + round_num, ::do_nothing);
                     add_menu_item(menu, "Score: " + score, ::do_nothing);
+                    add_menu_item(menu, "Duration: " + duration, ::do_nothing);
                     add_menu_item(menu, "", ::do_nothing);
                     add_menu_item(menu, "Kills: " + kills, ::do_nothing);
                     add_menu_item(menu, "Headshots: " + headshots, ::do_nothing);
@@ -7653,7 +7849,7 @@ open_perks_usage_menu()
         if (display_index >= recent_files.size)
             display_index = 0;
 
-        match_filename = "scriptdata/recent/" + player_guid + "/" + recent_files[display_index];
+        match_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + recent_files[display_index];
 
         if (fs_testfile(match_filename))
         {
@@ -9232,7 +9428,7 @@ monitor_sv_cheats_activation()
             
             
 
-            // Marcar que la partida está alterada para TODOS los jugadores
+            
             level.partida_alterada_global = true;
             self.partida_alterada_sv_cheats = true;
 
@@ -9299,5 +9495,960 @@ monitor_sv_cheats_activation()
     }
 }
 
+open_menu_dimensions_settings()
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
+
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "DIMENSIONES DEL MENÚ" : "MENU DIMENSIONS";
+    menu = create_menu(title, self);
+    menu.parent_menu = "settings";
+
+    
+    if (!isDefined(self.custom_menu_width))
+        self.custom_menu_width = 175;
+
+    if (!isDefined(self.custom_menu_margin_x))
+        self.custom_menu_margin_x = 263;
+
+    if (!isDefined(self.custom_menu_margin_y))
+        self.custom_menu_margin_y = 180;
+
+    if (!isDefined(self.custom_menu_item_height))
+        self.custom_menu_item_height = 18;
+
+    if (!isDefined(self.custom_menu_header_height))
+        self.custom_menu_header_height = 22;
+
+    if (self.langLEN == 0)
+    {
+        
+        add_menu_item(menu, "Ancho [+]: " + self.custom_menu_width, ::increase_menu_width);
+        add_menu_item(menu, "Ancho [-]: " + self.custom_menu_width, ::decrease_menu_width);
+
+        
+        add_menu_item(menu, "Margen X [+]: " + self.custom_menu_margin_x, ::increase_menu_margin_x);
+        add_menu_item(menu, "Margen X [-]: " + self.custom_menu_margin_x, ::decrease_menu_margin_x);
+
+        
+        add_menu_item(menu, "Margen Y [+]: " + self.custom_menu_margin_y, ::increase_menu_margin_y);
+        add_menu_item(menu, "Margen Y [-]: " + self.custom_menu_margin_y, ::decrease_menu_margin_y);
+
+        
+        add_menu_item(menu, "Altura Item [+]: " + self.custom_menu_item_height, ::increase_menu_item_height);
+        add_menu_item(menu, "Altura Item [-]: " + self.custom_menu_item_height, ::decrease_menu_item_height);
+
+        
+        add_menu_item(menu, "Altura Header [+]: " + self.custom_menu_header_height, ::increase_menu_header_height);
+        add_menu_item(menu, "Altura Header [-]: " + self.custom_menu_header_height, ::decrease_menu_header_height);
+
+        add_menu_item(menu, "Restaurar Predeterminados", ::reset_menu_dimensions);
+        add_menu_item(menu, "Volver", ::open_settings_menu);
+    }
+    else
+    {
+        
+        add_menu_item(menu, "Width [+]: " + self.custom_menu_width, ::increase_menu_width);
+        add_menu_item(menu, "Width [-]: " + self.custom_menu_width, ::decrease_menu_width);
+
+        
+        add_menu_item(menu, "Margin X [+]: " + self.custom_menu_margin_x, ::increase_menu_margin_x);
+        add_menu_item(menu, "Margin X [-]: " + self.custom_menu_margin_x, ::decrease_menu_margin_x);
+
+        
+        add_menu_item(menu, "Margin Y [+]: " + self.custom_menu_margin_y, ::increase_menu_margin_y);
+        add_menu_item(menu, "Margin Y [-]: " + self.custom_menu_margin_y, ::decrease_menu_margin_y);
+
+        
+        add_menu_item(menu, "Item Height [+]: " + self.custom_menu_item_height, ::increase_menu_item_height);
+        add_menu_item(menu, "Item Height [-]: " + self.custom_menu_item_height, ::decrease_menu_item_height);
+
+        
+        add_menu_item(menu, "Header Height [+]: " + self.custom_menu_header_height, ::increase_menu_header_height);
+        add_menu_item(menu, "Header Height [-]: " + self.custom_menu_header_height, ::decrease_menu_header_height);
+
+        add_menu_item(menu, "Reset to Default", ::reset_menu_dimensions);
+        add_menu_item(menu, "Back", ::open_settings_menu);
+    }
+    
+    show_menu(menu);
+    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
+
+    
+    menu = scripts\zm\style_menu::apply_custom_dimensions(menu);
+
+    
+    menu = scripts\zm\style_shaders_menu::apply_menu_shaders(menu);
+
+    
+    if (isDefined(self.transparency_index))
+    {
+        menu = scripts\zm\style_transparecy::apply_transparency(menu, self.transparency_index);
+    }
+
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
+    {
+        menu.active_color = self.menu_current.active_color;
+        menu.selection_bar.color = menu.active_color;
+        menu.items[menu.selected].item.color = (1, 1, 1);
+    }
+
+    self thread menu_control(menu);
+
+
+}
+
+increase_menu_width()
+{
+    current_width = self.custom_menu_width;
+    new_width = current_width + 25;
+
+    if (new_width > 350)
+        new_width = 350;
+
+    scripts\zm\style_menu::set_custom_menu_width(self, new_width);
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.width = new_width;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+decrease_menu_width()
+{
+    current_width = self.custom_menu_width;
+    new_width = current_width - 25;
+
+    if (new_width < 100)
+        new_width = 100;
+
+    scripts\zm\style_menu::set_custom_menu_width(self, new_width);
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.width = new_width;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+increase_menu_margin_x()
+{
+    current_margin = self.custom_menu_margin_x;
+    new_margin = current_margin + 20;
+
+    if (new_margin > 600)
+        new_margin = 600;
+
+    scripts\zm\style_menu::set_custom_menu_margin_x(self, new_margin);
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.margin_x = new_margin;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+decrease_menu_margin_x()
+{
+    current_margin = self.custom_menu_margin_x;
+    new_margin = current_margin - 20;
+
+    if (new_margin < 0)
+        new_margin = 0;
+
+    scripts\zm\style_menu::set_custom_menu_margin_x(self, new_margin);
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.margin_x = new_margin;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+increase_menu_margin_y()
+{
+    current_margin = self.custom_menu_margin_y;
+    new_margin = current_margin + 20;
+
+    if (new_margin > 200)
+        new_margin = 200;
+
+    scripts\zm\style_menu::set_custom_menu_margin_y(self, new_margin);
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.margin_y = new_margin;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+decrease_menu_margin_y()
+{
+    current_margin = self.custom_menu_margin_y;
+    new_margin = current_margin - 20;
+
+    if (new_margin < 0)
+        new_margin = 0;
+
+    scripts\zm\style_menu::set_custom_menu_margin_y(self, new_margin);
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.margin_y = new_margin;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+increase_menu_item_height()
+{
+    current_height = self.custom_menu_item_height;
+    new_height = current_height + 2;
+
+    if (new_height > 28)
+        new_height = 28;
+
+    scripts\zm\style_menu::set_custom_menu_item_height(self, new_height);
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.item_height = new_height;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+decrease_menu_item_height()
+{
+    current_height = self.custom_menu_item_height;
+    new_height = current_height - 2;
+
+    if (new_height < 10)
+        new_height = 10;
+
+    scripts\zm\style_menu::set_custom_menu_item_height(self, new_height);
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.item_height = new_height;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+increase_menu_header_height()
+{
+    current_height = self.custom_menu_header_height;
+    new_height = current_height + 2;
+
+    if (new_height > 50)
+        new_height = 50;
+
+    scripts\zm\style_menu::set_custom_menu_header_height(self, new_height);
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.header_height = new_height;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+decrease_menu_header_height()
+{
+    current_height = self.custom_menu_header_height;
+    new_height = current_height - 2;
+
+    if (new_height < 15)
+        new_height = 15;
+
+    scripts\zm\style_menu::set_custom_menu_header_height(self, new_height);
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.header_height = new_height;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+update_selector_position_after_dimension_change(menu)
+{
+    if (!isDefined(menu) || !isDefined(menu.selection_bar))
+        return;
+
+    
+    menu.selection_bar.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+
+    
+    if (isDefined(menu.selector_style_index) && menu.selector_style_index > 0)
+    {
+        scripts\zm\style_selector::update_selector_position(menu);
+        scripts\zm\style_selector::update_selector_visuals(menu);
+    }
+}
+
+update_dimensions_menu_display()
+{
+    if (!isDefined(self.menu_current))
+        return;
+
+    
+    menu = self.menu_current;
+
+    if (self.langLEN == 0)
+    {
+        
+        if (isDefined(menu.items[0]) && isDefined(menu.items[0].item))
+            menu.items[0].item setText("Ancho [+]: " + self.custom_menu_width);
+        if (isDefined(menu.items[1]) && isDefined(menu.items[1].item))
+            menu.items[1].item setText("Ancho [-]: " + self.custom_menu_width);
+
+        if (isDefined(menu.items[2]) && isDefined(menu.items[2].item))
+            menu.items[2].item setText("Margen X [+]: " + self.custom_menu_margin_x);
+        if (isDefined(menu.items[3]) && isDefined(menu.items[3].item))
+            menu.items[3].item setText("Margen X [-]: " + self.custom_menu_margin_x);
+
+        if (isDefined(menu.items[4]) && isDefined(menu.items[4].item))
+            menu.items[4].item setText("Margen Y [+]: " + self.custom_menu_margin_y);
+        if (isDefined(menu.items[5]) && isDefined(menu.items[5].item))
+            menu.items[5].item setText("Margen Y [-]: " + self.custom_menu_margin_y);
+
+        if (isDefined(menu.items[6]) && isDefined(menu.items[6].item))
+            menu.items[6].item setText("Altura Item [+]: " + self.custom_menu_item_height);
+        if (isDefined(menu.items[7]) && isDefined(menu.items[7].item))
+            menu.items[7].item setText("Altura Item [-]: " + self.custom_menu_item_height);
+
+        if (isDefined(menu.items[8]) && isDefined(menu.items[8].item))
+            menu.items[8].item setText("Altura Header [+]: " + self.custom_menu_header_height);
+        if (isDefined(menu.items[9]) && isDefined(menu.items[9].item))
+            menu.items[9].item setText("Altura Header [-]: " + self.custom_menu_header_height);
+    }
+    else
+    {
+        
+        if (isDefined(menu.items[0]) && isDefined(menu.items[0].item))
+            menu.items[0].item setText("Width [+]: " + self.custom_menu_width);
+        if (isDefined(menu.items[1]) && isDefined(menu.items[1].item))
+            menu.items[1].item setText("Width [-]: " + self.custom_menu_width);
+
+        if (isDefined(menu.items[2]) && isDefined(menu.items[2].item))
+            menu.items[2].item setText("Margin X [+]: " + self.custom_menu_margin_x);
+        if (isDefined(menu.items[3]) && isDefined(menu.items[3].item))
+            menu.items[3].item setText("Margin X [-]: " + self.custom_menu_margin_x);
+
+        if (isDefined(menu.items[4]) && isDefined(menu.items[4].item))
+            menu.items[4].item setText("Margin Y [+]: " + self.custom_menu_margin_y);
+        if (isDefined(menu.items[5]) && isDefined(menu.items[5].item))
+            menu.items[5].item setText("Margin Y [-]: " + self.custom_menu_margin_y);
+
+        if (isDefined(menu.items[6]) && isDefined(menu.items[6].item))
+            menu.items[6].item setText("Item Height [+]: " + self.custom_menu_item_height);
+        if (isDefined(menu.items[7]) && isDefined(menu.items[7].item))
+            menu.items[7].item setText("Item Height [-]: " + self.custom_menu_item_height);
+
+        if (isDefined(menu.items[8]) && isDefined(menu.items[8].item))
+            menu.items[8].item setText("Header Height [+]: " + self.custom_menu_header_height);
+        if (isDefined(menu.items[9]) && isDefined(menu.items[9].item))
+            menu.items[9].item setText("Header Height [-]: " + self.custom_menu_header_height);
+    }
+}
+
+reset_menu_dimensions()
+{
+    scripts\zm\style_menu::reset_custom_dimensions(self);
+    self iPrintln((self.langLEN == 0) ? "^2Dimensiones restauradas a valores predeterminados" : "^2Dimensions reset to default values");
+    update_dimensions_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current.width = 175;
+        self.menu_current.margin_x = 263;
+        self.menu_current.margin_y = 180;
+        self.menu_current.item_height = 18;
+        self.menu_current.header_height = 22;
+        scripts\zm\style_menu::apply_custom_dimensions(self.menu_current);
+
+        
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+
+        
+        if (isDefined(self.edge_animation_style_index) && self.edge_animation_style_index > 0)
+        {
+            scripts\zm\style_edge_animation::clear_existing_edge_animation(self.menu_current);
+            self.menu_current = scripts\zm\style_edge_animation::apply_edge_animation(self.menu_current, self.edge_animation_style_index);
+        }
+
+        update_selector_position_after_dimension_change(self.menu_current);
+    }
+}
+
+
+
+
+
+open_menu_shaders_settings()
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
+
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "SHADERS DEL MENÚ" : "MENU SHADERS";
+    menu = create_menu(title, self);
+    menu.parent_menu = "settings";
+
+    
+    if (!isDefined(self.background_shader_index))
+        self.background_shader_index = -1;
+    if (!isDefined(self.header_shader_index))
+        self.header_shader_index = -1;
+    if (!isDefined(self.selection_shader_index))
+        self.selection_shader_index = -1;
+
+    if (self.langLEN == 0)
+    {
+        
+        bg_name = scripts\zm\style_shaders_menu::get_background_shader_display_name(self.background_shader_index, 0);
+        add_menu_item(menu, "Shader Fondo: " + bg_name, ::cycle_background_shader_menu);
+
+        header_name = scripts\zm\style_shaders_menu::get_header_shader_display_name(self.header_shader_index, 0);
+        add_menu_item(menu, "Shader Header: " + header_name, ::cycle_header_shader_menu);
+
+        selection_name = scripts\zm\style_shaders_menu::get_selector_shader_display_name(self.selection_shader_index, 0);
+        add_menu_item(menu, "Shader Selector: " + selection_name, ::cycle_selection_shader_menu);
+
+        add_menu_item(menu, "Restaurar Predeterminados", ::reset_menu_shaders);
+        add_menu_item(menu, "Volver", ::open_settings_menu);
+    }
+    else
+    {
+        
+        bg_name = scripts\zm\style_shaders_menu::get_background_shader_display_name(self.background_shader_index, 1);
+        add_menu_item(menu, "Background Shader: " + bg_name, ::cycle_background_shader_menu);
+
+        header_name = scripts\zm\style_shaders_menu::get_header_shader_display_name(self.header_shader_index, 1);
+        add_menu_item(menu, "Header Shader: " + header_name, ::cycle_header_shader_menu);
+
+        selection_name = scripts\zm\style_shaders_menu::get_selector_shader_display_name(self.selection_shader_index, 1);
+        add_menu_item(menu, "Selector Shader: " + selection_name, ::cycle_selection_shader_menu);
+
+        add_menu_item(menu, "Reset to Default", ::reset_menu_shaders);
+        add_menu_item(menu, "Back", ::open_settings_menu);
+    }
+    
+    show_menu(menu);
+    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
+
+    
+    menu = scripts\zm\style_menu::apply_custom_dimensions(menu);
+
+    
+    if (isDefined(self.transparency_index))
+    {
+        menu = scripts\zm\style_transparecy::apply_transparency(menu, self.transparency_index);
+    }
+
+    
+    menu = scripts\zm\style_shaders_menu::apply_menu_shaders(menu);
+
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
+    {
+        menu.active_color = self.menu_current.active_color;
+        menu.selection_bar.color = menu.active_color;
+        menu.items[menu.selected].item.color = (1, 1, 1);
+    }
+
+    self thread menu_control(menu);
+}
+
+cycle_background_shader_menu()
+{
+    scripts\zm\style_shaders_menu::cycle_background_shader(self);
+    update_shaders_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+        
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+    }
+}
+
+cycle_header_shader_menu()
+{
+    scripts\zm\style_shaders_menu::cycle_header_shader(self);
+    update_shaders_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+        
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+    }
+}
+
+cycle_selection_shader_menu()
+{
+    scripts\zm\style_shaders_menu::cycle_selection_shader(self);
+    update_shaders_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+        
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+    }
+}
+
+update_shaders_menu_display()
+{
+    if (!isDefined(self.menu_current))
+        return;
+
+    menu = self.menu_current;
+
+    if (self.langLEN == 0)
+    {
+        
+        if (isDefined(menu.items[0]) && isDefined(menu.items[0].item))
+        {
+            bg_name = scripts\zm\style_shaders_menu::get_background_shader_display_name(self.background_shader_index, 0);
+            menu.items[0].item setText("Shader Fondo: " + bg_name);
+        }
+
+        if (isDefined(menu.items[1]) && isDefined(menu.items[1].item))
+        {
+            header_name = scripts\zm\style_shaders_menu::get_header_shader_display_name(self.header_shader_index, 0);
+            menu.items[1].item setText("Shader Header: " + header_name);
+        }
+
+        if (isDefined(menu.items[2]) && isDefined(menu.items[2].item))
+        {
+            selection_name = scripts\zm\style_shaders_menu::get_selector_shader_display_name(self.selection_shader_index, 0);
+            menu.items[2].item setText("Shader Selector: " + selection_name);
+        }
+    }
+    else
+    {
+        
+        if (isDefined(menu.items[0]) && isDefined(menu.items[0].item))
+        {
+            bg_name = scripts\zm\style_shaders_menu::get_background_shader_display_name(self.background_shader_index, 1);
+            menu.items[0].item setText("Background Shader: " + bg_name);
+        }
+
+        if (isDefined(menu.items[1]) && isDefined(menu.items[1].item))
+        {
+            header_name = scripts\zm\style_shaders_menu::get_header_shader_display_name(self.header_shader_index, 1);
+            menu.items[1].item setText("Header Shader: " + header_name);
+        }
+
+        if (isDefined(menu.items[2]) && isDefined(menu.items[2].item))
+        {
+            selection_name = scripts\zm\style_shaders_menu::get_selector_shader_display_name(self.selection_shader_index, 1);
+            menu.items[2].item setText("Selector Shader: " + selection_name);
+        }
+    }
+}
+
+reset_menu_shaders()
+{
+    scripts\zm\style_shaders_menu::reset_all_shaders(self);
+    self iPrintln((self.langLEN == 0) ? "^2Shaders restaurados a valores predeterminados" : "^2Shaders reset to default values");
+    update_shaders_menu_display();
+
+    
+    if (isDefined(self.menu_current))
+    {
+        self.menu_current = scripts\zm\style_shaders_menu::apply_menu_shaders(self.menu_current);
+        
+        
+        if (isDefined(self.transparency_index))
+        {
+            self.menu_current = scripts\zm\style_transparecy::apply_transparency(self.menu_current, self.transparency_index);
+        }
+    }
+}
+
+
+open_bank_transactions_menu()
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
+
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "TRANSACCIONES" : "TRANSACTIONS";
+    menu = create_menu(title, self);
+    menu.parent_menu = "recent_matches";
+
+    
+    map_name = getDvar("ui_zm_mapstartlocation");
+    player_guid = self getGuid();
+
+    if (!isDefined(self.recent_match_index))
+        self.recent_match_index = 0;
+
+    recent_files = get_recent_match_files(player_guid, map_name);
+    if (isDefined(recent_files) && recent_files.size > 0)
+    {
+        display_index = self.recent_match_index;
+        if (display_index >= recent_files.size)
+            display_index = 0;
+
+        match_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + recent_files[display_index];
+
+        if (fs_testfile(match_filename))
+        {
+            file = fs_fopen(match_filename, "read");
+            if (isDefined(file))
+            {
+                file_size = fs_length(file);
+                content = fs_read(file, file_size);
+                fs_fclose(file);
+
+                
+                lines = strTok(content, "\n");
+                all_transactions = [];
+
+                in_transactions_section = false;
+                foreach (line in lines)
+                {
+                    if (isSubStr(line, "TRANSACCIONES BANCARIAS:"))
+                        in_transactions_section = true;
+                    else if (in_transactions_section && isSubStr(line, "--------------------------------"))
+                        continue; 
+                    else if (isSubStr(line, "================================") && in_transactions_section)
+                        break; 
+                    else if (in_transactions_section && line != "")
+                    {
+                        all_transactions[all_transactions.size] = line;
+                    }
+                }
+
+                if (all_transactions.size > 0)
+                {
+                    
+                    
+                    
+                    transactions_per_page = 6;
+                    
+                    if (!isDefined(self.transaction_page_index))
+                        self.transaction_page_index = 0;
+
+                    
+                    if (!isDefined(self.last_recent_match_index_trans) || self.last_recent_match_index_trans != self.recent_match_index)
+                    {
+                        self.transaction_page_index = 0;
+                        self.last_recent_match_index_trans = self.recent_match_index;
+                    }
+
+                    total_transactions = all_transactions.size;
+                    start_index = self.transaction_page_index * transactions_per_page;
+                    end_index = min(start_index + transactions_per_page, total_transactions);
+                    total_pages = int((total_transactions - 1) / transactions_per_page) + 1;
+
+                    for (i = start_index; i < end_index; i++)
+                    {
+                        add_menu_item(menu, all_transactions[i], ::do_nothing);
+                    }
+
+                    if (total_pages > 1)
+                    {
+                        add_menu_item(menu, "", ::do_nothing);
+                        
+                        page_info = (self.langLEN == 0) ?
+                            "Página " + (self.transaction_page_index + 1) + " de " + total_pages :
+                            "Page " + (self.transaction_page_index + 1) + " of " + total_pages;
+                        add_menu_item(menu, page_info, ::do_nothing);
+
+                        if (self.transaction_page_index > 0)
+                            add_menu_item(menu, (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS", ::transaction_page_previous);
+                        
+                        if (self.transaction_page_index < total_pages - 1)
+                            add_menu_item(menu, (self.langLEN == 0) ? "SIGUIENTE" : "NEXT", ::transaction_page_next);
+                    }
+                }
+                else
+                {
+                    if (self.langLEN == 0)
+                    {
+                        add_menu_item(menu, "NO HAY TRANSACCIONES", ::do_nothing);
+                    }
+                    else
+                    {
+                        add_menu_item(menu, "NO TRANSACTIONS", ::do_nothing);
+                    }
+                }
+            }
+        }
+    }
+
+    
+    add_menu_item(menu, "", ::do_nothing);
+
+    if (self.langLEN == 0)
+    {
+        add_menu_item(menu, "Volver", ::menu_go_back);
+        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
+    }
+    else
+    {
+        add_menu_item(menu, "Back", ::menu_go_back);
+        add_menu_item(menu, "Close Menu", ::close_all_menus);
+    }
+
+    show_menu(menu);
+    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
+
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
+    {
+        menu.active_color = self.menu_current.active_color;
+        menu.selection_bar.color = menu.active_color;
+        menu.items[menu.selected].item.color = (1, 1, 1);
+    }
+
+    self thread menu_control(menu);
+}
+
+transaction_page_next()
+{
+    self.transaction_page_index++;
+    self thread open_bank_transactions_menu();
+    scripts\zm\playsound::play_menu_scroll_sound(self);
+}
+
+transaction_page_previous()
+{
+    self.transaction_page_index--;
+    if (self.transaction_page_index < 0)
+        self.transaction_page_index = 0;
+    self thread open_bank_transactions_menu();
+    scripts\zm\playsound::play_menu_scroll_sound(self);
+}
 
 

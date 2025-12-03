@@ -71,6 +71,38 @@ init()
     level.menu_styles[50] = "Coral Reef";        
     level.menu_styles[51] = "Royal Purple";      
     level.menu_styles[52] = "Sunrise Gradient";  
+    
+    level.menu_styles[53] = "Blueprint";
+    level.menu_styles[54] = "Amber Terminal";
+    level.menu_styles[55] = "Monochrome";
+    level.menu_styles[56] = "Parchment";
+    level.menu_styles[57] = "Graphite";
+    level.menu_styles[58] = "Espresso";
+    level.menu_styles[59] = "Lilac";
+    level.menu_styles[60] = "Mint";
+    level.menu_styles[61] = "Imperial Red";
+    level.menu_styles[62] = "White Gold";
+    level.menu_styles[63] = "Storm";
+    level.menu_styles[64] = "Cotton Candy";
+    level.menu_styles[65] = "Midnight Violet";
+    level.menu_styles[66] = "Sunburst";
+    level.menu_styles[67] = "Titanium";
+    
+    level.menu_styles[68] = "Emerald City";
+    level.menu_styles[69] = "Ruby Red";
+    level.menu_styles[70] = "Sapphire Blue";
+    level.menu_styles[71] = "Obsidian";
+    level.menu_styles[72] = "Pearl";
+    level.menu_styles[73] = "Carbon Fiber";
+    level.menu_styles[74] = "Magma";
+    level.menu_styles[75] = "Glitch";
+    level.menu_styles[76] = "Biohazard";
+    level.menu_styles[77] = "Radioactive";
+    level.menu_styles[78] = "Void";
+    level.menu_styles[79] = "Zen";
+    level.menu_styles[80] = "Nordic";
+    level.menu_styles[81] = "Solar Flare";
+    level.menu_styles[82] = "Nebula";
 }
 
 
@@ -255,15 +287,52 @@ apply_menu_style(menu, style_index)
         case 52:
             apply_sunrise_gradient_style(menu);
             break;
+            
+        case 53: apply_blueprint_style(menu); break;
+        case 54: apply_amber_terminal_style(menu); break;
+        case 55: apply_monochrome_style(menu); break;
+        case 56: apply_parchment_style(menu); break;
+        case 57: apply_graphite_style(menu); break;
+        case 58: apply_espresso_style(menu); break;
+        case 59: apply_lilac_style(menu); break;
+        case 60: apply_mint_style(menu); break;
+        case 61: apply_imperial_red_style(menu); break;
+        case 62: apply_white_gold_style(menu); break;
+        case 63: apply_storm_style(menu); break;
+        case 64: apply_cotton_candy_style(menu); break;
+        case 65: apply_midnight_violet_style(menu); break;
+        case 66: apply_sunburst_style(menu); break;
+        case 67: apply_titanium_style(menu); break;
+
+        case 68: apply_emerald_city_style(menu); break;
+        case 69: apply_ruby_red_style(menu); break;
+        case 70: apply_sapphire_blue_style(menu); break;
+        case 71: apply_obsidian_style(menu); break;
+        case 72: apply_pearl_style(menu); break;
+        case 73: apply_carbon_fiber_style(menu); break;
+        case 74: apply_magma_style(menu); break;
+        case 75: apply_glitch_style(menu); break;
+        case 76: apply_biohazard_style(menu); break;
+        case 77: apply_radioactive_style(menu); break;
+        case 78: apply_void_style(menu); break;
+        case 79: apply_zen_style(menu); break;
+        case 80: apply_nordic_style(menu); break;
+        case 81: apply_solar_flare_style(menu); break;
+        case 82: apply_nebula_style(menu); break;
+
         default:
             apply_modern_blue_style(menu); 
     }
 
+
     
-    if (isDefined(menu.transparency_index) && menu.transparency_index > 0)
+    if (isDefined(menu.user) && isDefined(menu.user.transparency_index) && menu.user.transparency_index > 0)
     {
-        menu = apply_transparency(menu, menu.transparency_index);
+        menu = scripts\zm\style_transparecy::apply_transparency(menu, menu.user.transparency_index);
     }
+
+    
+    menu = apply_custom_dimensions(menu);
 
     return menu;
 }
@@ -338,6 +407,39 @@ get_style_name(style_index, lang_index)
             case 50: return "Arrecife Coral";
             case 51: return "Púrpura Real";
             case 52: return "Gradiente Amanecer";
+            
+            case 53: return "Plano Azul";
+            case 54: return "Terminal Ámbar";
+            case 55: return "Monocromo";
+            case 56: return "Pergamino";
+            case 57: return "Grafito";
+            case 58: return "Expreso";
+            case 59: return "Lila";
+            case 60: return "Menta";
+            case 61: return "Rojo Imperial";
+            case 62: return "Oro Blanco";
+            case 63: return "Tormenta";
+            case 64: return "Algodón de Azúcar";
+            case 65: return "Violeta Medianoche";
+            case 66: return "Rayo de Sol";
+            case 67: return "Titanio";
+            
+            case 68: return "Ciudad Esmeralda";
+            case 69: return "Rojo Rubí";
+            case 70: return "Azul Zafiro";
+            case 71: return "Obsidiana";
+            case 72: return "Perla";
+            case 73: return "Fibra de Carbono";
+            case 74: return "Magma";
+            case 75: return "Glitch";
+            case 76: return "Biohazard";
+            case 77: return "Radiactivo";
+            case 78: return "Vacío";
+            case 79: return "Zen";
+            case 80: return "Nórdico";
+            case 81: return "Llamarada Solar";
+            case 82: return "Nebulosa";
+            
             default: return "Desconocido";
         }
     }
@@ -405,6 +507,39 @@ get_style_name(style_index, lang_index)
             case 50: return "Coral Reef";
             case 51: return "Royal Purple";
             case 52: return "Sunrise Gradient";
+            
+            case 53: return "Blueprint";
+            case 54: return "Amber Terminal";
+            case 55: return "Monochrome";
+            case 56: return "Parchment";
+            case 57: return "Graphite";
+            case 58: return "Espresso";
+            case 59: return "Lilac";
+            case 60: return "Mint";
+            case 61: return "Imperial Red";
+            case 62: return "White Gold";
+            case 63: return "Storm";
+            case 64: return "Cotton Candy";
+            case 65: return "Midnight Violet";
+            case 66: return "Sunburst";
+            case 67: return "Titanium";
+            
+            case 68: return "Emerald City";
+            case 69: return "Ruby Red";
+            case 70: return "Sapphire Blue";
+            case 71: return "Obsidian";
+            case 72: return "Pearl";
+            case 73: return "Carbon Fiber";
+            case 74: return "Magma";
+            case 75: return "Glitch";
+            case 76: return "Biohazard";
+            case 77: return "Radioactive";
+            case 78: return "Void";
+            case 79: return "Zen";
+            case 80: return "Nordic";
+            case 81: return "Solar Flare";
+            case 82: return "Nebula";
+            
             default: return "Unknown";
         }
     }
@@ -413,19 +548,19 @@ get_style_name(style_index, lang_index)
 
 apply_modern_blue_style(menu)
 {
-    
-    menu.header_color = (0.1, 0.45, 0.85);  
-    menu.active_color = (0.1, 0.45, 0.85);  
-    menu.inactive_color = (1, 1, 1);        
-    menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0, 0, 0);              
 
-    
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.header_color = (0.1, 0.45, 0.85);
+    menu.active_color = (0.1, 0.45, 0.85);
+    menu.inactive_color = (1, 1, 1);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0, 0, 0);
+
+
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 24; 
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.75; 
@@ -441,19 +576,19 @@ apply_modern_blue_style(menu)
 
 apply_classic_style(menu)
 {
-    
-    menu.header_color = (0.8, 0.8, 0.8);    
-    menu.active_color = (1, 1, 0);          
-    menu.inactive_color = (0.9, 0.9, 0.9);  
-    menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.2, 0.2, 0.2);        
-    
-    
-    menu.width = 160;
-    menu.margin_x = 270;
+
+    menu.header_color = (1, 1, 0);
+    menu.active_color = (1, 1, 0);
+    menu.inactive_color = (0.9, 0.9, 0.9);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.2, 0.2, 0.2);
+
+
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 16;
-    menu.header_height = 20;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -469,19 +604,19 @@ apply_classic_style(menu)
 
 apply_zombie_style(menu)
 {
-    
-    menu.header_color = (0.2, 0.5, 0.1);    
-    menu.active_color = (0.7, 0.1, 0.1);    
-    menu.inactive_color = (0.8, 0.8, 0.6);  
-    menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.1, 0.1, 0.1);        
-    
-    
-    menu.width = 190;
-    menu.margin_x = 255;
+
+    menu.header_color = (0.7, 0.1, 0.1);
+    menu.active_color = (0.7, 0.1, 0.1);
+    menu.inactive_color = (0.8, 0.8, 0.6);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.1, 0.1, 0.1);
+
+
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 25;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.85;
@@ -497,19 +632,19 @@ apply_zombie_style(menu)
 
 apply_minimalist_style(menu)
 {
-    
-    menu.header_color = (0.05, 0.05, 0.05); 
-    menu.active_color = (0.9, 0.9, 0.9);    
-    menu.inactive_color = (0.7, 0.7, 0.7);  
-    menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.15, 0.15, 0.15);     
-    
-    
-    menu.width = 170;
-    menu.margin_x = 265;
+
+    menu.header_color = (0.9, 0.9, 0.9);
+    menu.active_color = (0.9, 0.9, 0.9);
+    menu.inactive_color = (0.7, 0.7, 0.7);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.15, 0.15, 0.15);
+
+
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 16;
-    menu.header_height = 18;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.6;
@@ -526,18 +661,18 @@ apply_minimalist_style(menu)
 apply_neon_style(menu)
 {
     
-    menu.header_color = (0, 0.8, 0.8);      
+    menu.header_color = (1, 0.2, 0.8);      
     menu.active_color = (1, 0.2, 0.8);      
     menu.inactive_color = (0.7, 0.9, 1);    
     menu.title_color = (1, 1, 1);           
     menu.bg_color = (0.05, 0.05, 0.1);      
     
     
-    menu.width = 185;
-    menu.margin_x = 258;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 24;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.8;
@@ -555,7 +690,7 @@ apply_dark_mode_style(menu)
 {
     
     menu.header_color = (0.15, 0.15, 0.15); 
-    menu.active_color = (0.4, 0.7, 1);      
+    menu.active_color = (0.15, 0.15, 0.15);      
     menu.inactive_color = (0.6, 0.6, 0.6);  
     menu.title_color = (1, 1, 1);       
     menu.bg_color = (0.05, 0.05, 0.05);     
@@ -582,18 +717,18 @@ apply_dark_mode_style(menu)
 apply_military_style(menu)
 {
     
-    menu.header_color = (0.2, 0.3, 0.15);   
+    menu.header_color = (0.6, 0.6, 0.2);   
     menu.active_color = (0.6, 0.6, 0.2);    
     menu.inactive_color = (0.8, 0.8, 0.7);  
     menu.title_color = (1, 1, 1);     
     menu.bg_color = (0.15, 0.15, 0.1);      
     
     
-    menu.width = 190;
-    menu.margin_x = 255;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 24;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.85;
@@ -613,18 +748,18 @@ apply_rainbow_style(menu)
     
 
     
-    menu.header_color = (1, 0, 0);          
+    menu.header_color = (1, 0.5, 0);          
     menu.active_color = (1, 0.5, 0);        
     menu.inactive_color = (1, 1, 1);        
     menu.title_color = (1, 1, 1);           
     menu.bg_color = (0.1, 0, 0.2);          
 
     
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 19;
-    menu.header_height = 25; 
+    menu.item_height = 18;
+    menu.header_height = 22; 
 
     
     menu.bg_alpha = 0.8; 
@@ -687,7 +822,8 @@ rainbow_effect(menu)
         
         if (isDefined(menu.title_text))
         {
-            menu.title_text.alpha = 1; 
+            hide_title = scripts\zm\style_shaders_menu::should_hide_title_for_logo_shader(menu.user);
+            menu.title_text.alpha = hide_title ? 0 : 1;
         }
 
         wait 0.05; 
@@ -826,7 +962,7 @@ update_menu_visuals(menu)
         menu.header_border_top.x = original_x;
         menu.header_border_top.y = original_y;
         menu.header_border_top.alpha = 1;
-        menu.header_border_top.color = (0.8, 0.8, 0.9); 
+        menu.header_border_top.color = menu.active_color; 
         menu.header_border_top setShader("white", menu.width, 1);
     }
     else
@@ -844,10 +980,12 @@ update_menu_visuals(menu)
     }
     menu.title_text.y = original_y + 3;
     menu.title_text.color = menu.title_color;
-    menu.title_text.alpha = 1; 
-    menu.title_text.sort = 2; 
 
     
+    hide_title = scripts\zm\style_shaders_menu::should_hide_title_for_logo_shader(menu.user);
+    menu.title_text.alpha = hide_title ? 0 : 1;
+    menu.title_text.sort = 2;
+
     if (!isDefined(menu.font_position_index) || menu.font_position_index == 0)
     {
         menu.title_shadow.x = original_x + 14;
@@ -855,7 +993,7 @@ update_menu_visuals(menu)
     }
     menu.title_shadow.y = original_y + 5;
     menu.title_shadow.color = (0, 0, 0);
-    menu.title_shadow.alpha = 0.4; 
+    menu.title_shadow.alpha = hide_title ? 0 : 0.4;
     menu.title_shadow.sort = 0; 
 
     
@@ -864,13 +1002,13 @@ update_menu_visuals(menu)
     {
         menu.selection_bar.y = original_y + menu.header_height + (menu.item_height * menu.selected);
     }
-    menu.selection_bar.color = menu.active_color;
+    menu.selection_bar.color = menu.header_color;
     menu.selection_bar setShader("white", menu.width, menu.item_height);
 
     
     if (isDefined(menu.selection_bar))
     {
-        menu.selection_bar.color = menu.active_color;
+        menu.selection_bar.color = menu.header_color;
     }
 
     
@@ -925,18 +1063,18 @@ stop_rainbow_effect(menu)
 apply_futuristic_style(menu)
 {
     
-    menu.header_color = (0, 0.2, 0.5);      
-    menu.active_color = (0.2, 0.8, 1);      
-    menu.inactive_color = (0.85, 0.95, 1);  
+    menu.header_color = (0.0, 0.45, 0.85);      
+    menu.active_color = (0.0, 0.45, 0.85);      
+    menu.inactive_color = (0.8, 0.95, 1.0);  
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.03, 0.06, 0.12);     
+    menu.bg_color = (0.0, 0.05, 0.1);     
     
     
-    menu.width = 190;
-    menu.margin_x = 255;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 24;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -953,18 +1091,18 @@ apply_futuristic_style(menu)
 apply_elegant_style(menu)
 {
     
-    menu.header_color = (0.8, 0.65, 0.2);   
-    menu.active_color = (0.9, 0.75, 0.3);   
-    menu.inactive_color = (0.8, 0.8, 0.8);  
+    menu.header_color = (0.85, 0.7, 0.2);   
+    menu.active_color = (0.85, 0.7, 0.2);   
+    menu.inactive_color = (1.0, 0.95, 0.8);  
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.1, 0.1, 0.1);        
+    menu.bg_color = (0.08, 0.07, 0.02);        
     
     
-    menu.width = 185;
-    menu.margin_x = 258;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 19;
-    menu.header_height = 26;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.85;
@@ -981,18 +1119,18 @@ apply_elegant_style(menu)
 apply_cyberpunk_style(menu)
 {
     
-    menu.header_color = (0.9, 0.1, 0.6);    
-    menu.active_color = (0, 0.9, 0.9);      
-    menu.inactive_color = (0.85, 0.85, 0.9); 
+    menu.header_color = (1.0, 0.0, 0.5);    
+    menu.active_color = (1.0, 0.0, 0.5);      
+    menu.inactive_color = (1.0, 0.8, 0.9); 
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.05, 0, 0.1);         
+    menu.bg_color = (0.1, 0.0, 0.05);         
     
     
-    menu.width = 195;
-    menu.margin_x = 253;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 21;
-    menu.header_height = 28;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1009,18 +1147,18 @@ apply_cyberpunk_style(menu)
 apply_aqua_style(menu)
 {
     
-    menu.header_color = (0, 0.5, 0.5);      
-    menu.active_color = (0, 0.6, 0.8);      
-    menu.inactive_color = (0.8, 1, 1);      
+    menu.header_color = (0.0, 0.6, 0.6);      
+    menu.active_color = (0.0, 0.6, 0.6);      
+    menu.inactive_color = (0.8, 1.0, 1.0);      
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.05, 0.15, 0.2);      
+    menu.bg_color = (0.0, 0.06, 0.06);      
     
     
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 24;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.8;
@@ -1037,18 +1175,18 @@ apply_aqua_style(menu)
 apply_retro_arcade_style(menu)
 {
     
-    menu.header_color = (0.9, 0, 0.9);      
-    menu.active_color = (0, 0.9, 0.9);      
-    menu.inactive_color = (0.5, 0.9, 0.5);  
+    menu.header_color = (0.7, 0.0, 1.0);      
+    menu.active_color = (0.7, 0.0, 1.0);      
+    menu.inactive_color = (0.9, 0.8, 1.0);  
     menu.title_color = (1, 1, 1);          
-    menu.bg_color = (0, 0, 0.3);            
+    menu.bg_color = (0.07, 0.0, 0.1);            
     
     
-    menu.width = 200;
-    menu.margin_x = 250;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 22;
-    menu.header_height = 30;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.85;
@@ -1065,18 +1203,18 @@ apply_retro_arcade_style(menu)
 apply_polar_ice_style(menu)
 {
     
-    menu.header_color = (0.7, 0.9, 1);      
-    menu.active_color = (0.2, 0.6, 0.9);    
-    menu.inactive_color = (0.9, 0.95, 1);   
+    menu.header_color = (0.6, 0.8, 1.0);      
+    menu.active_color = (0.6, 0.8, 1.0);    
+    menu.inactive_color = (0.9, 0.98, 1.0);   
     menu.title_color = (1, 1, 1);     
-    menu.bg_color = (0.85, 0.9, 0.95);      
+    menu.bg_color = (0.06, 0.08, 0.1);      
     
     
-    menu.width = 185;
-    menu.margin_x = 258;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 19;
-    menu.header_height = 25;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.8;
@@ -1093,18 +1231,18 @@ apply_polar_ice_style(menu)
 apply_inferno_style(menu)
 {
     
-    menu.header_color = (0.8, 0.2, 0);      
-    menu.active_color = (1, 0.6, 0);        
-    menu.inactive_color = (1, 0.8, 0.7);    
+    menu.header_color = (0.9, 0.1, 0.0);      
+    menu.active_color = (0.9, 0.1, 0.0);        
+    menu.inactive_color = (1.0, 0.9, 0.8);    
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.3, 0, 0);            
+    menu.bg_color = (0.09, 0.01, 0.0);            
     
     
-    menu.width = 190;
-    menu.margin_x = 255;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 26;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1121,18 +1259,18 @@ apply_inferno_style(menu)
 apply_nature_style(menu)
 {
     
-    menu.header_color = (0.2, 0.5, 0.1);    
-    menu.active_color = (0.5, 0.8, 0.2);    
-    menu.inactive_color = (0.8, 0.9, 0.7);  
+    menu.header_color = (0.1, 0.6, 0.2);    
+    menu.active_color = (0.1, 0.6, 0.2);    
+    menu.inactive_color = (0.8, 1.0, 0.85);  
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.3, 0.2, 0.1);        
+    menu.bg_color = (0.01, 0.06, 0.02);        
     
     
     menu.width = 175;
     menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 24;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.85;
@@ -1149,18 +1287,18 @@ apply_nature_style(menu)
 apply_halloween_style(menu)
 {
     
-    menu.header_color = (0.9, 0.5, 0);      
-    menu.active_color = (0.8, 0.4, 0);      
-    menu.inactive_color = (0.8, 0.7, 0.8);  
+    menu.header_color = (1.0, 0.4, 0.0);      
+    menu.active_color = (1.0, 0.4, 0.0);      
+    menu.inactive_color = (1.0, 0.85, 0.7);  
     menu.title_color = (1, 1, 1);         
-    menu.bg_color = (0.1, 0.02, 0.1);       
+    menu.bg_color = (0.1, 0.04, 0.0);       
     
     
-    menu.width = 195;
-    menu.margin_x = 253;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 21;
-    menu.header_height = 28;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1177,18 +1315,18 @@ apply_halloween_style(menu)
 apply_christmas_style(menu)
 {
     
-    menu.header_color = (0.8, 0.1, 0.1);    
-    menu.active_color = (0.1, 0.6, 0.1);    
-    menu.inactive_color = (1, 1, 1);        
+    menu.header_color = (0.8, 0.0, 0.0);    
+    menu.active_color = (0.8, 0.0, 0.0);    
+    menu.inactive_color = (1.0, 0.9, 0.9);        
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.05, 0.1, 0.05);      
+    menu.bg_color = (0.08, 0.0, 0.0);      
     
     
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 25;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.85;
@@ -1205,18 +1343,18 @@ apply_christmas_style(menu)
 apply_galaxy_style(menu)
 {
     
-    menu.header_color = (0.3, 0.1, 0.5);    
-    menu.active_color = (0.5, 0.2, 1);      
-    menu.inactive_color = (0.6, 0.7, 1);    
+    menu.header_color = (0.4, 0.0, 0.6);    
+    menu.active_color = (0.4, 0.0, 0.6);      
+    menu.inactive_color = (0.9, 0.8, 1.0);    
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.05, 0.05, 0.15);     
+    menu.bg_color = (0.04, 0.0, 0.06);     
     
     
-    menu.width = 190;
-    menu.margin_x = 255;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 26;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1233,18 +1371,18 @@ apply_galaxy_style(menu)
 apply_tropical_style(menu)
 {
     
-    menu.header_color = (0, 0.7, 0.7);      
-    menu.active_color = (1, 0.6, 0);        
-    menu.inactive_color = (1, 1, 0.8);      
+    menu.header_color = (0.0, 0.7, 0.8);      
+    menu.active_color = (0.0, 0.7, 0.8);        
+    menu.inactive_color = (0.8, 1.0, 1.0);      
     menu.title_color = (1, 1, 1);         
-    menu.bg_color = (0, 0.5, 0.5);          
+    menu.bg_color = (0.0, 0.07, 0.08);          
     
     
-    menu.width = 185;
-    menu.margin_x = 258;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 19;
-    menu.header_height = 25;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.8;
@@ -1261,18 +1399,18 @@ apply_tropical_style(menu)
 apply_metal_style(menu)
 {
     
-    menu.header_color = (0.6, 0.6, 0.6);    
-    menu.active_color = (0.8, 0.8, 0.8);    
-    menu.inactive_color = (0.5, 0.5, 0.5);  
+    menu.header_color = (0.5, 0.55, 0.6);    
+    menu.active_color = (0.5, 0.55, 0.6);    
+    menu.inactive_color = (0.9, 0.9, 0.95);  
     menu.title_color = (1, 1, 1);    
-    menu.bg_color = (0.2, 0.2, 0.2);        
+    menu.bg_color = (0.05, 0.055, 0.06);        
     
     
     menu.width = 175;
     menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 24;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1289,18 +1427,18 @@ apply_metal_style(menu)
 apply_vampire_style(menu)
 {
     
-    menu.header_color = (0.4, 0, 0);        
-    menu.active_color = (0.7, 0, 0);        
-    menu.inactive_color = (0.7, 0.6, 0.6);  
+    menu.header_color = (0.6, 0.0, 0.0);        
+    menu.active_color = (0.6, 0.0, 0.0);        
+    menu.inactive_color = (1.0, 0.8, 0.8);  
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.05, 0, 0.05);        
+    menu.bg_color = (0.06, 0.0, 0.0);        
     
     
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 25;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.95;
@@ -1317,18 +1455,18 @@ apply_vampire_style(menu)
 apply_toxic_style(menu)
 {
     
-    menu.header_color = (0.2, 0.8, 0);      
-    menu.active_color = (0.4, 1, 0);        
-    menu.inactive_color = (0.8, 1, 0.7);    
+    menu.header_color = (0.4, 0.9, 0.0);      
+    menu.active_color = (0.4, 0.9, 0.0);        
+    menu.inactive_color = (0.9, 1.0, 0.8);    
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.1, 0.1, 0.1);        
+    menu.bg_color = (0.04, 0.09, 0.0);        
     
     
-    menu.width = 185;
-    menu.margin_x = 258;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 21;
-    menu.header_height = 27;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1345,15 +1483,15 @@ apply_toxic_style(menu)
 apply_pastel_style(menu)
 {
     
-    menu.header_color = (0.9, 0.8, 0.9);    
-    menu.active_color = (0.8, 0.6, 0.8);    
-    menu.inactive_color = (0.9, 0.9, 0.9);  
+    menu.header_color = (1.0, 0.7, 0.8);    
+    menu.active_color = (1.0, 0.7, 0.8);    
+    menu.inactive_color = (1.0, 0.9, 0.95);  
     menu.title_color = (1, 1, 1);     
-    menu.bg_color = (1, 0.95, 1);           
+    menu.bg_color = (0.1, 0.07, 0.08);           
     
     
-    menu.width = 170;
-    menu.margin_x = 265;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 22;
@@ -1373,18 +1511,18 @@ apply_pastel_style(menu)
 apply_desert_style(menu)
 {
     
-    menu.header_color = (0.8, 0.6, 0.3);    
-    menu.active_color = (0.9, 0.7, 0.2);    
-    menu.inactive_color = (0.95, 0.9, 0.7); 
+    menu.header_color = (0.8, 0.5, 0.2);    
+    menu.active_color = (0.8, 0.5, 0.2);    
+    menu.inactive_color = (1.0, 0.95, 0.8); 
     menu.title_color = (1, 1, 1);    
-    menu.bg_color = (0.7, 0.6, 0.4);        
+    menu.bg_color = (0.08, 0.05, 0.02);        
     
     
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 19;
-    menu.header_height = 24;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.85;
@@ -1401,18 +1539,18 @@ apply_desert_style(menu)
 apply_ocean_deep_style(menu)
 {
     
-    menu.header_color = (0.1, 0.2, 0.4);    
-    menu.active_color = (0, 0.4, 0.7);      
-    menu.inactive_color = (0.6, 0.8, 0.9);  
+    menu.header_color = (0.0, 0.1, 0.3);    
+    menu.active_color = (0.0, 0.1, 0.3);      
+    menu.inactive_color = (0.8, 0.9, 1.0);  
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.05, 0.1, 0.2);       
+    menu.bg_color = (0.0, 0.01, 0.03);       
     
     
-    menu.width = 185;
-    menu.margin_x = 258;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 26;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.95;
@@ -1429,18 +1567,18 @@ apply_ocean_deep_style(menu)
 apply_nuke_style(menu)
 {
     
-    menu.header_color = (0.8, 0.8, 0);      
-    menu.active_color = (0.9, 0.9, 0);      
-    menu.inactive_color = (0.8, 0.8, 0.6);  
+    menu.header_color = (1.0, 0.9, 0.0);      
+    menu.active_color = (1.0, 0.9, 0.0);      
+    menu.inactive_color = (1.0, 1.0, 0.8);  
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.15, 0.15, 0.15);     
+    menu.bg_color = (0.1, 0.09, 0.0);     
     
     
-    menu.width = 195;
-    menu.margin_x = 253;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 22;
-    menu.header_height = 28;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1457,18 +1595,18 @@ apply_nuke_style(menu)
 apply_gold_elite_style(menu)
 {
     
-    menu.header_color = (0.9, 0.8, 0.2);    
-    menu.active_color = (1, 0.85, 0.1);     
-    menu.inactive_color = (0.85, 0.7, 0.2); 
+    menu.header_color = (0.8, 0.7, 0.2);    
+    menu.active_color = (0.8, 0.7, 0.2);     
+    menu.inactive_color = (1.0, 0.95, 0.8); 
     menu.title_color = (1, 1, 1);     
-    menu.bg_color = (0.25, 0.2, 0.1);       
+    menu.bg_color = (0.08, 0.07, 0.02);       
     
     
-    menu.width = 190;
-    menu.margin_x = 255;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 25;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1485,18 +1623,18 @@ apply_gold_elite_style(menu)
 apply_frozen_style(menu)
 {
     
-    menu.header_color = (0.8, 0.9, 1);      
-    menu.active_color = (0.6, 0.8, 1);      
-    menu.inactive_color = (0.9, 0.95, 1);   
+    menu.header_color = (0.6, 0.8, 1.0);      
+    menu.active_color = (0.6, 0.8, 1.0);      
+    menu.inactive_color = (0.9, 0.98, 1.0);   
     menu.title_color = (1, 1, 1);     
-    menu.bg_color = (0.95, 0.98, 1);        
+    menu.bg_color = (0.06, 0.08, 0.1);        
     
     
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 24;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.85;
@@ -1513,18 +1651,18 @@ apply_frozen_style(menu)
 apply_retro_tv_style(menu)
 {
     
-    menu.header_color = (0.2, 0.2, 0.2);    
-    menu.active_color = (0.1, 0.7, 0.1);    
-    menu.inactive_color = (0.7, 0.7, 0.7);  
+    menu.header_color = (0.3, 0.3, 0.3);    
+    menu.active_color = (0.3, 0.3, 0.3);    
+    menu.inactive_color = (0.8, 0.8, 0.8);  
     menu.title_color = (1, 1, 1);      
-    menu.bg_color = (0.1, 0.1, 0.1);        
+    menu.bg_color = (0.03, 0.03, 0.03);        
     
     
-    menu.width = 200;
-    menu.margin_x = 250;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 25;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.95;
@@ -1541,18 +1679,18 @@ apply_retro_tv_style(menu)
 apply_sunset_style(menu)
 {
     
-    menu.header_color = (0.9, 0.5, 0);      
-    menu.active_color = (0.8, 0.4, 0);      
-    menu.inactive_color = (0.8, 0.7, 0.8);  
+    menu.header_color = (0.6, 0.3, 0.5);      
+    menu.active_color = (0.6, 0.3, 0.5);      
+    menu.inactive_color = (1.0, 0.9, 0.95);  
     menu.title_color = (1, 1, 1);       
-    menu.bg_color = (0.1, 0.02, 0.1);       
+    menu.bg_color = (0.06, 0.03, 0.05);       
     
     
-    menu.width = 195;
-    menu.margin_x = 253;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 21;
-    menu.header_height = 28;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1569,15 +1707,15 @@ apply_sunset_style(menu)
 apply_matrix_style(menu)
 {
     
-    menu.header_color = (0, 0.5, 0);        
-    menu.active_color = (0, 0.8, 0);        
-    menu.inactive_color = (0.5, 0.5, 0.5);  
+    menu.header_color = (0.0, 0.8, 0.0);        
+    menu.active_color = (0.0, 0.8, 0.0);        
+    menu.inactive_color = (0.8, 1.0, 0.8);  
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0, 0, 0);              
+    menu.bg_color = (0.0, 0.08, 0.0);              
     
     
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 22;
@@ -1597,15 +1735,15 @@ apply_matrix_style(menu)
 apply_steampunk_style(menu)
 {
     
-    menu.header_color = (0.5, 0.3, 0.1);    
-    menu.active_color = (0.8, 0.6, 0.2);    
-    menu.inactive_color = (0.7, 0.5, 0.1);  
+    menu.header_color = (0.6, 0.4, 0.2);    
+    menu.active_color = (0.6, 0.4, 0.2);    
+    menu.inactive_color = (0.95, 0.9, 0.8);  
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.2, 0.1, 0.05);       
+    menu.bg_color = (0.06, 0.04, 0.02);       
     
     
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 22;
@@ -1625,18 +1763,18 @@ apply_steampunk_style(menu)
 apply_blood_moon_style(menu)
 {
     
-    menu.header_color = (0.8, 0.2, 0);      
-    menu.active_color = (1, 0.6, 0);        
-    menu.inactive_color = (1, 0.8, 0.7);    
+    menu.header_color = (0.6, 0.0, 0.0);      
+    menu.active_color = (0.6, 0.0, 0.0);        
+    menu.inactive_color = (1.0, 0.8, 0.8);    
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.3, 0, 0);            
+    menu.bg_color = (0.06, 0.0, 0.0);            
     
     
-    menu.width = 190;
-    menu.margin_x = 255;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 26;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1653,18 +1791,18 @@ apply_blood_moon_style(menu)
 apply_synthwave_style(menu)
 {
     
-    menu.header_color = (0.9, 0.1, 0.6);    
-    menu.active_color = (0, 0.9, 0.9);      
-    menu.inactive_color = (0.85, 0.85, 0.9); 
+    menu.header_color = (1.0, 0.0, 0.8);    
+    menu.active_color = (1.0, 0.0, 0.8);      
+    menu.inactive_color = (1.0, 0.8, 0.95); 
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.05, 0, 0.1);         
+    menu.bg_color = (0.1, 0.0, 0.08);         
     
     
-    menu.width = 195;
-    menu.margin_x = 253;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 21;
-    menu.header_height = 28;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1681,15 +1819,15 @@ apply_synthwave_style(menu)
 apply_comic_style(menu)
 {
     
-    menu.header_color = (0.9, 0.8, 0.9);    
-    menu.active_color = (0.8, 0.6, 0.8);    
-    menu.inactive_color = (0.9, 0.9, 0.9);  
+    menu.header_color = (1.0, 0.2, 0.2);    
+    menu.active_color = (1.0, 0.2, 0.2);    
+    menu.inactive_color = (1.0, 0.9, 0.9);  
     menu.title_color = (1, 1, 1);    
-    menu.bg_color = (1, 0.95, 1);           
+    menu.bg_color = (0.1, 0.02, 0.02);           
     
     
-    menu.width = 170;
-    menu.margin_x = 265;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
     menu.header_height = 22;
@@ -1709,18 +1847,18 @@ apply_comic_style(menu)
 apply_pixel_art_style(menu)
 {
     
-    menu.header_color = (0.3, 0.3, 0.8);    
-    menu.active_color = (1, 0.5, 0.1);      
-    menu.inactive_color = (0.7, 0.7, 0.7);  
+    menu.header_color = (0.2, 0.2, 0.8);    
+    menu.active_color = (0.2, 0.2, 0.8);      
+    menu.inactive_color = (0.9, 0.9, 1.0);  
     menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.1, 0.1, 0.2);        
+    menu.bg_color = (0.02, 0.02, 0.08);        
     
     
-    menu.width = 200;
-    menu.margin_x = 250;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 24;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 1.0;     
@@ -1737,18 +1875,18 @@ apply_pixel_art_style(menu)
 apply_graffiti_style(menu)
 {
     
-    menu.header_color = (0.2, 0.2, 0.2);    
-    menu.active_color = (1, 0.2, 0.5);      
-    menu.inactive_color = (0.3, 0.9, 0.5);  
+    menu.header_color = (1.0, 0.0, 0.4);    
+    menu.active_color = (1.0, 0.0, 0.4);      
+    menu.inactive_color = (1.0, 0.8, 0.9);  
     menu.title_color = (1, 1, 1);         
-    menu.bg_color = (0.15, 0.15, 0.15);     
+    menu.bg_color = (0.1, 0.0, 0.04);     
     
     
-    menu.width = 210;
-    menu.margin_x = 245;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 22;
-    menu.header_height = 30;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.95;
@@ -1765,18 +1903,18 @@ apply_graffiti_style(menu)
 apply_vaporwave_style(menu)
 {
     
-    menu.header_color = (0.8, 0.3, 0.8);    
-    menu.active_color = (0, 0.9, 0.9);      
-    menu.inactive_color = (0.9, 0.5, 0.9);  
+    menu.header_color = (1.0, 0.4, 0.8);    
+    menu.active_color = (1.0, 0.4, 0.8);      
+    menu.inactive_color = (1.0, 0.9, 1.0);  
     menu.title_color = (1, 1, 1);        
-    menu.bg_color = (0.2, 0, 0.3);          
+    menu.bg_color = (0.1, 0.04, 0.08);          
     
     
-    menu.width = 195;
-    menu.margin_x = 253;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 21;
-    menu.header_height = 28;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.8;
@@ -1793,18 +1931,18 @@ apply_vaporwave_style(menu)
 apply_enchanted_forest_style(menu)
 {
     
-    menu.header_color = (0.2, 0.6, 0.3);    
-    menu.active_color = (0.6, 0.2, 0.8);    
-    menu.inactive_color = (0.7, 0.9, 0.7);  
+    menu.header_color = (0.1, 0.4, 0.2);    
+    menu.active_color = (0.1, 0.4, 0.2);    
+    menu.inactive_color = (0.8, 1.0, 0.85);  
     menu.title_color = (1, 1, 1);      
-    menu.bg_color = (0.1, 0.2, 0.15);       
+    menu.bg_color = (0.01, 0.04, 0.02);       
     
     
-    menu.width = 185;
-    menu.margin_x = 258;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 19;
-    menu.header_height = 26;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.85;
@@ -1821,18 +1959,18 @@ apply_enchanted_forest_style(menu)
 apply_ancient_egypt_style(menu)
 {
     
-    menu.header_color = (0.9, 0.7, 0.1);    
-    menu.active_color = (0.1, 0.4, 0.7);    
-    menu.inactive_color = (0.8, 0.7, 0.5);  
+    menu.header_color = (0.8, 0.6, 0.1);    
+    menu.active_color = (0.8, 0.6, 0.1);    
+    menu.inactive_color = (1.0, 0.95, 0.8);  
     menu.title_color = (1, 1, 1);      
-    menu.bg_color = (0.4, 0.3, 0.2);        
+    menu.bg_color = (0.08, 0.06, 0.01);        
     
     
-    menu.width = 190;
-    menu.margin_x = 255;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 27;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.9;
@@ -1849,18 +1987,18 @@ apply_ancient_egypt_style(menu)
 apply_crystal_glass_style(menu)
 {
     
-    menu.header_color = (0.8, 0.95, 1);      
-    menu.active_color = (0.6, 0.85, 1);      
-    menu.inactive_color = (0.9, 0.95, 1);    
-    menu.title_color = (0.2, 0.4, 0.8);      
-    menu.bg_color = (0.95, 0.98, 1);         
+    menu.header_color = (0.7, 0.8, 0.9);      
+    menu.active_color = (0.7, 0.8, 0.9);      
+    menu.inactive_color = (0.95, 0.98, 1.0);    
+    menu.title_color = (1, 1, 1);      
+    menu.bg_color = (0.07, 0.08, 0.09);         
 
     
-    menu.width = 185;
-    menu.margin_x = 258;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 19;
-    menu.header_height = 25;
+    menu.item_height = 18;
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.7;
@@ -1877,18 +2015,18 @@ apply_crystal_glass_style(menu)
 apply_velvet_noir_style(menu)
 {
     
-    menu.header_color = (0.1, 0.1, 0.15);    
-    menu.active_color = (0.8, 0.7, 0.2);     
-    menu.inactive_color = (0.4, 0.4, 0.5);   
-    menu.title_color = (0.9, 0.8, 0.3);      
-    menu.bg_color = (0.05, 0.05, 0.08);      
+    menu.header_color = (0.4, 0.0, 0.1);    
+    menu.active_color = (0.4, 0.0, 0.1);     
+    menu.inactive_color = (1.0, 0.9, 0.9);   
+    menu.title_color = (1, 1, 1);      
+    menu.bg_color = (0.04, 0.0, 0.01);      
 
     
-    menu.width = 190;
-    menu.margin_x = 255;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 26;
+    menu.item_height = 18;
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.95;
@@ -1905,18 +2043,18 @@ apply_velvet_noir_style(menu)
 apply_aurora_borealis_style(menu)
 {
     
-    menu.header_color = (0.2, 0.8, 0.6);     
-    menu.active_color = (0.8, 0.4, 1);       
-    menu.inactive_color = (0.9, 0.9, 1);     
-    menu.title_color = (0.6, 1, 0.8);        
-    menu.bg_color = (0.05, 0.1, 0.2);        
+    menu.header_color = (0.0, 0.8, 0.6);     
+    menu.active_color = (0.0, 0.8, 0.6);       
+    menu.inactive_color = (0.8, 1.0, 0.95);     
+    menu.title_color = (1, 1, 1);        
+    menu.bg_color = (0.0, 0.08, 0.06);        
 
     
-    menu.width = 195;
-    menu.margin_x = 253;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 21;
-    menu.header_height = 28;
+    menu.item_height = 18;
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.85;
@@ -1978,18 +2116,18 @@ aurora_effect(menu)
 apply_marble_luxe_style(menu)
 {
     
-    menu.header_color = (0.95, 0.95, 0.9);   
-    menu.active_color = (0.9, 0.8, 0.4);     
-    menu.inactive_color = (0.85, 0.85, 0.8); 
-    menu.title_color = (0.3, 0.25, 0.1);     
-    menu.bg_color = (0.98, 0.98, 0.95);      
+    menu.header_color = (0.9, 0.8, 0.2);   
+    menu.active_color = (0.9, 0.8, 0.2);     
+    menu.inactive_color = (1.0, 0.95, 0.8); 
+    menu.title_color = (1, 1, 1);     
+    menu.bg_color = (0.09, 0.08, 0.02);      
 
     
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 24;
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.9;
@@ -2006,18 +2144,18 @@ apply_marble_luxe_style(menu)
 apply_neon_city_style(menu)
 {
     
-    menu.header_color = (0.1, 0.1, 0.2);     
-    menu.active_color = (1, 0.1, 0.8);       
-    menu.inactive_color = (0.2, 0.8, 1);     
-    menu.title_color = (1, 0.5, 0);          
-    menu.bg_color = (0.05, 0.05, 0.1);       
+    menu.header_color = (0.6, 0.0, 0.8);     
+    menu.active_color = (0.6, 0.0, 0.8);       
+    menu.inactive_color = (0.9, 0.8, 1.0);     
+    menu.title_color = (1, 1, 1);          
+    menu.bg_color = (0.06, 0.0, 0.08);       
 
     
-    menu.width = 200;
-    menu.margin_x = 250;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 22;
-    menu.header_height = 30;
+    menu.item_height = 18;
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.9;
@@ -2034,18 +2172,18 @@ apply_neon_city_style(menu)
 apply_sakura_blossom_style(menu)
 {
     
-    menu.header_color = (0.95, 0.8, 0.9);    
-    menu.active_color = (0.9, 0.6, 0.8);     
-    menu.inactive_color = (0.95, 0.9, 0.95); 
-    menu.title_color = (0.7, 0.4, 0.6);      
-    menu.bg_color = (0.98, 0.95, 0.97);      
+    menu.header_color = (1.0, 0.6, 0.8);    
+    menu.active_color = (1.0, 0.6, 0.8);     
+    menu.inactive_color = (1.0, 0.9, 0.95); 
+    menu.title_color = (1, 1, 1);      
+    menu.bg_color = (0.1, 0.06, 0.08);      
 
     
     menu.width = 175;
     menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 23;
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.85;
@@ -2062,18 +2200,18 @@ apply_sakura_blossom_style(menu)
 apply_deep_space_style(menu)
 {
     
-    menu.header_color = (0.1, 0.1, 0.3);     
-    menu.active_color = (0.8, 0.8, 1);       
-    menu.inactive_color = (0.5, 0.5, 0.7);   
-    menu.title_color = (1, 1, 0.8);          
-    menu.bg_color = (0.02, 0.02, 0.08);      
+    menu.header_color = (0.0, 0.0, 0.4);     
+    menu.active_color = (0.0, 0.0, 0.4);       
+    menu.inactive_color = (0.8, 0.8, 1.0);   
+    menu.title_color = (1, 1, 1);          
+    menu.bg_color = (0.0, 0.0, 0.04);      
 
     
-    menu.width = 190;
-    menu.margin_x = 255;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 26;
+    menu.item_height = 18;
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.95;
@@ -2090,18 +2228,18 @@ apply_deep_space_style(menu)
 apply_coral_reef_style(menu)
 {
     
-    menu.header_color = (0.9, 0.6, 0.3);     
-    menu.active_color = (0.1, 0.7, 0.8);     
-    menu.inactive_color = (0.8, 0.9, 0.7);   
-    menu.title_color = (0.9, 0.4, 0.2);      
-    menu.bg_color = (0.1, 0.3, 0.4);         
+    menu.header_color = (1.0, 0.4, 0.4);     
+    menu.active_color = (1.0, 0.4, 0.4);     
+    menu.inactive_color = (1.0, 0.9, 0.9);   
+    menu.title_color = (1, 1, 1);      
+    menu.bg_color = (0.1, 0.04, 0.04);         
 
     
-    menu.width = 185;
-    menu.margin_x = 258;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 19;
-    menu.header_height = 25;
+    menu.item_height = 18;
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.85;
@@ -2118,18 +2256,18 @@ apply_coral_reef_style(menu)
 apply_royal_purple_style(menu)
 {
     
-    menu.header_color = (0.4, 0.1, 0.6);     
-    menu.active_color = (0.9, 0.7, 0.1);     
-    menu.inactive_color = (0.6, 0.4, 0.7);   
-    menu.title_color = (0.95, 0.8, 0.2);     
-    menu.bg_color = (0.2, 0.1, 0.3);         
+    menu.header_color = (0.4, 0.0, 0.6);     
+    menu.active_color = (0.4, 0.0, 0.6);     
+    menu.inactive_color = (0.9, 0.8, 1.0);   
+    menu.title_color = (1, 1, 1);     
+    menu.bg_color = (0.04, 0.0, 0.06);         
 
     
-    menu.width = 195;
-    menu.margin_x = 253;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 21;
-    menu.header_height = 28;
+    menu.item_height = 18;
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.9;
@@ -2146,18 +2284,18 @@ apply_royal_purple_style(menu)
 apply_sunrise_gradient_style(menu)
 {
     
-    menu.header_color = (0.9, 0.5, 0.2);     
-    menu.active_color = (1, 0.7, 0.3);       
-    menu.inactive_color = (0.95, 0.8, 0.6);  
-    menu.title_color = (0.2, 0.1, 0.05);     
-    menu.bg_color = (0.98, 0.85, 0.7);       
+    menu.header_color = (1.0, 0.5, 0.0);     
+    menu.active_color = (1.0, 0.5, 0.0);       
+    menu.inactive_color = (1.0, 0.9, 0.8);  
+    menu.title_color = (1, 1, 1);     
+    menu.bg_color = (0.1, 0.05, 0.0);       
 
     
-    menu.width = 180;
-    menu.margin_x = 260;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
     menu.item_height = 18;
-    menu.header_height = 24;
+    menu.header_height = 22;
 
     
     menu.bg_alpha = 0.85;
@@ -2184,18 +2322,18 @@ stop_aurora_effect(menu)
 apply_neon_retro_style(menu)
 {
     
-    menu.header_color = (0, 0, 0);          
-    menu.active_color = (1, 0.1, 0.6);      
-    menu.inactive_color = (0.1, 0.9, 0.9);  
+    menu.header_color = (0.0, 0.0, 0.0);          
+    menu.active_color = (0.0, 0.0, 0.0);      
+    menu.inactive_color = (0.8, 0.8, 0.8);  
     menu.title_color = (1, 1, 1);       
-    menu.bg_color = (0.05, 0.05, 0.05);     
+    menu.bg_color = (0.1, 0.1, 0.1);     
     
     
-    menu.width = 195;
-    menu.margin_x = 253;
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 22;
-    menu.header_height = 29;
+    menu.item_height = 18;
+    menu.header_height = 22;
     
     
     menu.bg_alpha = 0.95;
@@ -2211,27 +2349,877 @@ apply_neon_retro_style(menu)
 
 apply_hologram_style(menu)
 {
-    
-    menu.header_color = (0.1, 0.7, 0.9);    
-    menu.active_color = (0.3, 0.8, 1);      
-    menu.inactive_color = (0.6, 0.8, 0.9);  
-    menu.title_color = (1, 1, 1);           
-    menu.bg_color = (0.1, 0.2, 0.3);        
-    
-    
-    menu.width = 200;
-    menu.margin_x = 250;
+
+    menu.header_color = (0.0, 0.8, 1.0);
+    menu.active_color = (0.0, 0.8, 1.0);
+    menu.inactive_color = (0.8, 0.95, 1.0);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.0, 0.08, 0.1);
+
+
+    menu.width = 175;
+    menu.margin_x = 263;
     menu.margin_y = 180;
-    menu.item_height = 20;
-    menu.header_height = 25;
-    
-    
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+
     menu.bg_alpha = 0.6;
     menu.header_alpha = 0.8;
-    
-    
+
+
     menu.has_border = false;
+
+
+    update_menu_visuals(menu);
+}
+
+
+
+
+apply_custom_dimensions(menu)
+{
+    if (!isDefined(menu.user))
+        return menu;
+
     
+    if (!isDefined(menu.user.custom_menu_width))
+        menu.user.custom_menu_width = 175;
+
+    if (!isDefined(menu.user.custom_menu_margin_x))
+        menu.user.custom_menu_margin_x = 0;
+
+    if (!isDefined(menu.user.custom_menu_margin_y))
+        menu.user.custom_menu_margin_y = 40;
+
+    if (!isDefined(menu.user.custom_menu_item_height))
+        menu.user.custom_menu_item_height = 18;
+
+    if (!isDefined(menu.user.custom_menu_header_height))
+        menu.user.custom_menu_header_height = 36;
+
     
+    menu.width = menu.user.custom_menu_width;
+    menu.margin_x = menu.user.custom_menu_margin_x;
+    menu.margin_y = menu.user.custom_menu_margin_y;
+    menu.item_height = menu.user.custom_menu_item_height;
+    menu.header_height = menu.user.custom_menu_header_height;
+
+    
+    update_menu_visuals(menu);
+
+    
+    if (isDefined(menu.background))
+    {
+        total_height = menu.header_height + (menu.item_height * menu.items.size);
+        menu.background setShader("white", menu.width, total_height);
+        menu.background.x = menu.margin_x;
+        menu.background.y = menu.margin_y;
+    }
+
+    if (isDefined(menu.header_bg))
+    {
+        menu.header_bg setShader("white", menu.width, menu.header_height);
+        menu.header_bg.x = menu.margin_x;
+        menu.header_bg.y = menu.margin_y;
+    }
+
+    
+    if (isDefined(menu.selection_bar))
+    {
+        menu.selection_bar.x = menu.margin_x;
+        menu.selection_bar.y = menu.margin_y + menu.header_height + (menu.item_height * menu.selected);
+        menu.selection_bar setShader("white", menu.width, menu.item_height);
+    }
+
+    
+    for (i = 0; i < menu.items.size; i++)
+    {
+        if (isDefined(menu.items[i].item))
+        {
+            menu.items[i].item.y = menu.margin_y + menu.header_height + (menu.item_height * i) + (menu.item_height / 2) - 6;
+
+            
+            if (isDefined(menu.font_position_index))
+            {
+                switch(menu.font_position_index)
+                {
+                    case 0: 
+                        menu.items[i].item.x = menu.margin_x + 15;
+                        menu.items[i].item.alignX = "left";
+                        break;
+                    case 1: 
+                        menu.items[i].item.x = menu.margin_x + (menu.width / 2);
+                        menu.items[i].item.alignX = "center";
+                        break;
+                    case 2: 
+                        menu.items[i].item.x = menu.margin_x + menu.width - 15;
+                        menu.items[i].item.alignX = "right";
+                        break;
+                    default: 
+                        menu.items[i].item.x = menu.margin_x + 15;
+                        menu.items[i].item.alignX = "left";
+                        break;
+                }
+            }
+            else
+            {
+                
+                if (menu.items[i].item.horzalign == "center")
+                {
+                    menu.items[i].item.x = menu.margin_x + (menu.width / 2);
+                }
+                else
+                {
+                    menu.items[i].item.x = menu.margin_x + 15;
+                }
+            }
+        }
+    }
+
+    
+    if (isDefined(menu.title_text))
+    {
+        menu.title_text.y = menu.margin_y + 3;
+        
+        if (isDefined(menu.font_position_index))
+        {
+            switch(menu.font_position_index)
+            {
+                case 0: 
+                    menu.title_text.x = menu.margin_x + 10;
+                    menu.title_text.alignX = "left";
+                    break;
+                case 1: 
+                    menu.title_text.x = menu.margin_x + (menu.width / 2);
+                    menu.title_text.alignX = "center";
+                    break;
+                case 2: 
+                    menu.title_text.x = menu.margin_x + menu.width - 10;
+                    menu.title_text.alignX = "right";
+                    break;
+                default:
+                    menu.title_text.x = menu.margin_x + 10;
+                    menu.title_text.alignX = "left";
+                    break;
+            }
+        }
+        else
+        {
+            menu.title_text.x = menu.margin_x + 12;
+        }
+    }
+
+    if (isDefined(menu.title_shadow))
+    {
+        menu.title_shadow.y = menu.margin_y + 5;
+        
+        if (isDefined(menu.font_position_index))
+        {
+            switch(menu.font_position_index)
+            {
+                case 0: 
+                    menu.title_shadow.x = menu.margin_x + 12;
+                    menu.title_shadow.alignX = "left";
+                    break;
+                case 1: 
+                    menu.title_shadow.x = menu.margin_x + (menu.width / 2) + 2;
+                    menu.title_shadow.alignX = "center";
+                    break;
+                case 2: 
+                    menu.title_shadow.x = menu.margin_x + menu.width - 8;
+                    menu.title_shadow.alignX = "right";
+                    break;
+                default:
+                    menu.title_shadow.x = menu.margin_x + 12;
+                    menu.title_shadow.alignX = "left";
+                    break;
+            }
+        }
+        else
+        {
+            menu.title_shadow.x = menu.margin_x + 14;
+        }
+    }
+
+    return menu;
+}
+
+set_custom_menu_width(player, width)
+{
+    if (!isDefined(width) || width < 150 || width > 350)
+        width = 175;
+
+    player.custom_menu_width = width;
+}
+
+set_custom_menu_margin_x(player, margin_x)
+{
+    if (!isDefined(margin_x) || margin_x < 0 || margin_x > 600)
+        margin_x = 0;
+
+    player.custom_menu_margin_x = margin_x;
+}
+
+set_custom_menu_margin_y(player, margin_y)
+{
+    if (!isDefined(margin_y) || margin_y < 0 || margin_y > 200)
+        margin_y = 40;
+
+    player.custom_menu_margin_y = margin_y;
+}
+
+set_custom_menu_item_height(player, item_height)
+{
+    if (!isDefined(item_height) || item_height < 12 || item_height > 28)
+        item_height = 18;
+
+    player.custom_menu_item_height = item_height;
+}
+
+set_custom_menu_header_height(player, header_height)
+{
+    if (!isDefined(header_height) || header_height < 15 || header_height > 50)
+        header_height = 36;
+
+    player.custom_menu_header_height = header_height;
+}
+
+reset_custom_dimensions(player)
+{
+    player.custom_menu_width = 175;
+    player.custom_menu_margin_x = 0;
+    player.custom_menu_margin_y = 40;
+    player.custom_menu_item_height = 18;
+    player.custom_menu_header_height = 36;
+}
+
+apply_blueprint_style(menu)
+{
+    menu.header_color = (0.0, 0.2, 0.6);
+    menu.active_color = (0.0, 0.2, 0.6);
+    menu.inactive_color = (0.9, 0.9, 1.0);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.0, 0.1, 0.4);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_amber_terminal_style(menu)
+{
+    menu.header_color = (1.0, 0.7, 0.0);
+    menu.active_color = (1.0, 0.7, 0.0);
+    menu.inactive_color = (0.8, 0.6, 0.0);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.0, 0.0, 0.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.95;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_monochrome_style(menu)
+{
+    menu.header_color = (0.1, 0.1, 0.1);
+    menu.active_color = (0.1, 0.1, 0.1);
+    menu.inactive_color = (0.5, 0.5, 0.5);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.0, 0.0, 0.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 1;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_parchment_style(menu)
+{
+    menu.header_color = (0.4, 0.3, 0.2);
+    menu.active_color = (0.4, 0.3, 0.2);
+    menu.inactive_color = (0.3, 0.2, 0.1);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.9, 0.85, 0.7);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_graphite_style(menu)
+{
+    menu.header_color = (0.6, 0.6, 0.6);
+    menu.active_color = (0.6, 0.6, 0.6);
+    menu.inactive_color = (0.4, 0.4, 0.4);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.1, 0.1, 0.1);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.95;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_espresso_style(menu)
+{
+    menu.header_color = (0.8, 0.7, 0.6);
+    menu.active_color = (0.8, 0.7, 0.6);
+    menu.inactive_color = (0.6, 0.5, 0.4);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.1, 0.05, 0.02);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_lilac_style(menu)
+{
+    menu.header_color = (0.6, 0.4, 0.8);
+    menu.active_color = (0.6, 0.4, 0.8);
+    menu.inactive_color = (0.3, 0.2, 0.4);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.9, 0.8, 1.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.85;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_mint_style(menu)
+{
+    menu.header_color = (0.4, 0.8, 0.6);
+    menu.active_color = (0.4, 0.8, 0.6);
+    menu.inactive_color = (0.2, 0.4, 0.3);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.8, 1.0, 0.9);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.85;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_imperial_red_style(menu)
+{
+    menu.header_color = (1.0, 0.8, 0.0);
+    menu.active_color = (1.0, 0.8, 0.0);
+    menu.inactive_color = (1.0, 0.9, 0.8);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.2, 0.0, 0.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.95;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_white_gold_style(menu)
+{
+    menu.header_color = (0.9, 0.8, 0.2);
+    menu.active_color = (0.9, 0.8, 0.2);
+    menu.inactive_color = (0.6, 0.5, 0.1);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (1.0, 1.0, 1.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_storm_style(menu)
+{
+    menu.header_color = (1.0, 0.9, 0.0);
+    menu.active_color = (1.0, 0.9, 0.0);
+    menu.inactive_color = (0.7, 0.8, 0.9);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.1, 0.15, 0.2);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_cotton_candy_style(menu)
+{
+    menu.header_color = (0.6, 0.8, 1.0);
+    menu.active_color = (0.6, 0.8, 1.0);
+    menu.inactive_color = (1.0, 0.9, 0.95);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.2, 0.1, 0.15);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.85;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_midnight_violet_style(menu)
+{
+    menu.header_color = (0.6, 0.4, 0.8);
+    menu.active_color = (0.6, 0.4, 0.8);
+    menu.inactive_color = (0.4, 0.3, 0.5);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.05, 0.0, 0.1);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.95;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_sunburst_style(menu)
+{
+    menu.header_color = (1.0, 0.8, 0.0);
+    menu.active_color = (1.0, 0.8, 0.0);
+    menu.inactive_color = (1.0, 0.9, 0.8);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.2, 0.1, 0.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_titanium_style(menu)
+{
+    menu.header_color = (0.3, 0.3, 0.35);
+    menu.active_color = (0.3, 0.3, 0.35);
+    menu.inactive_color = (0.4, 0.4, 0.45);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.8, 0.8, 0.85);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.95;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_emerald_city_style(menu)
+{
+    menu.header_color = (0.0, 0.6, 0.3);
+    menu.active_color = (0.0, 0.6, 0.3);
+    menu.inactive_color = (0.6, 1.0, 0.6);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.0, 0.1, 0.05);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_ruby_red_style(menu)
+{
+    menu.header_color = (0.8, 0.0, 0.1);
+    menu.active_color = (0.8, 0.0, 0.1);
+    menu.inactive_color = (1.0, 0.6, 0.6);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.1, 0.0, 0.02);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.95;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_sapphire_blue_style(menu)
+{
+    menu.header_color = (0.0, 0.2, 0.8);
+    menu.active_color = (0.0, 0.2, 0.8);
+    menu.inactive_color = (0.6, 0.7, 1.0);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.0, 0.02, 0.1);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.95;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_obsidian_style(menu)
+{
+    menu.header_color = (0.3, 0.3, 0.3);
+    menu.active_color = (0.3, 0.3, 0.3);
+    menu.inactive_color = (0.2, 0.2, 0.2);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.0, 0.0, 0.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.98;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_pearl_style(menu)
+{
+    menu.header_color = (0.4, 0.4, 0.45);
+    menu.active_color = (0.4, 0.4, 0.45);
+    menu.inactive_color = (0.7, 0.7, 0.7);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (1.0, 1.0, 1.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.85;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_carbon_fiber_style(menu)
+{
+    menu.header_color = (0.0, 0.0, 0.0);
+    menu.active_color = (0.0, 0.0, 0.0);
+    menu.inactive_color = (0.4, 0.4, 0.4);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.08, 0.08, 0.08);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 1;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_magma_style(menu)
+{
+    menu.header_color = (1.0, 0.3, 0.0);
+    menu.active_color = (1.0, 0.3, 0.0);
+    menu.inactive_color = (0.5, 0.5, 0.5);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.1, 0.05, 0.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_glitch_style(menu)
+{
+    menu.header_color = (0.0, 1.0, 0.0);
+    menu.active_color = (0.0, 1.0, 0.0);
+    menu.inactive_color = (1.0, 0.0, 1.0);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.05, 0.05, 0.05);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_biohazard_style(menu)
+{
+    menu.header_color = (0.0, 0.0, 0.0);
+    menu.active_color = (0.0, 0.0, 0.0);
+    menu.inactive_color = (0.4, 0.4, 0.0);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.1, 0.1, 0.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_radioactive_style(menu)
+{
+    menu.header_color = (0.2, 1.0, 0.2);
+    menu.active_color = (0.2, 1.0, 0.2);
+    menu.inactive_color = (0.1, 0.5, 0.1);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.0, 0.1, 0.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.95;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_void_style(menu)
+{
+    menu.header_color = (0.3, 0.0, 0.5);
+    menu.active_color = (0.3, 0.0, 0.5);
+    menu.inactive_color = (0.2, 0.2, 0.2);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.0, 0.0, 0.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 1;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_zen_style(menu)
+{
+    menu.header_color = (0.3, 0.5, 0.3);
+    menu.active_color = (0.3, 0.5, 0.3);
+    menu.inactive_color = (0.5, 0.45, 0.4);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.95, 0.92, 0.85);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_nordic_style(menu)
+{
+    menu.header_color = (0.6, 0.8, 0.9);
+    menu.active_color = (0.6, 0.8, 0.9);
+    menu.inactive_color = (0.7, 0.75, 0.8);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.2, 0.25, 0.3);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_solar_flare_style(menu)
+{
+    menu.header_color = (1.0, 1.0, 0.0);
+    menu.active_color = (1.0, 1.0, 0.0);
+    menu.inactive_color = (1.0, 0.8, 0.6);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.3, 0.1, 0.0);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
+    update_menu_visuals(menu);
+}
+
+apply_nebula_style(menu)
+{
+    menu.header_color = (0.2, 0.0, 0.4);
+    menu.active_color = (0.0, 0.8, 1.0);
+    menu.inactive_color = (1.0, 0.4, 0.8);
+    menu.title_color = (1, 1, 1);
+    menu.bg_color = (0.1, 0.0, 0.2);
+
+    menu.width = 175;
+    menu.margin_x = 263;
+    menu.margin_y = 180;
+    menu.item_height = 18;
+    menu.header_height = 22;
+
+    menu.bg_alpha = 0.9;
+    menu.header_alpha = 1;
+    menu.has_border = false;
+
     update_menu_visuals(menu);
 } 

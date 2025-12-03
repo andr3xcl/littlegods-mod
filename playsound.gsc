@@ -297,11 +297,11 @@ change_menu_select_sound(player, new_sound_index)
 }
 
 
-// Funciones para sonidos de cancel
+
 play_menu_cancel_sound(player)
 {
     if (!isDefined(player.menu_cancel_sound_index))
-        player.menu_cancel_sound_index = 1; // Default to first sound
+        player.menu_cancel_sound_index = 1; 
 
     if (player.menu_cancel_sound_index > 0)
     {
@@ -321,7 +321,7 @@ get_menu_cancel_sound_name(index, lang)
         sound_name = level.menu_cancel_sounds[index];
         switch(lang)
         {
-            case 0: // Español
+            case 0: 
                 switch(index)
                 {
                     case 0: return "Sin Sonido";
@@ -330,7 +330,7 @@ get_menu_cancel_sound_name(index, lang)
                     case 3: return "Screen Pan";
                     default: return sound_name;
                 }
-            case 1: // Inglés
+            case 1: 
             default:
                 switch(index)
                 {

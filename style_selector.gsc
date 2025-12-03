@@ -4,6 +4,7 @@
 #include maps\mp\_utility;
 #include common_scripts\utility;
 #include maps\mp\gametypes_zm\_hud_util;
+#include scripts\zm\style_shaders_menu;
 
 
 init()
@@ -36,6 +37,22 @@ init()
     
     
     level.selector_styles[18] = "Dot";           
+
+    
+    level.selector_styles[19] = "Modern Left Bar";
+    level.selector_styles[20] = "Modern Right Bar";
+    level.selector_styles[21] = "Modern Dual Bars";
+    level.selector_styles[22] = "Clean Brackets";
+    level.selector_styles[23] = "Clean Braces";
+    level.selector_styles[24] = "Clean Angles";
+    level.selector_styles[25] = "Solid Underline";
+    level.selector_styles[26] = "Solid Overline";
+    level.selector_styles[27] = "Full Highlight";
+    level.selector_styles[28] = "Left Dot";
+    level.selector_styles[29] = "Right Dot";
+    level.selector_styles[30] = "Dual Dots";
+    level.selector_styles[31] = "Corner Brackets";
+    level.selector_styles[32] = "Minimalist Line";
 }
 
 
@@ -116,6 +133,50 @@ apply_selector_style(menu, style_index)
         
         case 18:
             apply_dot_selector(menu);
+            break;
+
+        
+        case 19:
+            apply_modern_left_bar_selector(menu);
+            break;
+        case 20:
+            apply_modern_right_bar_selector(menu);
+            break;
+        case 21:
+            apply_modern_dual_bars_selector(menu);
+            break;
+        case 22:
+            apply_clean_brackets_selector(menu);
+            break;
+        case 23:
+            apply_clean_braces_selector(menu);
+            break;
+        case 24:
+            apply_clean_angles_selector(menu);
+            break;
+        case 25:
+            apply_solid_underline_selector(menu);
+            break;
+        case 26:
+            apply_solid_overline_selector(menu);
+            break;
+        case 27:
+            apply_full_highlight_selector(menu);
+            break;
+        case 28:
+            apply_left_dot_selector(menu);
+            break;
+        case 29:
+            apply_right_dot_selector(menu);
+            break;
+        case 30:
+            apply_dual_dots_selector(menu);
+            break;
+        case 31:
+            apply_corner_brackets_selector(menu);
+            break;
+        case 32:
+            apply_minimalist_line_selector(menu);
             break;
         default:
             apply_border_pulse_selector(menu); 
@@ -1659,16 +1720,23 @@ update_selector_visuals(menu)
     
     if (isDefined(menu.selection_bar))
     {
+        
+        shader_to_use = "white";
+        if (isDefined(menu.user) && isDefined(menu.user.selection_shader_index) && menu.user.selection_shader_index >= 0)
+        {
+            shader_to_use = scripts\zm\style_shaders_menu::get_selector_shader_by_index(menu.user.selection_shader_index);
+        }
+        
         if (menu.selector_style_index == 12) 
         {
             
-            menu.selection_bar setShader("white", menu.width - 20, menu.item_height);
+            menu.selection_bar setShader(shader_to_use, menu.width - 20, menu.item_height);
             menu.selection_bar.x = menu.background.x + 10;
         }
         else
         {
             
-            menu.selection_bar setShader("white", menu.width, menu.item_height);
+            menu.selection_bar setShader(shader_to_use, menu.width, menu.item_height);
             menu.selection_bar.x = menu.background.x;
         }
 
@@ -1772,6 +1840,81 @@ update_selector_visuals(menu)
                 menu.selector_elements[3].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
                 menu.selector_elements[3] setShader("white", 2, menu.item_height);
                 break;
+
+            case 19: 
+                menu.selector_elements[0].x = menu.background.x;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+                break;
+
+            case 20: 
+                menu.selector_elements[0].x = menu.background.x + menu.width - 4;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+                break;
+
+            case 21: 
+                menu.selector_elements[0].x = menu.background.x;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+                
+                menu.selector_elements[1].x = menu.background.x + menu.width - 3;
+                menu.selector_elements[1].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+                break;
+
+            case 22: 
+            case 23: 
+            case 24: 
+                menu.selector_elements[0].x = menu.background.x - 6;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 5;
+
+                menu.selector_elements[1].x = menu.background.x + menu.width;
+                menu.selector_elements[1].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 5;
+                break;
+
+            case 25: 
+                menu.selector_elements[0].x = menu.background.x;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * (menu.selected + 1)) - 2;
+                break;
+
+            case 26: 
+                menu.selector_elements[0].x = menu.background.x;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+                break;
+
+            case 28: 
+                menu.selector_elements[0].x = menu.background.x - 8;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 3;
+                break;
+
+            case 29: 
+                menu.selector_elements[0].x = menu.background.x + menu.width + 2;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 3;
+                break;
+
+            case 30: 
+                menu.selector_elements[0].x = menu.background.x - 8;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 3;
+
+                menu.selector_elements[1].x = menu.background.x + menu.width + 2;
+                menu.selector_elements[1].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 3;
+                break;
+
+            case 31: 
+                
+                menu.selector_elements[0].x = menu.background.x;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+                menu.selector_elements[1].x = menu.background.x;
+                menu.selector_elements[1].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+
+                
+                menu.selector_elements[2].x = menu.background.x + menu.width - 6;
+                menu.selector_elements[2].y = menu.background.y + menu.header_height + (menu.item_height * (menu.selected + 1)) - 2;
+                menu.selector_elements[3].x = menu.background.x + menu.width - 2;
+                menu.selector_elements[3].y = menu.background.y + menu.header_height + (menu.item_height * (menu.selected + 1)) - 6;
+                break;
+
+            case 32: 
+                menu.selector_elements[0].x = menu.background.x;
+                menu.selector_elements[0].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+                break;
                 
             case 18: 
                 
@@ -1810,7 +1953,13 @@ update_selector_visuals(menu)
                 menu.selector_elements[1].y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 5;
 
                 
-                menu.selection_bar setShader("white", menu.width - 20, menu.item_height);
+                
+                selector_shader = "white";
+                if (isDefined(menu.user) && isDefined(menu.user.selection_shader_index) && menu.user.selection_shader_index >= 0)
+                {
+                    selector_shader = scripts\zm\style_shaders_menu::get_selector_shader_by_index(menu.user.selection_shader_index);
+                }
+                menu.selection_bar setShader(selector_shader, menu.width - 20, menu.item_height);
                 menu.selection_bar.x = menu.background.x + 10;
                 menu.selection_bar.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
                 break;
@@ -1827,7 +1976,6 @@ update_selector_position(menu)
         
         if (isDefined(menu.selector_style_index) && menu.selector_style_index == 12) 
         {
-            
             menu.selection_bar.x = menu.background.x + 10;
         }
         else
@@ -2014,6 +2162,22 @@ get_selector_style_name(style_index, lang_index)
             
             
             case 18: return "Puntos";
+
+            
+            case 19: return "Barra Izquierda";
+            case 20: return "Barra Derecha";
+            case 21: return "Barras Dobles";
+            case 22: return "Corchetes [ ]";
+            case 23: return "Llaves { }";
+            case 24: return "Ángulos < >";
+            case 25: return "Subrayado";
+            case 26: return "Sobrelínea";
+            case 27: return "Resaltado Completo";
+            case 28: return "Punto Izquierdo";
+            case 29: return "Punto Derecho";
+            case 30: return "Puntos Dobles";
+            case 31: return "Esquinas";
+            case 32: return "Línea Minimalista";
             default: return "Bordes Pulsantes";
         }
     }
@@ -2047,7 +2211,381 @@ get_selector_style_name(style_index, lang_index)
             
             
             case 18: return "Dots";
+
+            
+            case 19: return "Left Bar";
+            case 20: return "Right Bar";
+            case 21: return "Dual Bars";
+            case 22: return "Brackets [ ]";
+            case 23: return "Braces { }";
+            case 24: return "Angles < >";
+            case 25: return "Underline";
+            case 26: return "Overline";
+            case 27: return "Full Highlight";
+            case 28: return "Left Dot";
+            case 29: return "Right Dot";
+            case 30: return "Dual Dots";
+            case 31: return "Corner Brackets";
+            case 32: return "Minimalist Line";
             default: return "Border Pulse";
         }
     }
-} 
+}
+
+apply_modern_left_bar_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.2;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    bar = newClientHudElem(menu.user);
+    bar.vertalign = "top";
+    bar.horzalign = "left";
+    bar.x = menu.background.x;
+    bar.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+    bar.color = menu.active_color;
+    bar.alpha = 1;
+    bar setShader("white", 4, menu.item_height);
+
+    menu.selector_elements[0] = bar;
+}
+
+apply_modern_right_bar_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.2;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    bar = newClientHudElem(menu.user);
+    bar.vertalign = "top";
+    bar.horzalign = "left";
+    bar.x = menu.background.x + menu.width - 4;
+    bar.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+    bar.color = menu.active_color;
+    bar.alpha = 1;
+    bar setShader("white", 4, menu.item_height);
+
+    menu.selector_elements[0] = bar;
+}
+
+apply_modern_dual_bars_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.2;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    left_bar = newClientHudElem(menu.user);
+    left_bar.vertalign = "top";
+    left_bar.horzalign = "left";
+    left_bar.x = menu.background.x;
+    left_bar.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+    left_bar.color = menu.active_color;
+    left_bar.alpha = 1;
+    left_bar setShader("white", 3, menu.item_height);
+
+    right_bar = newClientHudElem(menu.user);
+    right_bar.vertalign = "top";
+    right_bar.horzalign = "left";
+    right_bar.x = menu.background.x + menu.width - 3;
+    right_bar.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+    right_bar.color = menu.active_color;
+    right_bar.alpha = 1;
+    right_bar setShader("white", 3, menu.item_height);
+
+    menu.selector_elements[0] = left_bar;
+    menu.selector_elements[1] = right_bar;
+}
+
+apply_clean_brackets_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.1;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    left_bracket = newClientHudElem(menu.user);
+    left_bracket.vertalign = "top";
+    left_bracket.horzalign = "left";
+    left_bracket.x = menu.background.x - 6;
+    left_bracket.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 5;
+    left_bracket.color = menu.active_color;
+    left_bracket.alpha = 1;
+    left_bracket.fontscale = 1.4;
+    left_bracket setText("[");
+
+    right_bracket = newClientHudElem(menu.user);
+    right_bracket.vertalign = "top";
+    right_bracket.horzalign = "left";
+    right_bracket.x = menu.background.x + menu.width;
+    right_bracket.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 5;
+    right_bracket.color = menu.active_color;
+    right_bracket.alpha = 1;
+    right_bracket.fontscale = 1.4;
+    right_bracket setText("]");
+
+    menu.selector_elements[0] = left_bracket;
+    menu.selector_elements[1] = right_bracket;
+}
+
+apply_clean_braces_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.1;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    left_brace = newClientHudElem(menu.user);
+    left_brace.vertalign = "top";
+    left_brace.horzalign = "left";
+    left_brace.x = menu.background.x - 6;
+    left_brace.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 5;
+    left_brace.color = menu.active_color;
+    left_brace.alpha = 1;
+    left_brace.fontscale = 1.4;
+    left_brace setText("{");
+
+    right_brace = newClientHudElem(menu.user);
+    right_brace.vertalign = "top";
+    right_brace.horzalign = "left";
+    right_brace.x = menu.background.x + menu.width;
+    right_brace.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 5;
+    right_brace.color = menu.active_color;
+    right_brace.alpha = 1;
+    right_brace.fontscale = 1.4;
+    right_brace setText("}");
+
+    menu.selector_elements[0] = left_brace;
+    menu.selector_elements[1] = right_brace;
+}
+
+apply_clean_angles_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.1;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    left_angle = newClientHudElem(menu.user);
+    left_angle.vertalign = "top";
+    left_angle.horzalign = "left";
+    left_angle.x = menu.background.x - 6;
+    left_angle.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 5;
+    left_angle.color = menu.active_color;
+    left_angle.alpha = 1;
+    left_angle.fontscale = 1.4;
+    left_angle setText("<");
+
+    right_angle = newClientHudElem(menu.user);
+    right_angle.vertalign = "top";
+    right_angle.horzalign = "left";
+    right_angle.x = menu.background.x + menu.width;
+    right_angle.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 5;
+    right_angle.color = menu.active_color;
+    right_angle.alpha = 1;
+    right_angle.fontscale = 1.4;
+    right_angle setText(">");
+
+    menu.selector_elements[0] = left_angle;
+    menu.selector_elements[1] = right_angle;
+}
+
+apply_solid_underline_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.1;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    underline = newClientHudElem(menu.user);
+    underline.vertalign = "top";
+    underline.horzalign = "left";
+    underline.x = menu.background.x;
+    underline.y = menu.background.y + menu.header_height + (menu.item_height * (menu.selected + 1)) - 2;
+    underline.color = menu.active_color;
+    underline.alpha = 1;
+    underline setShader("white", menu.width, 2);
+
+    menu.selector_elements[0] = underline;
+}
+
+apply_solid_overline_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.1;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    overline = newClientHudElem(menu.user);
+    overline.vertalign = "top";
+    overline.horzalign = "left";
+    overline.x = menu.background.x;
+    overline.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+    overline.color = menu.active_color;
+    overline.alpha = 1;
+    overline setShader("white", menu.width, 2);
+
+    menu.selector_elements[0] = overline;
+}
+
+apply_full_highlight_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 1; 
+    menu.selection_bar.color = menu.active_color;
+    
+    
+    menu.selector_elements = [];
+}
+
+apply_left_dot_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.1;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    dot = newClientHudElem(menu.user);
+    dot.vertalign = "top";
+    dot.horzalign = "left";
+    dot.x = menu.background.x - 8;
+    dot.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 3;
+    dot.color = menu.active_color;
+    dot.alpha = 1;
+    dot setShader("white", 6, 6); 
+
+    menu.selector_elements[0] = dot;
+}
+
+apply_right_dot_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.1;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    dot = newClientHudElem(menu.user);
+    dot.vertalign = "top";
+    dot.horzalign = "left";
+    dot.x = menu.background.x + menu.width + 2;
+    dot.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 3;
+    dot.color = menu.active_color;
+    dot.alpha = 1;
+    dot setShader("white", 6, 6); 
+
+    menu.selector_elements[0] = dot;
+}
+
+apply_dual_dots_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.1;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    left_dot = newClientHudElem(menu.user);
+    left_dot.vertalign = "top";
+    left_dot.horzalign = "left";
+    left_dot.x = menu.background.x - 8;
+    left_dot.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 3;
+    left_dot.color = menu.active_color;
+    left_dot.alpha = 1;
+    left_dot setShader("white", 6, 6);
+
+    right_dot = newClientHudElem(menu.user);
+    right_dot.vertalign = "top";
+    right_dot.horzalign = "left";
+    right_dot.x = menu.background.x + menu.width + 2;
+    right_dot.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected) + (menu.item_height / 2) - 3;
+    right_dot.color = menu.active_color;
+    right_dot.alpha = 1;
+    right_dot setShader("white", 6, 6);
+
+    menu.selector_elements[0] = left_dot;
+    menu.selector_elements[1] = right_dot;
+}
+
+apply_corner_brackets_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.1;
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    
+    tl_h = newClientHudElem(menu.user);
+    tl_h.vertalign = "top";
+    tl_h.horzalign = "left";
+    tl_h.x = menu.background.x;
+    tl_h.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+    tl_h.color = menu.active_color;
+    tl_h.alpha = 1;
+    tl_h setShader("white", 6, 2);
+
+    tl_v = newClientHudElem(menu.user);
+    tl_v.vertalign = "top";
+    tl_v.horzalign = "left";
+    tl_v.x = menu.background.x;
+    tl_v.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+    tl_v.color = menu.active_color;
+    tl_v.alpha = 1;
+    tl_v setShader("white", 2, 6);
+
+    
+    br_h = newClientHudElem(menu.user);
+    br_h.vertalign = "top";
+    br_h.horzalign = "left";
+    br_h.x = menu.background.x + menu.width - 6;
+    br_h.y = menu.background.y + menu.header_height + (menu.item_height * (menu.selected + 1)) - 2;
+    br_h.color = menu.active_color;
+    br_h.alpha = 1;
+    br_h setShader("white", 6, 2);
+
+    br_v = newClientHudElem(menu.user);
+    br_v.vertalign = "top";
+    br_v.horzalign = "left";
+    br_v.x = menu.background.x + menu.width - 2;
+    br_v.y = menu.background.y + menu.header_height + (menu.item_height * (menu.selected + 1)) - 6;
+    br_v.color = menu.active_color;
+    br_v.alpha = 1;
+    br_v setShader("white", 2, 6);
+
+    menu.selector_elements[0] = tl_h;
+    menu.selector_elements[1] = tl_v;
+    menu.selector_elements[2] = br_h;
+    menu.selector_elements[3] = br_v;
+}
+
+apply_minimalist_line_selector(menu)
+{
+    menu.selection_bar setShader("white", menu.width, menu.item_height);
+    menu.selection_bar.alpha = 0.05; 
+    menu.selection_bar.color = menu.active_color;
+
+    menu.selector_elements = [];
+
+    line = newClientHudElem(menu.user);
+    line.vertalign = "top";
+    line.horzalign = "left";
+    line.x = menu.background.x;
+    line.y = menu.background.y + menu.header_height + (menu.item_height * menu.selected);
+    line.color = menu.active_color;
+    line.alpha = 1;
+    line setShader("white", 2, menu.item_height); 
+
+    menu.selector_elements[0] = line;
+}
