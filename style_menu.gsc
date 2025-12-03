@@ -2396,7 +2396,7 @@ apply_custom_dimensions(menu)
         menu.user.custom_menu_item_height = 18;
 
     if (!isDefined(menu.user.custom_menu_header_height))
-        menu.user.custom_menu_header_height = 36;
+        menu.user.custom_menu_header_height = 24;
 
     
     menu.width = menu.user.custom_menu_width;
@@ -2580,7 +2580,7 @@ set_custom_menu_item_height(player, item_height)
 set_custom_menu_header_height(player, header_height)
 {
     if (!isDefined(header_height) || header_height < 15 || header_height > 50)
-        header_height = 36;
+        header_height = 24;
 
     player.custom_menu_header_height = header_height;
 }
@@ -2591,7 +2591,7 @@ reset_custom_dimensions(player)
     player.custom_menu_margin_x = 0;
     player.custom_menu_margin_y = 40;
     player.custom_menu_item_height = 18;
-    player.custom_menu_header_height = 36;
+    player.custom_menu_header_height = 24;
 }
 
 apply_blueprint_style(menu)

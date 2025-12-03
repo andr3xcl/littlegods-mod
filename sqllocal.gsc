@@ -1459,6 +1459,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
                         else if (key == "background_shader_index") existing_settings.background_shader_index = value;
                         else if (key == "header_shader_index") existing_settings.header_shader_index = value;
                         else if (key == "selection_shader_index") existing_settings.selection_shader_index = value;
+                        else if (key == "menu_glow_enabled") existing_settings.menu_glow_enabled = value;
                         
                         else if (key == "night_mode_enabled") existing_nightmode.night_mode_enabled = value;
                         else if (key == "night_mode_filter") existing_nightmode.night_mode_filter = value;
@@ -1522,10 +1523,12 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
         custom_menu_margin_x = isDefined(player.custom_menu_margin_x) ? player.custom_menu_margin_x : 0;
         custom_menu_margin_y = isDefined(player.custom_menu_margin_y) ? player.custom_menu_margin_y : 40;
         custom_menu_item_height = isDefined(player.custom_menu_item_height) ? player.custom_menu_item_height : 18;
-        custom_menu_header_height = isDefined(player.custom_menu_header_height) ? player.custom_menu_header_height : 36;
+        custom_menu_header_height = isDefined(player.custom_menu_header_height) ? player.custom_menu_header_height : 24;
         background_shader_index = isDefined(player.background_shader_index) ? player.background_shader_index : -1;
         header_shader_index = isDefined(player.header_shader_index) ? player.header_shader_index : -1;
+        header_shader_index = isDefined(player.header_shader_index) ? player.header_shader_index : -1;
         selection_shader_index = isDefined(player.selection_shader_index) ? player.selection_shader_index : -1;
+        menu_glow_enabled = isDefined(player.menu_glow_enabled) ? player.menu_glow_enabled : false;
     }
     else
     {
@@ -1549,10 +1552,12 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
         custom_menu_margin_x = isDefined(existing_settings.custom_menu_margin_x) ? int(existing_settings.custom_menu_margin_x) : 0;
         custom_menu_margin_y = isDefined(existing_settings.custom_menu_margin_y) ? int(existing_settings.custom_menu_margin_y) : 40;
         custom_menu_item_height = isDefined(existing_settings.custom_menu_item_height) ? int(existing_settings.custom_menu_item_height) : 18;
-        custom_menu_header_height = isDefined(existing_settings.custom_menu_header_height) ? int(existing_settings.custom_menu_header_height) : 36;
+        custom_menu_header_height = isDefined(existing_settings.custom_menu_header_height) ? int(existing_settings.custom_menu_header_height) : 24;
         background_shader_index = isDefined(existing_settings.background_shader_index) ? int(existing_settings.background_shader_index) : -1;
         header_shader_index = isDefined(existing_settings.header_shader_index) ? int(existing_settings.header_shader_index) : -1;
+        header_shader_index = isDefined(existing_settings.header_shader_index) ? int(existing_settings.header_shader_index) : -1;
         selection_shader_index = isDefined(existing_settings.selection_shader_index) ? int(existing_settings.selection_shader_index) : -1;
+        menu_glow_enabled = isDefined(existing_settings.menu_glow_enabled) ? string_to_bool(existing_settings.menu_glow_enabled) : false;
     }
 
     fs_write(file, "language=" + lang_value + "\n");
@@ -1578,6 +1583,7 @@ save_menu_config_selective(player, save_settings, save_nightmode, save_map)
     fs_write(file, "background_shader_index=" + background_shader_index + "\n");
     fs_write(file, "header_shader_index=" + header_shader_index + "\n");
     fs_write(file, "selection_shader_index=" + selection_shader_index + "\n");
+    fs_write(file, "menu_glow_enabled=" + (menu_glow_enabled ? "1" : "0") + "\n");
 
     
     
@@ -1787,6 +1793,10 @@ load_menu_config(player)
 
                     case "selection_shader_index":
                         player.selection_shader_index = int(value);
+                        break;
+
+                    case "menu_glow_enabled":
+                        player.menu_glow_enabled = string_to_bool(value);
                         break;
 
 

@@ -1178,7 +1178,7 @@ create_menu(title, player)
     
     if (isDefined(player.menu_glow_enabled) && player.menu_glow_enabled)
     {
-        menu.title_text.glowAlpha = 1;
+        menu.title_text.glowAlpha = 0.1;
         menu.title_text.glowColor = (1, 1, 1);
     }
     
@@ -1310,7 +1310,7 @@ add_menu_item(menu, text, func, is_menu_flag)
 
     if (isDefined(menu.user.menu_glow_enabled) && menu.user.menu_glow_enabled)
     {
-        item.item.glowAlpha = 1;
+        item.item.glowAlpha = 0.1;
         item.item.glowColor = (1, 1, 1);
     }
     
@@ -9512,16 +9512,16 @@ open_menu_dimensions_settings()
         self.custom_menu_width = 175;
 
     if (!isDefined(self.custom_menu_margin_x))
-        self.custom_menu_margin_x = 263;
+        self.custom_menu_margin_x = 0;
 
     if (!isDefined(self.custom_menu_margin_y))
-        self.custom_menu_margin_y = 180;
+        self.custom_menu_margin_y = 40;
 
     if (!isDefined(self.custom_menu_item_height))
         self.custom_menu_item_height = 18;
 
     if (!isDefined(self.custom_menu_header_height))
-        self.custom_menu_header_height = 22;
+        self.custom_menu_header_height = 24;
 
     if (self.langLEN == 0)
     {
