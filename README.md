@@ -5,14 +5,14 @@
 
 # LITTLEGODS MOD MENU – [RELEASE]
 
-![Version](https://img.shields.io/badge/VERSION-3.9.0-6E00FF?style=for-the-badge&logo=starship&logoColor=white)
+![Version](https://img.shields.io/badge/VERSION-4.0.0-6E00FF?style=for-the-badge&logo=starship&logoColor=white)
 ![Game](https://img.shields.io/badge/COD_BO2-ZOMBIES-2E0854?style=for-the-badge&logo=activision&logoColor=white)
 ![Script](https://img.shields.io/badge/GSC_SCRIPT-9932CC?style=for-the-badge&logo=codeigniter&logoColor=white)
 ![Platform](https://img.shields.io/badge/PLATFORM-Plutonium-9400D3?style=for-the-badge&logo=atom&logoColor=white)
 ![Author](https://img.shields.io/badge/CREATOR-andr3xcl-1A001A?style=for-the-badge&logo=github&logoColor=%23C300FF)
 
 
-[![Download v3.9.0](https://img.shields.io/badge/Download-v3.9.0-blue?style=for-the-badge&logo=github)](https://github.com/andr3xcl/littlegods-mod/releases/tag/v3.9.0)
+[![Download v4.0.0](https://img.shields.io/badge/Download-v4.0.0-black?style=for-the-badge&logo=github)](https://github.com/andr3xcl/littlegods-mod/releases/download/v4.0.0/v4.0.0.rar)
 
 Littlegods Mod Menu is one of the most complete projects created for Call of Duty: Black Ops 2 Zombies (Plutonium).
 It includes a visual interface through a redesigned menu where you can use multiple GSC functions for the player.
