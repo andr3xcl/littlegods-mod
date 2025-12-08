@@ -211,6 +211,8 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
 
         return;
     }
+    
+    map_name = get_corrected_map_name(map_name);
 
 
     if (!isDefined(player) || !isPlayer(player))
@@ -329,24 +331,6 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
             
             display_line = weapon_name + ": " + kill_count + " kills";
             
-            if (isDefined(player.weapon_last_kill_time) && isDefined(player.weapon_last_kill_time[weapon_name]))
-            {
-                time = int(player.weapon_last_kill_time[weapon_name] / 1000);
-                hours = int(time / 3600);
-                minutes = int((time % 3600) / 60);
-                seconds = time % 60;
-                
-                time_str = "";
-                if (hours < 10) time_str += "0";
-                time_str += hours + ":";
-                if (minutes < 10) time_str += "0";
-                time_str += minutes + ":";
-                if (seconds < 10) time_str += "0";
-                time_str += seconds;
-                
-                display_line += " (Last Kill: " + time_str + ")";
-            }
-            
             fs_write(file, display_line + "\n");
         }
     }
@@ -389,6 +373,7 @@ save_recent_match(player, map_name, round_number, kills, headshots, revives, dow
 
 save_player_round_data(player, map_name, round_number, kills, headshots, revives, downs, score)
 {
+    map_name = get_corrected_map_name(map_name);
     
     most_used_weapon = get_most_used_weapon(player);
     all_weapons_data = get_all_weapons_used(player);
@@ -515,6 +500,8 @@ show_recent_matches(player, map_name)
             player iPrintlnBold("^1Statistics are disabled in Developer Mode or when sv_cheats is enabled");
         return;
     }
+
+    map_name = get_corrected_map_name(map_name);
 
     player_guid = player getGuid();
 
@@ -659,6 +646,8 @@ get_map_display_name(map_code)
     {
         case "tomb": return "Origins";
         case "transit": return "Transit";
+        case "tranzit": return "Transit";
+        case "busdepot": return "Bus Depot";
         case "processing": return "Buried";
         case "prison": return "Mob of the Dead";
         case "nuked": return "Nuketown";
@@ -667,9 +656,23 @@ get_map_display_name(map_code)
     }
 }
 
+get_corrected_map_name(map_name)
+{
+    if (map_name == "transit")
+    {
+        var = getdvar("ui_gametype");
+        if (var == "zclassic")
+            return "tranzit";
+        else
+            return "busdepot";
+    }
+    return map_name;
+}
+
 
 load_player_round_data(player_guid, map_name)
 {
+    map_name = get_corrected_map_name(map_name);
     filename = map_name + "_" + player_guid + ".txt";
 
     if (!fs_testfile(filename))
@@ -709,6 +712,7 @@ check_round_result(player, map_name, current_round)
         return -1;
     }
 
+    map_name = get_corrected_map_name(map_name);
     
     player_guid = player getGuid();
 
@@ -816,6 +820,8 @@ show_player_stats(player_guid, map_name)
         return;
     }
 
+    map_name = get_corrected_map_name(map_name);
+
     filename = map_name + "_" + player_guid + ".txt";
 
     if (!fs_testfile(filename))
@@ -846,6 +852,7 @@ show_player_stats(player_guid, map_name)
 
 show_recent_match_details(player, map_name, match_number)
 {
+    map_name = get_corrected_map_name(map_name);
     player_guid = player getGuid();
     filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + map_name + "_recent_" + match_number + ".txt";
 
@@ -1930,11 +1937,7 @@ init_weapon_tracking(player)
         player.weapon_kills = [];
     }
     
-    if (!isDefined(player.weapon_last_kill_time))
-    {
-        player.weapon_last_kill_time = [];
-    }
-    
+    // Time tracking removed
     
     player thread track_weapon_kills_callback();
 }
@@ -1993,8 +1996,7 @@ track_weapon_kills_callback()
                 kills_diff = current_kills - self.weapon_tracking_last_kills;
                 self.weapon_kills[current_weapon] += kills_diff;
                 
-                
-                self.weapon_last_kill_time[current_weapon] = getTime();
+                // Time tracking removed
 
             }
 

@@ -13,6 +13,9 @@ init()
     level thread on_player_connect();
     level thread onPlayerSay();
     level thread monitor_end_game(); 
+    level thread rotate_skydome();
+    level thread change_skydome();
+    level thread daynightcycle();
 }
 on_player_connect()
 {
@@ -56,26 +59,37 @@ on_players_spawned()
 
 save_default_dvars()
 {
+    if (isDefined(self.defaults_saved))
+        return;
+
+    self.defaults_saved = true;
     wait 0.5; 
     
     
-    if (!isDefined(level.default_r_exposureValue))
-        level.default_r_exposureValue = 0;
-    
-    if (!isDefined(level.default_r_lightTweakSunLight))
-        level.default_r_lightTweakSunLight = 1;
-    
-    if (!isDefined(level.default_r_sky_intensity_factor0))
-        level.default_r_sky_intensity_factor0 = 1;
+    if (!isDefined(level.default_r_exposureValue)) level.default_r_exposureValue = getDvar("r_exposureValue");
+    if (!isDefined(level.default_r_lightTweakSunLight)) level.default_r_lightTweakSunLight = getDvar("r_lightTweakSunLight");
+    if (!isDefined(level.default_r_sky_intensity_factor0)) level.default_r_sky_intensity_factor0 = getDvar("r_sky_intensity_factor0");
+    if (!isDefined(level.default_r_skyColorTemp)) level.default_r_skyColorTemp = getDvar("r_skyColorTemp");
+    if (!isDefined(level.default_r_skyRotation)) level.default_r_skyRotation = getDvar("r_skyRotation");
+    if (!isDefined(level.default_r_skyTransition)) level.default_r_skyTransition = getDvar("r_skyTransition");
+    if (!isDefined(level.default_r_lighttweaksuncolor)) level.default_r_lighttweaksuncolor = getDvar("r_lighttweaksuncolor");
+    if (!isDefined(level.default_r_lodScaleRigid)) level.default_r_lodScaleRigid = getDvar("r_lodScaleRigid");
+    if (!isDefined(level.default_r_lodScaleSkinned)) level.default_r_lodScaleSkinned = getDvar("r_lodScaleSkinned");
+    if (!isDefined(level.default_r_enablePlayerShadow)) level.default_r_enablePlayerShadow = getDvar("r_enablePlayerShadow");
+    if (!isDefined(level.default_r_lightTweakSunDirection)) level.default_r_lightTweakSunDirection = getDvar("r_lightTweakSunDirection");
+    if (!isDefined(level.default_wind_global_vector)) level.default_wind_global_vector = getDvar("wind_global_vector");
+    if (!isDefined(level.default_sm_sunquality)) level.default_sm_sunquality = getDvar("sm_sunquality");
+    if (!isDefined(level.default_r_dof_enable)) level.default_r_dof_enable = getDvar("r_dof_enable");
+    if (!isDefined(level.default_r_lodBiasRigid)) level.default_r_lodBiasRigid = getDvar("r_lodBiasRigid");
+    if (!isDefined(level.default_r_lodBiasSkinned)) level.default_r_lodBiasSkinned = getDvar("r_lodBiasSkinned");
+    if (!isDefined(level.default_r_bloomScale)) level.default_r_bloomScale = getDvar("r_bloomScale");
+    if (!isDefined(level.default_r_bloomThreshold)) level.default_r_bloomThreshold = getDvar("r_bloomThreshold");
 }
 
 
 reset_night_mode_on_end()
 {
-    
-    self waittill_any( "disconnect", "death" );
-    
-    
+    self waittill( "disconnect" );
     self reset_all_night_mode_dvars();
 }
 
@@ -83,7 +97,6 @@ reset_night_mode_on_end()
 monitor_end_game()
 {
     level waittill( "end_game" );
-    
     
     foreach(player in level.players)
     {
@@ -103,21 +116,36 @@ reset_all_night_mode_dvars()
     self SetClientDvar("r_exposureTweak", 0);
     
     
-    if (isDefined(level.default_r_exposureValue))
-        self SetClientDvar("r_exposureValue", level.default_r_exposureValue);
-    else
-        self SetClientDvar("r_exposureValue", 0);
+    if (isDefined(level.default_r_exposureValue)) self apply_night_vision_exposure(level.default_r_exposureValue);
+    else self apply_night_vision_exposure(0);
     
-    if (isDefined(level.default_r_lightTweakSunLight))
-        self SetClientDvar("r_lightTweakSunLight", level.default_r_lightTweakSunLight);
-    else
-        self SetClientDvar("r_lightTweakSunLight", 1);
+    if (isDefined(level.default_r_lightTweakSunLight)) self SetClientDvar("r_lightTweakSunLight", level.default_r_lightTweakSunLight);
+    if (isDefined(level.default_r_sky_intensity_factor0)) self SetClientDvar("r_sky_intensity_factor0", level.default_r_sky_intensity_factor0);
+    if (isDefined(level.default_r_skyColorTemp)) self SetClientDvar("r_skyColorTemp", level.default_r_skyColorTemp);
+    if (isDefined(level.default_r_skyRotation)) self SetClientDvar("r_skyRotation", level.default_r_skyRotation);
+    if (isDefined(level.default_r_skyTransition)) self SetClientDvar("r_skyTransition", level.default_r_skyTransition);
+    if (isDefined(level.default_r_lighttweaksuncolor)) self SetClientDvar("r_lighttweaksuncolor", level.default_r_lighttweaksuncolor);
+    if (isDefined(level.default_r_lodScaleRigid)) self SetClientDvar("r_lodScaleRigid", level.default_r_lodScaleRigid);
+    if (isDefined(level.default_r_lodScaleSkinned)) self SetClientDvar("r_lodScaleSkinned", level.default_r_lodScaleSkinned);
+    if (isDefined(level.default_r_enablePlayerShadow)) self SetClientDvar("r_enablePlayerShadow", level.default_r_enablePlayerShadow);
+    if (isDefined(level.default_r_lightTweakSunDirection)) self SetClientDvar("r_lightTweakSunDirection", level.default_r_lightTweakSunDirection);
+    if (isDefined(level.default_wind_global_vector)) self SetClientDvar("wind_global_vector", level.default_wind_global_vector);
+    if (isDefined(level.default_sm_sunquality)) self SetClientDvar("sm_sunquality", level.default_sm_sunquality);
+    if (isDefined(level.default_r_dof_enable)) self SetClientDvar("r_dof_enable", level.default_r_dof_enable);
+    if (isDefined(level.default_r_lodBiasRigid)) self SetClientDvar("r_lodBiasRigid", level.default_r_lodBiasRigid);
+    if (isDefined(level.default_r_lodBiasSkinned)) self SetClientDvar("r_lodBiasSkinned", level.default_r_lodBiasSkinned);
+    if (isDefined(level.default_r_bloomScale)) self SetClientDvar("r_bloomScale", level.default_r_bloomScale);
+    if (isDefined(level.default_r_bloomThreshold)) self SetClientDvar("r_bloomThreshold", level.default_r_bloomThreshold);
+
     
-    if (isDefined(level.default_r_sky_intensity_factor0))
-        self SetClientDvar("r_sky_intensity_factor0", level.default_r_sky_intensity_factor0);
-    else
-        self SetClientDvar("r_sky_intensity_factor0", 1);
-    
+    self SetClientDvar( "vc_fgm", "1 1 1 1" );
+    self SetClientDvar( "vc_fbm", "0 0 0 0" );
+    self SetClientDvar( "vc_fsm", "1 1 1 1" );
+    self SetClientDvar( "vc_yh", "0 0 0 0" );
+    self SetClientDvar( "vc_yl", "0 0 0 0" );
+    self SetClientDvar( "vc_rgbh", "0 0 0 0" );
+    self SetClientDvar( "vc_rgbl", "0 0 0 0" );
+
     
     self SetClientDvar("r_filmTweakEnable", 0);
     self SetClientDvar("r_filmTweakInvert", 0);
@@ -137,13 +165,13 @@ reset_all_night_mode_dvars()
         self.fog = 0;
     }
     
-    
     self.nightfix = -1;
     self.night_mode_enabled = false;
 }
 night_mode_toggle(i)
 {
-    self endon("discconnect");
+    self endon("disconnect");
+    self notify("disable_nightmode");
     self.nightfix = 1;
 	switch (i)
 	{
@@ -205,55 +233,102 @@ set_map_specific_exposure()
 {
     if (level.script == "zm_buried")
     {
-        self setclientdvar("r_exposureValue", 5);
+        self setclientdvar( "r_skyRotation", 1 );
+		self setclientdvar( "r_skyTransition", 0 );
+		self apply_night_vision_exposure(4.8);
+		self setclientdvar( "r_skyColorTemp", 85000 );
+		self setclientdvar( "r_sky_intensity_factor0", 4 );
+		self setclientdvar( "r_lighttweaksunlight", 30 );
+		self setclientdvar( "r_lighttweaksuncolor", "0.1 0.07 0.2" );
     }
     else if (level.script == "zm_tomb")
     {
-        self setclientdvar("r_exposureValue", 5);
+        self setclientdvar( "r_skyRotation", 0 );
+		self setclientdvar( "r_skyTransition", 0 );
+		self apply_night_vision_exposure(5.2);
+		self setclientdvar( "r_sky_intensity_factor0", 5 );
+		self setclientdvar( "r_lighttweaksunlight", 20 );
+		self setClientDvar( "r_bloomtweaks", 1 );
+		self setclientdvar( "r_lighttweaksuncolor", "0.002 0.07 0.1" );
     }
     else if (level.script == "zm_nuked")
     {
-        self setclientdvar("r_exposureValue", 5);
+        self setclientdvar( "r_skyTransition", 0 );
+		self setclientdvar( "r_skyRotation", 0 );
+		self apply_night_vision_exposure(6.4);
+		self setclientdvar( "r_skyColorTemp", 25000 );
+		self setclientdvar( "r_sky_intensity_factor0", 1 );
+		self setclientdvar( "r_lighttweaksunlight", 42 );
+		self setclientdvar( "r_lighttweaksuncolor", "0.2 0.2 0.5" );
+        self setClientDvar( "r_bloomtweaks", 1 );
     }
     else if (level.script == "zm_highrise")
     {
-        self setclientdvar("r_exposureValue", 5);
+        self setclientdvar( "r_skyRotation", 1 );
+		self setclientdvar( "r_skyTransition", 0 );
+		self apply_night_vision_exposure(6.1);
+		self setclientdvar( "r_skyColorTemp", 85000 );
+		self setclientdvar( "r_sky_intensity_factor0", 2.6 );
+		self setclientdvar( "r_lighttweaksunlight", 30 );
+		self setclientdvar( "r_lighttweaksuncolor", "0.1 0.07 0.2" );
     }
 	else if (level.script == "zm_transit")
     {
-        self setclientdvar("r_exposureValue", 5);
+        self apply_night_vision_exposure(5);
     }
 	else if (level.script == "zm_prison")
     {
-        self setclientdvar("r_exposureValue", 5);
+		self setClientDvar("r_lodScaleRigid", 1);
+		self setClientDvar("r_lodScaleSkinned", 1);
+		self setclientdvar("r_enablePlayerShadow", 1);
+		self setclientdvar("r_filmUseTweaks", 1);
+		self setclientdvar("r_exposureTweak", 1);
+		self setclientdvar("r_lightTweakSunLight", 15);
+		self setclientdvar("r_sky_intensity_factor0", 2);
+		self setclientdvar("r_lightTweakSunDirection", (250, 200, 10));
+		self setclientdvar("wind_global_vector", (300, 220, 100));
+		self setclientdvar("sm_sunquality", 2);
+
+		self setclientdvar("r_skyRotation", 0);
+		self setclientdvar("r_skyTransition", 0);
+		self apply_night_vision_exposure(5.7);
+		self setclientdvar("r_skyColorTemp", 25000);
+		self setclientdvar("r_sky_intensity_factor0", 2);
+		self setclientdvar("r_lighttweaksunlight", 15);
+		self setClientDvar("r_bloomtweaks", 1);
+		self setclientdvar("r_lighttweaksuncolor", "0.1 0.2 2.5");
     }
 }
 
 
 enable_dark_mode()
 {
-    self endon("disconnect");
+	self endon("disconnect");
     set_common_dvars();
-	self SetClientDvar( "r_dof_enable", 0 );
-	self SetClientDvar( "r_lodBiasRigid", -1000 );
-	self SetClientDvar( "r_lodBiasSkinned", -1000 );
-	self SetClientDvar( "r_enablePlayerShadow", 1 );
-	self SetClientDvar( "r_skyTransition", 1 );
-	self SetClientDvar( "sm_sunquality", 2 );
-	self SetClientDvar( "r_filmUseTweaks", 1 ); 
-    self SetClientDvar( "r_bloomTweaks", 1 ); 
-    self SetClientDvar( "r_exposureTweak", 1 ); 
-	self SetClientDvar( "vc_fbm", "0 0 0 0" );
-	self SetClientDvar( "vc_fsm", "1 1 1 1" );
-    self SetClientDvar("vc_rgbh", "0.05 0.05 0.05 0");
-    self SetClientDvar("vc_yl", "0.1 0.1 0.1 0");
-    self SetClientDvar("vc_yh", "0.2 0.2 0.2 0");
-    self SetClientDvar("vc_rgbl", "0.05 0.05 0.05 0");
-    self SetClientDvar("r_exposureValue", 1.0);
-    self SetClientDvar("r_lightTweakSunLight", 0.1);
-    self SetClientDvar("r_sky_intensity_factor0", 0.1);
-    self SetClientDvar("r_bloomScale", 1.5);
-    self SetClientDvar("r_bloomThreshold", 0.5);
+	
+	self setClientDvar("r_lodScaleRigid", 1);
+	self setClientDvar("r_lodScaleSkinned", 1);
+	self setclientdvar("r_enablePlayerShadow", 1);
+	self setclientdvar( "r_filmUseTweaks", 1 );
+	self setclientdvar( "r_bloomTweaks", 1 );
+	self setclientdvar( "r_exposureTweak", 1 );
+    
+    
+    self SetClientDvar( "vc_fgm", "1 1 1 1" );
+    self SetClientDvar( "vc_fbm", "0 0 0 0" );
+    self SetClientDvar( "vc_fsm", "1 1 1 1" );
+    self SetClientDvar( "vc_yh", "0 0 0 0" );
+    self SetClientDvar( "vc_yl", "0 0 0 0" );
+    self SetClientDvar( "vc_rgbh", "0 0 0 0" );
+    self SetClientDvar( "vc_rgbl", "0 0 0 0" );
+
+	self apply_night_vision_exposure( 3.5 );
+	self setclientdvar( "r_lightTweakSunLight", 15 ); 
+	self setclientdvar( "r_sky_intensity_factor0", 3 ); 
+    self setclientdvar( "r_lightTweakSunDirection", ( 300, 250, 12 ) );
+    self setclientdvar( "wind_global_vector", ( 300, 220, 100 ) );
+    self setclientdvar( "sm_sunquality", 2 );
+	
     set_map_specific_exposure();
     self thread visual_fix();
 }
@@ -276,7 +351,7 @@ enable_acid_night_mode()
     self SetClientDvar("vc_yl", "0.1 0.5 0.1 0");
     self SetClientDvar("vc_yh", "0.3 0.9 0.3 0");
     self SetClientDvar("vc_rgbl", "0.2 0.8 0.2 0");
-    self SetClientDvar("r_exposureValue", 4.0);
+    self apply_night_vision_exposure(4.0);
     self SetClientDvar("r_lightTweakSunLight", 1.2);
     self SetClientDvar("r_sky_intensity_factor0", 1.0);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -304,7 +379,7 @@ enable_mystic_purple_night_mode()
     self SetClientDvar("vc_yl", "0.4 0 0.4 0");
     self SetClientDvar("vc_yh", "0.6 0 0.6 0");
     self SetClientDvar("vc_rgbl", "0.5 0 0.5 0");
-    self SetClientDvar("r_exposureValue", 2.0);
+    self apply_night_vision_exposure(2.0);
     self SetClientDvar("r_lightTweakSunLight", 0.3);
     self SetClientDvar("r_sky_intensity_factor0", 0.5);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -331,7 +406,7 @@ enable_apocalyptic_yellow_night_mode()
     self SetClientDvar("vc_yl", "0.8 0.6 0.1 0");
     self SetClientDvar("vc_yh", "1 0.8 0.2 0");
     self SetClientDvar("vc_rgbl", "0.9 0.7 0.1 0");
-    self SetClientDvar("r_exposureValue", 3.0);
+    self apply_night_vision_exposure(3.0);
     self SetClientDvar("r_lightTweakSunLight", 0.5);
     self SetClientDvar("r_sky_intensity_factor0", 0.3);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -359,7 +434,7 @@ enable_radioactive_green_night_mode()
     self SetClientDvar("vc_yl", "0.1 0.6 0.1 0");
     self SetClientDvar("vc_yh", "0.1 1 0.1 0");
     self SetClientDvar("vc_rgbl", "0.1 0.8 0.1 0");
-    self SetClientDvar("r_exposureValue", 2.5);
+    self apply_night_vision_exposure(2.5);
     self SetClientDvar("r_lightTweakSunLight", 0.4);
     self SetClientDvar("r_sky_intensity_factor0", 0.2);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -386,7 +461,7 @@ enable_bloody_night_mode()
     self SetClientDvar( "vc_yl", "0.15 0 0 0" ); 
     self SetClientDvar( "vc_yh", "0.2 0 0 0" );
     self SetClientDvar( "vc_rgbl", "0.6 0 0 0" );
-    self SetClientDvar( "r_exposureValue", 1.5 );
+    self apply_night_vision_exposure(1.5 );
     self SetClientDvar( "r_lightTweakSunLight", 0.3 );
     self SetClientDvar( "r_sky_intensity_factor0", 0 );
     self SetClientDvar("r_bloomScale", 1.5);
@@ -413,7 +488,7 @@ enable_cold_night_mode()
     self SetClientDvar("vc_yl", "0.2 0.2 0.5 0");
     self SetClientDvar("vc_yh", "0.3 0.3 0.6 0");
     self SetClientDvar("vc_rgbl", "0.1 0.1 0.4 0");
-    self SetClientDvar("r_exposureValue", 1.5);
+    self apply_night_vision_exposure(1.5);
     self SetClientDvar("r_lightTweakSunLight", 0.3);
     self SetClientDvar("r_sky_intensity_factor0", 0.4);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -441,7 +516,7 @@ enable_extreme_blue_night_mode()
     self SetClientDvar("vc_yl", "0.1 0.1 0.6 0");
     self SetClientDvar("vc_yh", "0.2 0.2 1 0");
     self SetClientDvar("vc_rgbl", "0.1 0.1 0.8 0");
-    self SetClientDvar("r_exposureValue", 1.8);
+    self apply_night_vision_exposure(1.8);
     self SetClientDvar("r_lightTweakSunLight", 0.2);
     self SetClientDvar("r_sky_intensity_factor0", 0.3);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -475,7 +550,7 @@ enable_luminous_night_mode()
     self SetClientDvar("vc_yl", "0.5 0.5 0.9 0");
     self SetClientDvar("vc_yh", "0.6 0.6 1 0");
     self SetClientDvar("vc_rgbl", "0.4 0.4 0.8 0");
-    self SetClientDvar("r_exposureValue", 2.0);
+    self apply_night_vision_exposure(2.0);
     self SetClientDvar("r_lightTweakSunLight", 0.6);
     self SetClientDvar("r_sky_intensity_factor0", 0.6);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -503,7 +578,7 @@ enable_warm_night_mode()
     self SetClientDvar("vc_yl", "0.8 0.5 0.1 0");
     self SetClientDvar("vc_yh", "1 0.7 0.2 0");
     self SetClientDvar("vc_rgbl", "0.7 0.5 0.2 0");
-    self SetClientDvar("r_exposureValue", 2.5);
+    self apply_night_vision_exposure(2.5);
     self SetClientDvar("r_lightTweakSunLight", 0.8);
     self SetClientDvar("r_sky_intensity_factor0", 0.5);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -531,7 +606,7 @@ enable_nebulous_night_mode()
     self SetClientDvar("vc_yl", "0.5 0.5 0.6 0");
     self SetClientDvar("vc_yh", "0.7 0.7 0.8 0");
     self SetClientDvar("vc_rgbl", "0.5 0.5 0.6 0");
-    self SetClientDvar("r_exposureValue", 2.2);
+    self apply_night_vision_exposure(2.2);
     self SetClientDvar("r_lightTweakSunLight", 0.4);
     self SetClientDvar("r_sky_intensity_factor0", 0.3);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -559,7 +634,7 @@ enable_apocalyptic_night_mode()
     self SetClientDvar("vc_yl", "0.6 0.1 0.1 0");
     self SetClientDvar("vc_yh", "1 0.3 0.3 0");
     self SetClientDvar("vc_rgbl", "0.7 0.1 0.1 0");
-    self SetClientDvar("r_exposureValue", 3.0);
+    self apply_night_vision_exposure(3.0);
     self SetClientDvar("r_lightTweakSunLight", 0.5);
     self SetClientDvar("r_sky_intensity_factor0", 0.4);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -587,7 +662,7 @@ enable_retro_night_mode()
     self SetClientDvar("vc_yl", "0.2 0.5 0.1 0");
     self SetClientDvar("vc_yh", "0.3 0.6 0.2 0");
     self SetClientDvar("vc_rgbl", "0.1 0.4 0.1 0");
-    self SetClientDvar("r_exposureValue", 2.0);
+    self apply_night_vision_exposure(2.0);
     self SetClientDvar("r_lightTweakSunLight", 0.4);
     self SetClientDvar("r_sky_intensity_factor0", 0.2);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -615,7 +690,7 @@ enable_ice_night_mode()
     self SetClientDvar("vc_yl", "0.1 0.4 0.7 0");
     self SetClientDvar("vc_yh", "0.2 0.6 1 0");
     self SetClientDvar("vc_rgbl", "0.1 0.5 0.8 0");
-    self SetClientDvar("r_exposureValue", 1.8);
+    self apply_night_vision_exposure(1.8);
     self SetClientDvar("r_lightTweakSunLight", 0.3);
     self SetClientDvar("r_sky_intensity_factor0", 0.4);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -643,7 +718,7 @@ enable_ghost_night_mode()
     self SetClientDvar("vc_yl", "0.7 0.7 0.8 0");
     self SetClientDvar("vc_yh", "0.9 0.9 1 0");
     self SetClientDvar("vc_rgbl", "0.6 0.6 0.8 0");
-    self SetClientDvar("r_exposureValue", 2.5);
+    self apply_night_vision_exposure(2.5);
     self SetClientDvar("r_lightTweakSunLight", 0.4);
     self SetClientDvar("r_sky_intensity_factor0", 0.5);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -668,7 +743,7 @@ enable_starred_night_mode()
     self SetClientDvar("vc_yl", "0.2 0.2 0.5 0");
     self SetClientDvar("vc_yh", "0.3 0.3 0.6 0");
     self SetClientDvar("vc_rgbl", "0.1 0.1 0.4 0");
-    self SetClientDvar("r_exposureValue", 2.0);
+    self apply_night_vision_exposure(2.0);
     self SetClientDvar("r_lightTweakSunLight", 0.5);
     self SetClientDvar("r_sky_intensity_factor0", 0.5);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -696,7 +771,7 @@ enable_radiant_night_mode()
     self SetClientDvar("vc_yl", "0.4 0.7 0.1 0");
     self SetClientDvar("vc_yh", "0.6 0.9 0.2 0");
     self SetClientDvar("vc_rgbl", "0.5 0.8 0.1 0");
-    self SetClientDvar("r_exposureValue", 2.0);
+    self apply_night_vision_exposure(2.0);
     self SetClientDvar("r_lightTweakSunLight", 0.5);
     self SetClientDvar("r_sky_intensity_factor0", 0.5);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -724,7 +799,7 @@ enable_storm_night_mode()
     self SetClientDvar("vc_yl", "0.3 0.3 0.5 0");
     self SetClientDvar("vc_yh", "0.4 0.4 0.6 0");
     self SetClientDvar("vc_rgbl", "0.2 0.2 0.3 0");
-    self SetClientDvar("r_exposureValue", 1.8);
+    self apply_night_vision_exposure(1.8);
     self SetClientDvar("r_lightTweakSunLight", 0.4);
     self SetClientDvar("r_sky_intensity_factor0", 0.6);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -752,7 +827,7 @@ enable_galaxy_night_mode()
     self SetClientDvar("vc_yl", "0.3 0.1 0.5 0");
     self SetClientDvar("vc_yh", "0.5 0.2 0.8 0");
     self SetClientDvar("vc_rgbl", "0.3 0.1 0.5 0");
-    self SetClientDvar("r_exposureValue", 2.5);
+    self apply_night_vision_exposure(2.5);
     self SetClientDvar("r_lightTweakSunLight", 0.6);
     self SetClientDvar("r_sky_intensity_factor0", 0.7);
     self SetClientDvar("r_bloomScale", 1.7);
@@ -779,7 +854,7 @@ enable_pastel_pink_night_mode()
     self SetClientDvar("vc_yl", "0.8 0.5 0.6 0");
     self SetClientDvar("vc_yh", "0.95 0.7 0.8 0");
     self SetClientDvar("vc_rgbl", "0.8 0.5 0.6 0");
-    self SetClientDvar("r_exposureValue", 2.8);
+    self apply_night_vision_exposure(2.8);
     self SetClientDvar("r_lightTweakSunLight", 0.7);
     self SetClientDvar("r_sky_intensity_factor0", 0.8);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -807,7 +882,7 @@ enable_gray_night_mode()
     self SetClientDvar("vc_yl", "0.4 0.4 0.4 0");
     self SetClientDvar("vc_yh", "0.6 0.6 0.6 0");
     self SetClientDvar("vc_rgbl", "0.4 0.4 0.4 0");
-    self SetClientDvar("r_exposureValue", 2.2);
+    self apply_night_vision_exposure(2.2);
     self SetClientDvar("r_lightTweakSunLight", 0.5);
     self SetClientDvar("r_sky_intensity_factor0", 0.6);
     self SetClientDvar("r_bloomScale", 5);
@@ -842,7 +917,7 @@ enable_cyberpunk_night_mode()
     self SetClientDvar("vc_yh", "1.0 0.4 0.8 0");
     self SetClientDvar("vc_rgbl", "0.6 0.2 0.8 0");
 
-    self SetClientDvar("r_exposureValue", 3.2);
+    self apply_night_vision_exposure(3.2);
     self SetClientDvar("r_lightTweakSunLight", 0.8);
     self SetClientDvar("r_sky_intensity_factor0", 0.9);
     self SetClientDvar("r_bloomScale", 2.0);
@@ -879,7 +954,7 @@ enable_underwater_night_mode()
     self SetClientDvar("vc_yh", "0.2 0.4 1.0 0");
     self SetClientDvar("vc_rgbl", "0.1 0.2 0.5 0");
 
-    self SetClientDvar("r_exposureValue", 1.5);
+    self apply_night_vision_exposure(1.5);
     self SetClientDvar("r_lightTweakSunLight", 0.2);
     self SetClientDvar("r_sky_intensity_factor0", 0.3);
     self SetClientDvar("r_bloomScale", 1.8);
@@ -916,7 +991,7 @@ enable_desert_storm_night_mode()
     self SetClientDvar("vc_yh", "1.0 0.8 0.3 0");
     self SetClientDvar("vc_rgbl", "0.5 0.3 0.1 0");
 
-    self SetClientDvar("r_exposureValue", 2.8);
+    self apply_night_vision_exposure(2.8);
     self SetClientDvar("r_lightTweakSunLight", 0.7);
     self SetClientDvar("r_sky_intensity_factor0", 0.8);
     self SetClientDvar("r_bloomScale", 1.3);
@@ -953,7 +1028,7 @@ enable_mystic_forest_night_mode()
     self SetClientDvar("vc_yh", "0.2 0.8 0.3 0");
     self SetClientDvar("vc_rgbl", "0.1 0.3 0.1 0");
 
-    self SetClientDvar("r_exposureValue", 1.8);
+    self apply_night_vision_exposure(1.8);
     self SetClientDvar("r_lightTweakSunLight", 0.3);
     self SetClientDvar("r_sky_intensity_factor0", 0.4);
     self SetClientDvar("r_bloomScale", 2.2);
@@ -990,7 +1065,7 @@ enable_volcano_lava_night_mode()
     self SetClientDvar("vc_yh", "1.0 0.4 0.2 0");
     self SetClientDvar("vc_rgbl", "0.6 0.1 0.1 0");
 
-    self SetClientDvar("r_exposureValue", 3.5);
+    self apply_night_vision_exposure(3.5);
     self SetClientDvar("r_lightTweakSunLight", 1.0);
     self SetClientDvar("r_sky_intensity_factor0", 0.7);
     self SetClientDvar("r_bloomScale", 2.5);
@@ -1027,7 +1102,7 @@ enable_crystal_cave_night_mode()
     self SetClientDvar("vc_yh", "0.4 0.6 1.0 0");
     self SetClientDvar("vc_rgbl", "0.2 0.2 0.6 0");
 
-    self SetClientDvar("r_exposureValue", 2.0);
+    self apply_night_vision_exposure(2.0);
     self SetClientDvar("r_lightTweakSunLight", 0.4);
     self SetClientDvar("r_sky_intensity_factor0", 0.5);
     self SetClientDvar("r_bloomScale", 2.8);
@@ -1064,7 +1139,7 @@ enable_haunted_house_night_mode()
     self SetClientDvar("vc_yh", "0.4 0.8 0.4 0");
     self SetClientDvar("vc_rgbl", "0.1 0.3 0.1 0");
 
-    self SetClientDvar("r_exposureValue", 1.2);
+    self apply_night_vision_exposure(1.2);
     self SetClientDvar("r_lightTweakSunLight", 0.1);
     self SetClientDvar("r_sky_intensity_factor0", 0.2);
     self SetClientDvar("r_bloomScale", 1.2);
@@ -1101,7 +1176,7 @@ enable_carnival_circus_night_mode()
     self SetClientDvar("vc_yh", "1.0 1.0 0.4 0");
     self SetClientDvar("vc_rgbl", "0.6 0.4 0.1 0");
 
-    self SetClientDvar("r_exposureValue", 3.0);
+    self apply_night_vision_exposure(3.0);
     self SetClientDvar("r_lightTweakSunLight", 0.9);
     self SetClientDvar("r_sky_intensity_factor0", 1.0);
     self SetClientDvar("r_bloomScale", 2.2);
@@ -1138,7 +1213,7 @@ enable_alien_space_night_mode()
     self SetClientDvar("vc_yh", "0.3 1.0 0.8 0");
     self SetClientDvar("vc_rgbl", "0.1 0.5 0.3 0");
 
-    self SetClientDvar("r_exposureValue", 2.5);
+    self apply_night_vision_exposure(2.5);
     self SetClientDvar("r_lightTweakSunLight", 0.6);
     self SetClientDvar("r_sky_intensity_factor0", 0.8);
     self SetClientDvar("r_bloomScale", 2.5);
@@ -1175,7 +1250,7 @@ enable_coral_reef_night_mode()
     self SetClientDvar("vc_yh", "0.2 0.8 1.0 0");
     self SetClientDvar("vc_rgbl", "0.1 0.3 0.5 0");
 
-    self SetClientDvar("r_exposureValue", 1.7);
+    self apply_night_vision_exposure(1.7);
     self SetClientDvar("r_lightTweakSunLight", 0.3);
     self SetClientDvar("r_sky_intensity_factor0", 0.4);
     self SetClientDvar("r_bloomScale", 2.0);
@@ -1212,7 +1287,7 @@ enable_northern_lights_night_mode()
     self SetClientDvar("vc_yh", "0.5 1.0 1.0 0");
     self SetClientDvar("vc_rgbl", "0.2 0.5 0.6 0");
 
-    self SetClientDvar("r_exposureValue", 1.9);
+    self apply_night_vision_exposure(1.9);
     self SetClientDvar("r_lightTweakSunLight", 0.4);
     self SetClientDvar("r_sky_intensity_factor0", 0.5);
     self SetClientDvar("r_bloomScale", 2.8);
@@ -1249,7 +1324,7 @@ enable_toxic_waste_night_mode()
     self SetClientDvar("vc_yh", "1.0 1.0 0.3 0");
     self SetClientDvar("vc_rgbl", "0.5 0.6 0.1 0");
 
-    self SetClientDvar("r_exposureValue", 2.7);
+    self apply_night_vision_exposure(2.7);
     self SetClientDvar("r_lightTweakSunLight", 0.6);
     self SetClientDvar("r_sky_intensity_factor0", 0.7);
     self SetClientDvar("r_bloomScale", 1.8);
@@ -1286,7 +1361,7 @@ enable_ancient_temple_night_mode()
     self SetClientDvar("vc_yh", "1.0 0.7 0.3 0");
     self SetClientDvar("vc_rgbl", "0.5 0.3 0.1 0");
 
-    self SetClientDvar("r_exposureValue", 2.3);
+    self apply_night_vision_exposure(2.3);
     self SetClientDvar("r_lightTweakSunLight", 0.5);
     self SetClientDvar("r_sky_intensity_factor0", 0.6);
     self SetClientDvar("r_bloomScale", 1.5);
@@ -1323,7 +1398,7 @@ enable_futuristic_city_night_mode()
     self SetClientDvar("vc_yh", "0.9 1.0 1.0 0");
     self SetClientDvar("vc_rgbl", "0.4 0.5 0.7 0");
 
-    self SetClientDvar("r_exposureValue", 2.8);
+    self apply_night_vision_exposure(2.8);
     self SetClientDvar("r_lightTweakSunLight", 0.7);
     self SetClientDvar("r_sky_intensity_factor0", 0.9);
     self SetClientDvar("r_bloomScale", 2.0);
@@ -1360,7 +1435,7 @@ enable_dream_world_night_mode()
     self SetClientDvar("vc_yh", "1.0 0.6 1.0 0");
     self SetClientDvar("vc_rgbl", "0.6 0.2 0.5 0");
 
-    self SetClientDvar("r_exposureValue", 2.4);
+    self apply_night_vision_exposure(2.4);
     self SetClientDvar("r_lightTweakSunLight", 0.5);
     self SetClientDvar("r_sky_intensity_factor0", 0.7);
     self SetClientDvar("r_bloomScale", 2.5);
@@ -1375,21 +1450,7 @@ enable_dream_world_night_mode()
 disable_night_mode() 
 {
 	self notify( "disable_nightmode" );
-	self.night = 0;
-	self.nightfix = 0;
-	self SetClientDvar( "r_filmUseTweaks", 0 );
-	self SetClientDvar( "r_bloomTweaks", 0 );
-	self SetClientDvar( "r_exposureTweak", 0 );
-	self SetClientDvar( "r_filmUseTweaks", 0 );
-    self SetClientDvar( "r_bloomTweaks", 0 );
-    self SetClientDvar( "r_exposureTweak", 0 );
-	self SetClientDvar( "vc_rgbh", "0 0 0 0" );
-	self SetClientDvar( "vc_yl", "0 0 0 0" );
-	self SetClientDvar( "vc_yh", "0 0 0 0" );
-	self SetClientDvar( "vc_rgbl", "0 0 0 0" );
-	self SetClientDvar( "r_exposureValue", int( level.default_r_exposureValue ) );
-	self SetClientDvar( "r_lightTweakSunLight", int( level.default_r_lightTweakSunLight ) );
-	self SetClientDvar( "r_sky_intensity_factor0", int( level.default_r_sky_intensity_factor0 ) );
+    self reset_all_night_mode_dvars();
 }
 
 visual_fix()
@@ -1484,7 +1545,8 @@ onPlayerSay()
                         if(i >= 4.5 && i <= 10)
                         {
                             player iPrintln("The darkness has been adjusted " + i );
-                            player setclientdvar("r_exposureValue", i);
+                            player.night_mode_darkness = i;
+                            player apply_night_vision_exposure( i );
                         }
                         else
                         {
@@ -1575,3 +1637,172 @@ create_simple_hud_element()
     hudElem.hidewheninmenu = false;
     return hudElem;
 }
+
+apply_night_vision_exposure(value)
+{
+    if (isDefined(self.night_mode_darkness) && self.night_mode_darkness >= 4.5)
+    {
+        self SetClientDvar("r_exposureValue", self.night_mode_darkness);
+    }
+    else
+    {
+        self SetClientDvar("r_exposureValue", value);
+    }
+}
+
+rotate_skydome()
+{
+    
+    if (level.script == "zm_tomb" || level.script == "zm_prison")
+        return;
+
+    angle = 360;
+
+    self endon("disconnect");
+    level endon("game_ended");
+
+    for(;;)
+    {
+        
+        angle = angle - 0.025;
+
+        
+        if (angle <= 0)
+        {
+            
+            angle = 360 + angle;
+        }
+
+        self setclientdvar("r_skyRotation", angle);
+        wait 0.1;
+    }
+}
+
+
+change_skydome()
+{
+    
+    tempValue = 6500;
+
+    self endon("disconnect");
+    level endon("game_ended");
+
+    for(;;)
+    {
+        
+        tempValue = tempValue + 1.626;
+
+        
+        if (tempValue >= 25000)
+        {
+            tempValue = tempValue - 23350;
+        }
+
+        self setclientdvar("r_skyColorTemp", tempValue);
+        wait 0.1;
+    }
+}
+
+
+daynightcycle()
+{
+    level endon("game_ended");
+    self endon("disconnect");
+
+    
+    if (!(level.script == "zm_buried" || level.script == "zm_highrise"))
+        return;
+
+    
+    baseExp = 3;
+    baseBleed = 3;
+    baseLight = 20;
+
+    currentExp = baseExp;
+    currentBleed = baseBleed;
+    currentLight = baseLight;
+
+    nightExpMax = 5.723;
+    nightLightMax = 30;
+    nightBleedMax = 5.7;
+
+    dayExpMin = 3.85;
+    dayLightMin = 15;
+    dayBleedMin = 3;
+
+    for(;;)
+    {
+        flag_wait("power_on");
+
+        foreach(p in getplayers())
+        {
+            
+            idxNight = randomintrange(1, 48);
+
+            if (currentBleed == dayBleedMin && currentLight == dayLightMin && currentExp == dayExpMin && idxNight == 24)
+            {
+                for(;;)
+                {
+                    currentBleed += 0.08;
+                    currentLight += 0.08;
+                    currentExp += 0.05;
+
+                    if (currentExp > nightExpMax) currentExp = nightExpMax;
+                    if (currentLight > nightLightMax) currentLight = nightLightMax;
+                    if (currentBleed > nightBleedMax) currentBleed = nightBleedMax;
+
+                    p apply_night_vision_exposure(currentExp);
+                    p setclientdvar("r_lightTweakSunLight", currentLight);
+                    p setclientdvar("r_sky_intensity_factor0", currentBleed);
+
+                    if (currentExp == nightExpMax && currentLight == nightLightMax && currentBleed == nightBleedMax)
+                    {
+                        for(i = 2; i <= 8; i++)
+                        {
+                            p setclientdvar("vc_yl", "0 0 0." + i + " 0");
+                            wait 0.15;
+                        }
+                        break;
+                    }
+                    wait 0.005;
+                }
+            }
+
+            
+            idxDay = randomintrange(1, 24);
+
+            if (currentBleed == nightBleedMax && currentLight == nightLightMax && currentExp == nightExpMax && idxDay == 12)
+            {
+                for(;;)
+                {
+                    currentBleed -= 0.1;
+                    currentLight -= 0.1;
+                    currentExp -= 0.05;
+
+                    if (currentExp < dayExpMin) currentExp = dayExpMin;
+                    if (currentLight < dayLightMin) currentLight = dayLightMin;
+                    if (currentBleed < dayBleedMin) currentBleed = dayBleedMin;
+
+                    p apply_night_vision_exposure(currentExp);
+                    p setclientdvar("r_lightTweakSunLight", currentLight);
+                    p setclientdvar("r_sky_intensity_factor0", currentBleed);
+
+                    if (currentExp == dayExpMin && currentLight == dayLightMin && currentBleed == dayBleedMin)
+                    {
+                        for(j = 8; j >= 1; j--)
+                        {
+                            p setclientdvar("vc_yl", "0 0 0." + j + " 0");
+                            wait 0.2;
+                        }
+                        break;
+                    }
+
+                    wait 0.005;
+                }
+            }
+        }
+
+        wait 13;
+    }
+}
+

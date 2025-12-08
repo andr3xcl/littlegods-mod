@@ -1,6 +1,5 @@
 
 
-
 #include maps\mp\_utility;
 #include common_scripts\utility;
 #include maps\mp\gametypes_zm\_hud_util;
@@ -119,7 +118,7 @@ update_menu_visuals_with_position(menu)
             
             
             if (i == menu.selected)
-                menu.items[i].item.color = menu.active_color;
+                menu.items[i].item.color = (1, 1, 1);
             else
                 menu.items[i].item.color = menu.inactive_color;
         }

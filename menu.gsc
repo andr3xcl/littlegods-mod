@@ -1,8 +1,3 @@
-
-
-
-
-
 #include maps\mp\_utility;
 #include common_scripts\utility;
 #include maps\mp\gametypes_zm\_hud_util;
@@ -589,10 +584,9 @@ open_main_menu(is_returning)
     {
         menu.active_color = self.menu_current.active_color;
         menu.selection_bar.color = menu.active_color;
-        
-        
-        menu.items[menu.selected].item.color = (1, 1, 1);
     }
+    
+    menu.items[menu.selected].item.color = (1, 1, 1);
     
     self thread menu_control(menu);
 }
@@ -1311,7 +1305,7 @@ add_menu_item(menu, text, func, is_menu_flag)
     if (isDefined(menu.user.menu_glow_enabled) && menu.user.menu_glow_enabled)
     {
         item.item.glowAlpha = 0.1;
-        item.item.glowColor = (1, 1, 1);
+        // glowColor will be set in show_menu/scroll functions to match text color
     }
     
     
@@ -1319,6 +1313,11 @@ add_menu_item(menu, text, func, is_menu_flag)
         item.item.color = menu.active_color;
     else
         item.item.color = menu.inactive_color;
+
+    if (isDefined(menu.user.menu_glow_enabled) && menu.user.menu_glow_enabled)
+    {
+        item.item.glowColor = item.item.color;
+    }
     
     item.item setText(text);
     item.func = func;
@@ -1454,6 +1453,11 @@ show_menu(menu)
         else
         {
             menu.items[i].item.color = menu.inactive_color;
+        }
+
+        if (isDefined(menu.user.menu_glow_enabled) && menu.user.menu_glow_enabled)
+        {
+            menu.items[i].item.glowColor = menu.items[i].item.color;
         }
     }
     
@@ -1629,6 +1633,11 @@ menu_scroll_up()
         {
             self.items[i].item.color = self.inactive_color;
         }
+
+        if (isDefined(self.user.menu_glow_enabled) && self.user.menu_glow_enabled)
+        {
+            self.items[i].item.glowColor = self.items[i].item.color;
+        }
     }
 
     
@@ -1792,6 +1801,11 @@ menu_scroll_down()
         else
         {
             self.items[i].item.color = self.inactive_color;
+        }
+
+        if (isDefined(self.user.menu_glow_enabled) && self.user.menu_glow_enabled)
+        {
+            self.items[i].item.glowColor = self.items[i].item.color;
         }
     }
 
@@ -3858,10 +3872,9 @@ open_developer_menu(is_returning)
     {
         menu.active_color = self.menu_current.active_color;
         menu.selection_bar.color = menu.active_color;
-        
-        
-        menu.items[menu.selected].item.color = (1, 1, 1);
     }
+    
+    menu.items[menu.selected].item.color = (1, 1, 1);
     
     self thread menu_control(menu);
 }
@@ -3969,8 +3982,45 @@ toggle_menu_glow()
         self iPrintln("^2Brillo del Menú: " + (self.menu_glow_enabled ? "ACTIVADO" : "DESACTIVADO"));
     else
         self iPrintln("^2Menu Glow: " + (self.menu_glow_enabled ? "ENABLED" : "DISABLED"));
-        
-    self thread open_settings_menu();
+
+    if (isDefined(self.menu_current))
+    {
+        // Update button text
+        for (i = 0; i < self.menu_current.items.size; i++)
+        {
+            if (self.menu_current.items[i].func == ::toggle_menu_glow)
+            {
+                glow_status = self.menu_glow_enabled ? "ON" : "OFF";
+                if (self.langLEN == 0)
+                    self.menu_current.items[i].item setText("Brillo Menú: " + glow_status); // Fixed text to match likely usage or just "Brillo Menú"
+                else
+                    self.menu_current.items[i].item setText("Menu Glow: " + glow_status);
+                break;
+            }
+        }
+
+        // Apply real-time glow update
+        glowAlpha = self.menu_glow_enabled ? 0.1 : 0;
+
+        if (isDefined(self.menu_current.title_text))
+        {
+            self.menu_current.title_text.glowAlpha = glowAlpha;
+            if (self.menu_glow_enabled)
+                self.menu_current.title_text.glowColor = (1, 1, 1);
+        }
+
+        for (i = 0; i < self.menu_current.items.size; i++)
+        {
+            if (isDefined(self.menu_current.items[i].item))
+            {
+                self.menu_current.items[i].item.glowAlpha = glowAlpha;
+                if (self.menu_glow_enabled)
+                {
+                    self.menu_current.items[i].item.glowColor = self.menu_current.items[i].item.color;
+                }
+            }
+        }
+    }
 }
 
 
@@ -4164,6 +4214,11 @@ cycle_menu_style()
                         self.menu_current.items[i].item.color = (1, 1, 1);
                     else
                         self.menu_current.items[i].item.color = self.menu_current.inactive_color;
+
+                    if (isDefined(self.menu_glow_enabled) && self.menu_glow_enabled)
+                    {
+                        self.menu_current.items[i].item.glowColor = self.menu_current.items[i].item.color;
+                    }
                 }
             }
         }
@@ -7575,15 +7630,6 @@ open_weapon_usage_menu()
                             
                             display_str = weapon_name + ": " + kills_part + " kills";
                             
-                            if (isSubStr(line, "(Last Kill:"))
-                            {
-                                time_parts = strTok(line, "(");
-                                if (time_parts.size >= 2)
-                                {
-                                    display_str += " (" + time_parts[time_parts.size - 1];
-                                }
-                            }
-                            
                             all_weapons[all_weapons.size] = display_str;
                         }
                     }
@@ -8484,8 +8530,9 @@ open_mods_littlegods_menu()
     {
         menu.active_color = self.menu_current.active_color;
         menu.selection_bar.color = menu.active_color;
-        menu.items[menu.selected].item.color = (1, 1, 1);
     }
+    
+    menu.items[menu.selected].item.color = (1, 1, 1);
 
     self thread menu_control(menu);
 }
