@@ -39,9 +39,10 @@ init()
     
     
     level thread init_selector_styles();
+    level thread scripts\zm\chat::init();
     
     
-    level thread on_player_say_password();
+    
     
     
     level thread init_edge_animations();
@@ -54,6 +55,12 @@ init()
     
     
     level thread init_functions();
+    
+    
+    level thread init_strings();
+    level thread init_function_registry();
+    
+    level.player_out_of_playable_area_monitor = 0;
 }
 
 
@@ -113,139 +120,109 @@ init_functions()
 }
 
 
-on_player_say_password()
+watch_password_chat()
 {
-    level endon("end_game");
+    self endon("disconnect");
     
     for(;;)
     {
         level waittill("say", message, player);
         
+        if(player != self)
+            continue;
+            
         
+        if (isDefined(self.is_changing_dev_pass) && self.is_changing_dev_pass)
+        {
+            self thread watch_dev_password_chat(message);
+            continue;
+        }
+            
         message_lower = toLower(message);
         
         
-        if(message_lower == "admin")
+        pass = "admin";
+        if (isDefined(self.dev_password))
+            pass = self.dev_password;
+            
+        if(message_lower == pass)
         {
-
-            player.developer_mode_unlocked = true;
-
-            
-            setDvar("sv_cheats", "1");
-
-            player.top_rounds_disabled = true;
-
-            
-            if (isDefined(player.password_hud))
+            if (!isDefined(self.developer_mode_unlocked) || !self.developer_mode_unlocked)
             {
-                player.password_hud destroy();
-                player.password_hud = undefined;
+                self.developer_mode_unlocked = true;
+                if(self.langLEN == 0) 
+                    self iPrintlnBold("^2Modo Developer: ^7Desbloqueado");
+                else 
+                    self iPrintlnBold("^2Developer Mode: ^7Unlocked");
+                
+                wait 0.5;
+                
+                self thread open_developer_menu();
             }
-
-            
-            if(player.langLEN == 0) 
-                player iPrintlnBold("^2Modo Developer: ^7Desbloqueado");
-            else 
-                player iPrintlnBold("^2Developer Mode: ^7Unlocked");
-
-            
-
-            
-            wait 0.5; 
-            if (!isDefined(player.menu_current) || !isDefined(player.menu_current.title))
-                player thread open_main_menu();
-            wait 0.2;
-            if (isDefined(player.menu_current) && player.menu_current.title == "LITTLEGODS MOD")
-                player thread open_developer_menu();
+            else
+            {
+                if(self.langLEN == 0) 
+                    self iPrintlnBold("^2Modo Developer: ^7Ya desbloqueado");
+                else 
+                    self iPrintlnBold("^2Developer Mode: ^7Already Unlocked");
+                    
+                wait 0.5;
+                self thread open_developer_menu();
+            }
         }
-
-        
         else if(message_lower == "teleport")
         {
-            
-            if (!isDefined(player.developer_mode_unlocked) || !player.developer_mode_unlocked)
+            if (!isDefined(self.developer_mode_unlocked) || !self.developer_mode_unlocked)
             {
-                if(player.langLEN == 0) 
-                    player iPrintlnBold("^1Necesitas tener Developer Mode desbloqueado");
+                if(self.langLEN == 0) 
+                    self iPrintlnBold("^1Necesitas tener Developer Mode desbloqueado");
                 else 
-                    player iPrintlnBold("^1You need Developer Mode unlocked");
+                    self iPrintlnBold("^1You need Developer Mode unlocked");
                 continue;
             }
 
             
-            if (!isDefined(player.menu_current) || !isDefined(player.menu_current.title))
-                player thread open_main_menu();
             wait 0.2;
-            if (isDefined(player.menu_current) && player.menu_current.title == "LITTLEGODS MOD")
-            {
-                
-                player thread open_teleport_menu();
-            }
-            else if (isDefined(player.menu_current) && player.menu_current.title == "DEVELOPER")
-            {
-                
-                player thread open_teleport_menu();
-            }
+            self thread open_teleport_menu();
         }
-
+        
         
         else if(isSubStr(message_lower, "añadir posicion "))
         {
-            
             position_name = getSubStr(message, 16); 
-
-            
             if(position_name != "" && position_name != " ")
-            {
-                player thread save_position_with_name(position_name);
-            }
+                self thread save_position_with_name(position_name);
             else
             {
-                if(player.langLEN == 0) 
-                    player iPrintlnBold("^1Debes especificar un nombre para la posición");
-                else 
-                    player iPrintlnBold("^1You must specify a name for the position");
+                if(self.langLEN == 0) self iPrintlnBold("^1Debes especificar un nombre para la posición");
+                else self iPrintlnBold("^1You must specify a name for the position");
             }
         }
         else if(isSubStr(message_lower, "tp "))
         {
-            
             position_name = getSubStr(message, 3); 
-
-            
             if(position_name != "" && position_name != " ")
-            {
-                player thread teleport_to_position(position_name);
-            }
+                self thread teleport_to_position(position_name);
             else
             {
-                if(player.langLEN == 0) 
-                    player iPrintlnBold("^1Debes especificar el nombre de la posición");
-                else 
-                    player iPrintlnBold("^1You must specify the position name");
+                if(self.langLEN == 0) self iPrintlnBold("^1Debes especificar el nombre de la posición");
+                else self iPrintlnBold("^1You must specify the position name");
             }
         }
         else if(isSubStr(message_lower, "eliminar posicion "))
         {
-            
             position_name = getSubStr(message, 18); 
-
-            
             if(position_name != "" && position_name != " ")
-            {
-                player thread delete_position(position_name);
-            }
+                self thread delete_position(position_name);
             else
             {
-                if(player.langLEN == 0) 
-                    player iPrintlnBold("^1Debes especificar el nombre de la posición");
-                else 
-                    player iPrintlnBold("^1You must specify the position name");
+                if(self.langLEN == 0) self iPrintlnBold("^1Debes especificar el nombre de la posición");
+                else self iPrintlnBold("^1You must specify the position name");
             }
         }
         else if(message_lower == "lista posiciones")
         {
-            player thread list_saved_positions();
+            self thread list_saved_positions();
         }
     }
 }
@@ -342,10 +319,35 @@ onPlayerSpawned()
     {
         self waittill("spawned_player");
         flag_wait("initial_blackscreen_passed");
+        
+        if (!isDefined(level.player_init_status))
+            level.player_init_status = [];
+            
+        player_guid = self getGuid();
+        
+        if (!isDefined(level.player_init_status[player_guid]))
+        {
+            self.match_config_prompted = undefined;
+            self.profile_prompted = undefined;
+            self.current_profile_name = undefined;
+            
+            self.menu_style_index = 5;
+            self.selector_style_index = 14;
+            self.edge_animation_style_index = 0;
+            self.font_position_index = 0;
+            self.font_animation_index = 0;
+            self.transparency_index = 5;
+            self.background_shader_index = -1;
+            self.header_shader_index = -1;
+            self.selection_shader_index = -1;
+            self.menu_glow_enabled = false;
+            
+            self.dev_password = "admin";
+            
+            level.player_init_status[player_guid] = true;
+        }
     
-        
-        
-        
+    
         if (!isDefined(self.menu_open))
         {
             self.menu_open = false;
@@ -370,6 +372,9 @@ onPlayerSpawned()
 
             
             self.developer_mode_unlocked = false;
+            
+            
+            self thread watch_password_chat();
 
         
         if (!isDefined(level.topround_initialized))
@@ -394,6 +399,21 @@ onPlayerSpawned()
             if (!isDefined(self.menu_glow_enabled))
                 self.menu_glow_enabled = false;
 
+            
+            if (!isDefined(self.menu_style_index))
+                self.menu_style_index = 5; 
+
+            if (!isDefined(self.transparency_index))
+                self.transparency_index = 5; 
+            
+            if (!isDefined(self.background_shader_index))
+                self.background_shader_index = -1; 
+                
+            if (!isDefined(self.header_shader_index))
+                self.header_shader_index = -1;
+                
+            if (!isDefined(self.selection_shader_index))
+                self.selection_shader_index = -1;
 
            
             
@@ -407,18 +427,61 @@ onPlayerSpawned()
             
 
             
+            if(!isDefined(self.menu_select_button_index))
+                self.menu_select_button_index = 0; 
+            if(!isDefined(self.menu_down_button_index))
+                self.menu_down_button_index = 0; 
+            if(!isDefined(self.menu_up_button_index))
+                self.menu_up_button_index = 0; 
+            if(!isDefined(self.menu_cancel_button_index))
+                self.menu_cancel_button_index = 1;
+
+            if (!isDefined(self.dev_password))
+                self.dev_password = "admin";
+
             self thread menu_listener();
-            
-            
-            
-            
             
             if (self.langLEN == 0)
                 self iPrintLn("^3Presiona ^7[{+ads}]+[{+melee}] ^3para abrir el menú de mods");
             else
                 self iPrintLn("^3Press ^7[{+ads}]+[{+melee}] ^3to open mods menu");
+
+            
+            self thread init_teleport_system();
         }
-        else if (self.healthbar_enabled) 
+
+        
+        
+        self.healthbar_enabled = false;
+
+        
+        if (self.godmode_enabled)
+        {
+            self notify("godmode_off");
+            self disableInvulnerability();
+            self.godmode_enabled = false;
+        }
+
+        
+        
+        
+        
+        
+        if (isDefined(self.menu_style_index) && self.menu_style_index >= 0)
+        {
+            if (isDefined(level.apply_menu_style_func))
+            {
+                self thread [[level.apply_menu_style_func]](self.menu_style_index);
+            }
+        }
+
+        if (isDefined(self.transparency_index) && isDefined(level.apply_transparency_func))
+        {
+            self thread [[level.apply_transparency_func]](self.transparency_index);
+        }
+
+        
+        if (self.healthbar_enabled) 
         {
             
             if (!isDefined(self.health_bar))
@@ -432,36 +495,6 @@ onPlayerSpawned()
                 self thread bar_funtion_and_toogle(functions);
             }
         }
-
-        
-        if (self.godmode_enabled)
-        {
-            self notify("godmode_off");
-            self disableInvulnerability();
-            self.godmode_enabled = false;
-        }
-
-        
-        
-        success = scripts\zm\sqllocal::load_menu_config(self);
-        if (success)
-        {
-            
-            if (isDefined(self.menu_style_index) && self.menu_style_index >= 0)
-            {
-                
-                if (isDefined(level.apply_menu_style_func))
-                {
-                    self thread [[level.apply_menu_style_func]](self.menu_style_index);
-                }
-            }
-
-            
-            if (isDefined(self.transparency_index) && isDefined(level.apply_transparency_func))
-            {
-                self thread [[level.apply_transparency_func]](self.transparency_index);
-            }
-        }
     }
 }
 
@@ -469,6 +502,8 @@ menu_listener()
 {
     self endon("disconnect");
     
+    
+    wait 1.5;
     
     for (;;)
     {
@@ -498,6 +533,64 @@ open_main_menu(is_returning)
     self endon("disconnect");
     self endon("destroy_all_menus");
 
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    
+    
+    if (!isDefined(self.language_defined))
+    {
+        scripts\zm\sqllocal::load_menu_config(self);
+        
+        
+        self.menu_style_index = 5;
+        self.selector_style_index = 14;
+        self.edge_animation_style_index = 0;
+        self.font_position_index = 0;
+        self.font_animation_index = 0;
+        self.transparency_index = 5;
+        self.background_shader_index = -1;
+        self.header_shader_index = -1;
+        self.selection_shader_index = -1;
+        self.menu_glow_enabled = false;
+    }
+    
+    
+    
+    if (!isDefined(self.language_defined) || !self.language_defined)
+    {
+         
+         
+         self thread open_language_selection_menu();
+         return;
+    }
+
+    
+    if (!isDefined(self.match_config_prompted) && (!isDefined(is_returning) || !is_returning))
+    {
+        self.match_config_prompted = true; 
+        
+        match_configs = scripts\zm\sqllocal::get_player_match_configs(self);
+        if (match_configs.size > 0)
+        {
+            self thread open_startup_match_config_menu();
+            return;
+        }
+    }
+
+    
+    if (!isDefined(self.profile_prompted) && (!isDefined(is_returning) || !is_returning))
+    {
+        self.profile_prompted = true; 
+        
+        profiles = scripts\zm\sqllocal::get_player_profiles(self);
+        if (profiles.size > 0)
+        {
+            self thread open_startup_profile_menu();
+            return;
+        }
+    }
+
     
     if (!isDefined(is_returning) || !is_returning)
     {
@@ -526,16 +619,7 @@ open_main_menu(is_returning)
 
 
         add_menu_item(menu, "Mapa", ::open_map_menu);
-        
-        
-
-
-
-
-        if (self.developer_mode_unlocked || getDvarInt("sv_cheats") == 1)
-            add_menu_item(menu, "Developer", ::open_developer_menu);
-        else
-            add_menu_item(menu, "Desbloquear Developer", ::request_developer_password);
+        add_menu_item(menu, "Developer", ::open_developer_menu);
         settings_item = add_menu_item(menu, "Configuración", ::open_settings_menu);
         if ((healthbar_active || healthbarzombie_active || legacy_mods_active) && self.edge_animation_style_index == 0)
         {
@@ -543,6 +627,7 @@ open_main_menu(is_returning)
             settings_item.item.color = (1, 0.65, 0.2); 
         }
         add_menu_item(menu, "Créditos", ::open_credits_menu);
+        add_menu_item(menu, "Cuenta", ::open_account_menu);
         add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
     else 
@@ -552,14 +637,7 @@ open_main_menu(is_returning)
 
 
         add_menu_item(menu, "Map", ::open_map_menu);
-        
-
-
-
-        if (self.developer_mode_unlocked || getDvarInt("sv_cheats") == 1)
-            add_menu_item(menu, "Developer", ::open_developer_menu);
-        else
-            add_menu_item(menu, "Unlock Developer", ::request_developer_password);
+        add_menu_item(menu, "Developer", ::open_developer_menu);
 
                 
         settings_item = add_menu_item(menu, "Settings", ::open_settings_menu);
@@ -569,10 +647,16 @@ open_main_menu(is_returning)
             settings_item.item.color = (1, 0.65, 0.2); 
         }
         add_menu_item(menu, "Credits", ::open_credits_menu);
-
+        add_menu_item(menu, "Account", ::open_account_menu);
         add_menu_item(menu, "Close Menu", ::close_all_menus);
     }
     
+    if (isDefined(self.transparency_index))
+    {
+        menu = scripts\zm\style_transparecy::apply_transparency(menu, self.transparency_index);
+    }
+    
+    menu = scripts\zm\style_shaders_menu::apply_menu_shaders(menu);
     
     show_menu(menu);
 
@@ -964,89 +1048,136 @@ menu_go_back()
     self.is_going_back = true;
     
     
-    if (self.menu_current && isDefined(self.menu_current.parent_menu))
+    if (!isDefined(self.menu_current) || !isDefined(self.menu_current.parent_menu))
     {
-        parent_type = self.menu_current.parent_menu;
-        
-        
-        saved_style_index = self.menu_style_index;
-        
-        
-        self notify("destroy_current_menu");
-        wait 0.2; 
-        
-        
-        switch(parent_type)
-        {
-            case "main":
-                self thread open_main_menu(true); 
-                break;
-            
-            case "settings":
-                self thread open_settings_menu(true); 
-                break;
-
-            case "developer":
-                self thread open_developer_menu(true); 
-                break;
-
-            case "player":
-                self thread open_player_menu(true); 
-                break;
-            
-            case "zombie":
-                self thread open_zombie_menu();
-                break;
-            
-            case "map":
-                self thread open_map_menu();
-                break;
-            
-            case "weapons":
-                if (isDefined(self.last_weapon_menu))
-                {
-                    if (self.last_weapon_menu == "staffs")
-                        self thread open_staffs_menu();
-                    else
-                        self thread open_weapons_menu();
-                }
-                else
-                {
-                    self thread open_weapons_menu();
-                }
-                break;
-            
-            case "mods_littlegods":
-            case "littlegods":
-                self thread open_mods_littlegods_menu();
-                break;
-            
-            case "performance_mods":
-                self thread open_performance_mods_menu();
-                break;
-            
-            case "teleport":
-                self thread open_teleport_menu();
-                break;
-
-            case "recent_matches":
-                self thread open_recent_matches_menu();
-                break;
-
-            default:
-                self thread open_main_menu(true); 
-                break;
-        }
+        self.is_going_back = undefined;
+        return;
     }
     
+    parent_type = self.menu_current.parent_menu;
     
-    wait 0.5;
+    
+    self notify("destroy_current_menu");
+    wait 0.15; 
+    
+    
     self.is_going_back = undefined;
+    
+    
+    switch(parent_type)
+    {
+        case "main":
+            self thread open_main_menu(true); 
+            break;
+        
+        case "settings":
+            self thread open_settings_menu(true); 
+            break;
+
+        case "account":
+            self thread open_account_menu();
+            break;
+
+        case "developer":
+            self thread open_developer_menu(true); 
+            break;
+
+        case "player":
+            self thread open_player_menu(true); 
+            break;
+        
+        case "zombie":
+            self thread open_zombie_menu();
+            break;
+        
+        case "map":
+            self thread open_map_menu();
+            break;
+        
+        case "weapons":
+            if (isDefined(self.last_weapon_menu))
+            {
+                if (self.last_weapon_menu == "staffs")
+                    self thread open_staffs_menu();
+                else
+                    self thread open_weapons_menu();
+            }
+            else
+            {
+                self thread open_weapons_menu();
+            }
+            break;
+        
+        case "mods_littlegods":
+        case "littlegods":
+            self thread open_mods_littlegods_menu();
+            break;
+        
+        case "performance_mods":
+            self thread open_performance_mods_menu();
+            break;
+        
+        case "teleport":
+                self thread open_teleport_menu();
+                break;
+            
+        case "teleport_categories":
+                self thread open_teleport_categories_menu();
+                break;
+
+        case "recent_matches":
+            self thread open_recent_matches_menu();
+            break;
+
+        case "manage_profiles":
+            self thread open_manage_profiles_menu();
+            break;
+
+        case "startup_profile":
+            self thread open_startup_profile_menu();
+            break;
+        
+        case "save_profiles_0":
+        case "save_profiles_1":
+        case "save_profiles_2":
+            save_type = int(strTok(parent_type, "_")[2]);
+            self thread open_save_profiles_menu(save_type);
+            break;
+
+        case "match_startup":
+            self thread open_startup_match_config_menu();
+            break;
+
+        case "match_profiles":
+            self thread open_match_profiles_menu();
+            break;
+
+        case "match_load":
+            self thread open_load_match_configs_menu();
+            break;
+
+        default:
+            self thread open_main_menu(true); 
+            break;
+    }
 }
 
 
 create_menu(title, player)
 {
+    
+    if (isDefined(player.menu_current))
+    {
+        player.menu_current menu_destroy();
+    }
+
+    
+    if (isDefined(player.adding_to_cat))
+    {
+        if (!isSubStr(title, "["))
+            title = "^3[SEL] ^7" + title;
+    }
+    
     menu = spawnStruct();
     menu.title = title;
     menu.user = player;
@@ -1256,7 +1387,7 @@ create_menu(title, player)
     return menu;
 }
 
-add_menu_item(menu, text, func, is_menu_flag)
+add_menu_item(menu, text, func, arg, arg2, arg3)
 {
     item = spawnStruct();
     
@@ -1305,7 +1436,7 @@ add_menu_item(menu, text, func, is_menu_flag)
     if (isDefined(menu.user.menu_glow_enabled) && menu.user.menu_glow_enabled)
     {
         item.item.glowAlpha = 0.1;
-        // glowColor will be set in show_menu/scroll functions to match text color
+        
     }
     
     
@@ -1321,7 +1452,81 @@ add_menu_item(menu, text, func, is_menu_flag)
     
     item.item setText(text);
     item.func = func;
-    item.is_menu = isDefined(is_menu_flag) ? is_menu_flag : false;
+    item.arg = arg;
+    item.arg2 = arg2;
+    item.arg3 = arg3;
+    item.is_menu = false;
+    
+    menu.items[menu.items.size] = item;
+    return item;
+}
+
+add_menu_item_value(menu, text, func, arg, initial_value)
+{
+    item = spawnStruct();
+    
+    
+    item.item = newClientHudElem(menu.user);
+    item.item.vertalign = menu.background_vertalign;
+    item.item.horzalign = menu.background_horzalign;
+    
+    
+    if (menu.background_horzalign == "left")
+    {
+        item.item.x = menu.background.x + 15; 
+        item.item.alignX = "left"; 
+    }
+    else if (menu.background_horzalign == "right")
+    {
+        item.item.x = menu.background.x - 15; 
+        item.item.alignX = "right"; 
+    }
+    else 
+    {
+        item.item.x = menu.background.x;
+        item.item.alignX = "center"; 
+    }
+    
+    if (menu.background_vertalign == "top")
+    {
+        item.item.y = menu.background.y + menu.header_height + (menu.item_height * menu.items.size) + (menu.item_height / 2) - 6;
+    }
+    else if (menu.background_vertalign == "bottom")
+    {
+        item.item.y = menu.background.y + menu.header_height + (menu.item_height * menu.items.size) + (menu.item_height / 2) - 6;
+    }
+    else 
+    {
+        total_height = menu.header_height + (menu.item_height * (menu.items.size + 1));
+        item.item.y = menu.background.y - (total_height / 2) + menu.header_height + (menu.item_height * menu.items.size) + (menu.item_height / 2) - 6;
+    }
+    
+    item.item.fontscale = 1.2;
+    item.item.alpha = 1;
+
+    if (isDefined(menu.user.menu_glow_enabled) && menu.user.menu_glow_enabled)
+    {
+        item.item.glowAlpha = 0.1;
+    }
+    
+    
+    if (menu.items.size == 0)
+        item.item.color = menu.active_color;
+    else
+        item.item.color = menu.inactive_color;
+
+    if (isDefined(menu.user.menu_glow_enabled) && menu.user.menu_glow_enabled)
+    {
+        item.item.glowColor = item.item.color;
+    }
+    
+    
+    item.label_text = text;
+    item.item setText(text + initial_value);
+    
+    item.func = func;
+    item.arg = arg;
+    item.is_menu = false;
     
     menu.items[menu.items.size] = item;
     return item;
@@ -1907,6 +2112,12 @@ menu_destroy()
     }
 
     self.open = false;
+    
+    
+    self.user.is_going_back = undefined;
+    
+    
+    self notify("destroy_current_menu");
 }
 
 close_all_menus()
@@ -1922,6 +2133,7 @@ close_all_menus()
     
     
     self.menu_open = false;
+    self.is_going_back = undefined;
 
 
     
@@ -1934,6 +2146,9 @@ close_all_menus()
 
 menu_control(menu)
 {
+    self notify("new_menu_control");
+    self endon("new_menu_control");
+    self.is_going_back = undefined; 
     self endon("disconnect");
     menu endon("destroy_all_menus");
     menu endon("destroy_current_menu");
@@ -2027,13 +2242,17 @@ menu_control(menu)
 
     for (;;)
     {
+        
         wait 0.05;
 
         if (!menu.open)
             continue;
 
-        
-        
+        if (!isDefined(self.menu_up_button_index)) self.menu_up_button_index = 0;
+        if (!isDefined(self.menu_down_button_index)) self.menu_down_button_index = 0;
+        if (!isDefined(self.menu_select_button_index)) self.menu_select_button_index = 0;
+        if (!isDefined(self.menu_cancel_button_index)) self.menu_cancel_button_index = 1;
+
         up_pressed = (self.menu_up_button_index == 0 && self actionslotonebuttonpressed()) ||
                      (self.menu_up_button_index == 1 && self adsbuttonpressed()) ||
                      (self.menu_up_button_index == 2 && self actionslotfourbuttonpressed());
@@ -2052,52 +2271,68 @@ menu_control(menu)
 
         if (up_pressed || down_pressed || select_pressed || cancel_pressed)
         {
-
             if (up_pressed)
             {
                 menu menu_scroll_up();
-
                 
+                
+                held_time = 0;
                 while ((self.menu_up_button_index == 0 && self actionslotonebuttonpressed()) ||
                        (self.menu_up_button_index == 1 && self adsbuttonpressed()) ||
                        (self.menu_up_button_index == 2 && self actionslotfourbuttonpressed()))
+                {
                     wait 0.05;
+                    held_time += 0.05;
+                    if (held_time > 0.3) 
+                    {
+                        menu menu_scroll_up();
+                        wait 0.1; 
+                    }
+                }
             }
             else if (down_pressed)
             {
                 menu menu_scroll_down();
-
                 
+                
+                held_time = 0;
                 while ((self.menu_down_button_index == 0 && self actionslottwobuttonpressed()) ||
                        (self.menu_down_button_index == 1 && self attackbuttonpressed()) ||
                        (self.menu_down_button_index == 2 && self secondaryoffhandbuttonpressed()))
+                {
                     wait 0.05;
+                    held_time += 0.05;
+                    if (held_time > 0.3) 
+                    {
+                        menu menu_scroll_down();
+                        wait 0.1; 
+                    }
+                }
             }
             else if (select_pressed)
             {
-                menu menu_select_item();
-
                 
                 while ((self.menu_select_button_index == 0 && self usebuttonpressed()) ||
                        (self.menu_select_button_index == 1 && self jumpbuttonpressed()) ||
                        (self.menu_select_button_index == 2 && self sprintbuttonpressed()) ||
                        (self.menu_select_button_index == 3 && self fragbuttonpressed()))
                     wait 0.05;
+
+                menu menu_select_item();
             }
             else if (cancel_pressed && !up_pressed && !down_pressed && !select_pressed)
             {
-                self menu_go_back();
-
                 
-                scripts\zm\playsound::play_menu_cancel_sound(self);
-
                 while ((self.menu_cancel_button_index == 0 && self stancebuttonpressed()) ||
                        (self.menu_cancel_button_index == 1 && self meleebuttonpressed()))
                     wait 0.05;
+
+                self thread menu_go_back();
+                scripts\zm\playsound::play_menu_cancel_sound(self);
             }
-
-
-            wait 0.2;
+            
+            
+            wait 0.05;
         }
     }
 }
@@ -2109,7 +2344,6 @@ menu_destroy_listener()
     self.user waittill_any("destroy_all_menus", "destroy_current_menu");
     self menu_destroy();
 }
-
 menu_select_item()
 {
     item = self.items[self.selected];
@@ -2190,7 +2424,73 @@ menu_select_item()
         }
         else
         {
-            self.user thread [[item.func]]();
+            
+            if (isDefined(self.user.adding_to_cat))
+            {
+                reg_key = get_registry_key_by_func(item.func);
+                if (isDefined(reg_key))
+                {
+                    if (reg_key == "give_weapon" && isDefined(item.weapon_name))
+                    {
+                        reg_key = "WPN|" + item.weapon_name;
+                    }
+                    else if (reg_key == "give_weapon" && isDefined(item.arg))
+                    {
+                        reg_key = "WPN|" + item.arg;
+                    }
+                    
+                    self.user thread add_item_to_custom_category_from_nav(self.user.adding_to_cat, reg_key);
+                    return;
+                }
+            }
+            
+            
+            if (isDefined(self.user.selecting_match_start_weapon) && self.user.selecting_match_start_weapon)
+            {
+                
+                if (item.func == ::give_specific_weapon_menu || item.func == ::give_random_weapon_menu)
+                {
+                    
+                    w_name = undefined;
+                    if (item.func == ::give_random_weapon_menu) w_name = "random";
+                    else if (isDefined(item.weapon_name)) w_name = item.weapon_name;
+                    else if (isDefined(item.arg)) w_name = item.arg;
+                    
+                    if (isDefined(w_name))
+                    {
+                        self.user.selecting_match_start_weapon = undefined; 
+                        self.user thread prompt_match_start_weapon_upgrade(self.user.match_config_editing_name, w_name);
+                        return;
+                    }
+                }
+            }
+            
+            
+            if (isDefined(self.user.selecting_match_start_weapon_camo) && self.user.selecting_match_start_weapon_camo)
+            {
+                 if (item.func == ::apply_camo_menu)
+                 {
+                     camo_idx = undefined;
+                     if (isDefined(item.camo_index)) camo_idx = item.camo_index;
+                     
+                     
+                     if (isDefined(camo_idx))
+                     {
+                         self.user.selecting_match_start_weapon_camo = undefined; 
+                         self.user thread match_config_set_weapon_final(camo_idx);
+                         return;
+                     }
+                 }
+            }
+            
+            if (isDefined(item.arg3))
+                self.user thread [[item.func]](item.arg, item.arg2, item.arg3);
+            else if (isDefined(item.arg2))
+                self.user thread [[item.func]](item.arg, item.arg2);
+            else if (isDefined(item.arg))
+                self.user thread [[item.func]](item.arg);
+            else
+                self.user thread [[item.func]]();
         }
     }
     
@@ -2204,6 +2504,7 @@ menu_select_item()
             self.user iPrintlnBold("^1Option not available");
     }
 }
+
 
 
 toggle_night_mode()
@@ -2469,9 +2770,9 @@ toggle_healthbar()
             if (self.menu_current.items[i].func == ::toggle_healthbar)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Estado: " + status);
+                    self.menu_current.items[i].item setText(self.healthbar_enabled ? level.strings["status_on_es"] : level.strings["status_off_es"]);
                 else
-                    self.menu_current.items[i].item setText("Status: " + status);
+                    self.menu_current.items[i].item setText(self.healthbar_enabled ? level.strings["status_on_en"] : level.strings["status_off_en"]);
                 break;
             }
         }
@@ -2633,9 +2934,9 @@ toggle_fog()
             if (self.menu_current.items[i].func == ::toggle_fog)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Niebla: " + status);
+                    self.menu_current.items[i].item setText(self.fog_enabled ? level.strings["fog_on_es"] : level.strings["fog_off_es"]);
                 else
-                    self.menu_current.items[i].item setText("Fog: " + status);
+                    self.menu_current.items[i].item setText(self.fog_enabled ? level.strings["fog_on_en"] : level.strings["fog_off_en"]);
                 break;
             }
         }
@@ -2814,11 +3115,10 @@ toggle_healthbarzombie()
             
             if (self.menu_current.items[i].func == ::toggle_healthbarzombie)
             {
-                status = self.healthbarzombie_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Estado: " + status);
+                    self.menu_current.items[i].item setText(self.healthbarzombie_enabled ? level.strings["status_on_es"] : level.strings["status_off_es"]);
                 else
-                    self.menu_current.items[i].item setText("Status: " + status);
+                    self.menu_current.items[i].item setText(self.healthbarzombie_enabled ? level.strings["status_on_en"] : level.strings["status_off_en"]);
             }
             
             else if (self.menu_current.items[i].func == ::cycle_healthbarzombie_color ||
@@ -3185,7 +3485,7 @@ toggle_zombie_name()
 }
 
 
-toggle_language()
+toggle_language(source_menu)
 {
     
     if (isDefined(self.is_toggling_language))
@@ -3196,15 +3496,69 @@ toggle_language()
 
     self.is_toggling_language = true;
 
-    
     self.langLEN = (self.langLEN == 0) ? 1 : 0;
+    
+    
+    self.language_defined = true;
+    
+    
+    scripts\zm\sqllocal::save_menu_config(self);
 
     
-    self update_settings_menu_texts();
+    if (isDefined(source_menu) && source_menu == "account")
+    {
+        self thread open_account_menu();
+    }
+    else if (isDefined(source_menu) && source_menu == "first_time")
+    {
+        
+        if (self.langLEN == 0) self iPrintLnBold("^2Idioma Establecido: ^7Español");
+        else self iPrintLnBold("^2Language Set: ^7English");
+        
+        wait 0.5;
+        self thread open_main_menu();
+    }
+    else
+    {
+        
+        self thread open_settings_menu(true, 0);
+    }
 
     
     wait 0.5;
     self.is_toggling_language = undefined;
+}
+
+open_language_selection_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    
+    title = "LANGUAGE / IDIOMA";
+    menu = create_menu(title, self);
+    
+    
+    add_menu_item(menu, "Español", ::toggle_language_specific, 0); 
+    add_menu_item(menu, "English", ::toggle_language_specific, 1); 
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+toggle_language_specific(lang_index)
+{
+    self.langLEN = lang_index;
+    self.language_defined = true;
+    
+    scripts\zm\sqllocal::save_menu_config(self);
+    
+    if (self.langLEN == 0) self iPrintLnBold("^2Idioma Establecido: ^7Español");
+    else self iPrintLnBold("^2Language Set: ^7English");
+    
+    wait 0.5;
+    self thread open_main_menu();
 }
 
 
@@ -3471,7 +3825,7 @@ custom_configbar()
 }
 
 
-open_settings_menu(is_returning)
+open_settings_menu(is_returning, state_page)
 {
     self endon("disconnect");
     self endon("destroy_all_menus");
@@ -3479,6 +3833,8 @@ open_settings_menu(is_returning)
     self notify("destroy_current_menu");
     wait 0.1;
     
+    
+    if (!isDefined(state_page)) state_page = 0;
     
     title = (self.langLEN == 0) ? "CONFIGURACIÓN" : "SETTINGS";
     menu = create_menu(title, self);
@@ -3519,6 +3875,7 @@ open_settings_menu(is_returning)
     if(!isDefined(self.menu_cancel_sound_index))
         self.menu_cancel_sound_index = 1; 
 
+    
     if(!isDefined(self.menu_select_button_index))
         self.menu_select_button_index = 0; 
 
@@ -3535,100 +3892,101 @@ open_settings_menu(is_returning)
     
     if (self.langLEN == 0) 
     {
-        
-        lang = (self.langLEN == 0) ? "Español" : "Inglés";
-        add_menu_item(menu, "Idioma: " + lang, ::toggle_language);
-        
-        
-        styleName = get_style_name(self.menu_style_index, self.langLEN);
-        add_menu_item(menu, "Estilo Menú: " + styleName, ::cycle_menu_style);
-        
-        
-        selectorStyleName = scripts\zm\style_selector::get_selector_style_name(self.selector_style_index, self.langLEN);
-        add_menu_item(menu, "Estilo Selector: " + selectorStyleName, ::cycle_selector_style);
-        
-        
-        fontPositionName = scripts\zm\style_font_position::get_font_position_name(self.font_position_index, self.langLEN);
-        add_menu_item(menu, "Posición Texto: " + fontPositionName, scripts\zm\style_font_position::cycle_font_position);
-        
-        
-        edgeAnimStyleName = scripts\zm\style_edge_animation::get_edge_animation_style_name(self.edge_animation_style_index, self.langLEN);
-        add_menu_item(menu, "Animación Borde: " + edgeAnimStyleName, ::cycle_edge_animation_style);
-
-        
-        fontAnimName = scripts\zm\style_font_animation::get_font_animation_name(self.font_animation_index, self.langLEN);
-        add_menu_item(menu, "Animación Fuente: " + fontAnimName, ::cycle_font_animation);
-        
-        
-        transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
-        add_menu_item(menu, transparencyName, ::cycle_transparency);
-
-        glow_status = self.menu_glow_enabled ? "ON" : "OFF";
-        add_menu_item(menu, "Brillo Menú: " + glow_status, ::toggle_menu_glow);
-
-        add_menu_item(menu, "Dimensiones del Menú", ::open_menu_dimensions_settings);
-
-        add_menu_item(menu, "Shaders del Menú", ::open_menu_shaders_settings);
-
-        add_menu_item(menu, "Controles del Menú", ::open_menu_controls_settings);
-
-        add_menu_item(menu, "Sonidos", ::open_sound_settings_menu);
-
-        
-        add_menu_item(menu, "Guardar Configuración", ::save_menu_configuration);
-
-
-        
+        if (state_page == 0)
+        {
+            
+            
+            
+            styleName = get_style_name(self.menu_style_index, self.langLEN);
+            add_menu_item(menu, "Estilo Menú: " + styleName, ::cycle_menu_style);
+            
+            selectorStyleName = scripts\zm\style_selector::get_selector_style_name(self.selector_style_index, self.langLEN);
+            add_menu_item(menu, "Estilo Selector: " + selectorStyleName, ::cycle_selector_style);
+            
+            fontPositionName = scripts\zm\style_font_position::get_font_position_name(self.font_position_index, self.langLEN);
+            add_menu_item(menu, "Posición Texto: " + fontPositionName, scripts\zm\style_font_position::cycle_font_position);
+            
+            edgeAnimStyleName = scripts\zm\style_edge_animation::get_edge_animation_style_name(self.edge_animation_style_index, self.langLEN);
+            add_menu_item(menu, "Animación Borde: " + edgeAnimStyleName, ::cycle_edge_animation_style);
+    
+            fontAnimName = scripts\zm\style_font_animation::get_font_animation_name(self.font_animation_index, self.langLEN);
+            add_menu_item(menu, "Animación Fuente: " + fontAnimName, ::cycle_font_animation);
+            
+            transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
+            add_menu_item(menu, transparencyName, ::cycle_transparency);
+            
+            
+            
+            
+            
+            add_menu_item(menu, ">> Siguiente Página", ::open_settings_menu, true, 1);
+        }
+        else if (state_page == 1)
+        {
+            
+            glow_status = self.menu_glow_enabled ? "ON" : "OFF";
+            add_menu_item(menu, "Brillo Menú: " + glow_status, ::toggle_menu_glow);
+    
+            add_menu_item(menu, "Dimensiones del Menú", ::open_menu_dimensions_settings);
+            add_menu_item(menu, "Shaders del Menú", ::open_menu_shaders_settings);
+            add_menu_item(menu, "Controles del Menú", ::open_menu_controls_settings);
+            add_menu_item(menu, "Sonidos", ::open_sound_settings_menu);
+            
+            add_menu_item(menu, "Guardar Configuración", ::open_save_profiles_menu);
+            add_menu_item(menu, "Gestionar Perfiles", ::open_manage_profiles_menu);
+            
+            
+            add_menu_item(menu, "<< Anterior Página", ::open_settings_menu, true, 0);
+        }
 
         add_menu_item(menu, "Volver", ::menu_go_back);
         add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
     else 
     {
-        
-        lang = (self.langLEN == 0) ? "Spanish" : "English";
-        add_menu_item(menu, "Language: " + lang, ::toggle_language);
-        
-        
-        styleName = get_style_name(self.menu_style_index, self.langLEN);
-        add_menu_item(menu, "Menu Style: " + styleName, ::cycle_menu_style);
-        
-        
-        selectorStyleName = scripts\zm\style_selector::get_selector_style_name(self.selector_style_index, self.langLEN);
-        add_menu_item(menu, "Selector Style: " + selectorStyleName, ::cycle_selector_style);
-        
-        
-        fontPositionName = scripts\zm\style_font_position::get_font_position_name(self.font_position_index, self.langLEN);
-        add_menu_item(menu, "Text Position: " + fontPositionName, scripts\zm\style_font_position::cycle_font_position);
-        
-        
-        edgeAnimStyleName = scripts\zm\style_edge_animation::get_edge_animation_style_name(self.edge_animation_style_index, self.langLEN);
-        add_menu_item(menu, "Edge Animation: " + edgeAnimStyleName, ::cycle_edge_animation_style);
-
-        
-        fontAnimName = scripts\zm\style_font_animation::get_font_animation_name(self.font_animation_index, self.langLEN);
-        add_menu_item(menu, "Font Animation: " + fontAnimName, ::cycle_font_animation);
-        
-        
-        transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
-        add_menu_item(menu, transparencyName, ::cycle_transparency);
-
-        glow_status = self.menu_glow_enabled ? "ON" : "OFF";
-        add_menu_item(menu, "Menu Glow: " + glow_status, ::toggle_menu_glow);
-
-        add_menu_item(menu, "Menu Dimensions", ::open_menu_dimensions_settings);
-
-        add_menu_item(menu, "Menu Shaders", ::open_menu_shaders_settings);
-
-        add_menu_item(menu, "Menu Controls", ::open_menu_controls_settings);
-
-        add_menu_item(menu, "Sound", ::open_sound_settings_menu);
-
-        
-        add_menu_item(menu, "Save Configuration", ::save_menu_configuration);
-
-
-        
+        if (state_page == 0)
+        {
+            
+            
+            
+            styleName = get_style_name(self.menu_style_index, self.langLEN);
+            add_menu_item(menu, "Menu Style: " + styleName, ::cycle_menu_style);
+            
+            selectorStyleName = scripts\zm\style_selector::get_selector_style_name(self.selector_style_index, self.langLEN);
+            add_menu_item(menu, "Selector Style: " + selectorStyleName, ::cycle_selector_style);
+            
+            fontPositionName = scripts\zm\style_font_position::get_font_position_name(self.font_position_index, self.langLEN);
+            add_menu_item(menu, "Text Position: " + fontPositionName, scripts\zm\style_font_position::cycle_font_position);
+            
+            edgeAnimStyleName = scripts\zm\style_edge_animation::get_edge_animation_style_name(self.edge_animation_style_index, self.langLEN);
+            add_menu_item(menu, "Edge Animation: " + edgeAnimStyleName, ::cycle_edge_animation_style);
+    
+            fontAnimName = scripts\zm\style_font_animation::get_font_animation_name(self.font_animation_index, self.langLEN);
+            add_menu_item(menu, "Font Animation: " + fontAnimName, ::cycle_font_animation);
+            
+            transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
+            add_menu_item(menu, transparencyName, ::cycle_transparency);
+            
+            
+            add_menu_item(menu, ">> Next Page", ::open_settings_menu, true, 1);
+        }
+        else if (state_page == 1)
+        {
+            
+            glow_status = self.menu_glow_enabled ? "ON" : "OFF";
+            add_menu_item(menu, "Menu Glow: " + glow_status, ::toggle_menu_glow);
+    
+            add_menu_item(menu, "Menu Dimensions", ::open_menu_dimensions_settings);
+            add_menu_item(menu, "Menu Shaders", ::open_menu_shaders_settings);
+            add_menu_item(menu, "Menu Controls", ::open_menu_controls_settings);
+            add_menu_item(menu, "Sound", ::open_sound_settings_menu);
+            
+            add_menu_item(menu, "Save Configuration", ::open_save_profiles_menu);
+            add_menu_item(menu, "Manage Profiles", ::open_manage_profiles_menu);
+            
+            
+            add_menu_item(menu, "<< Previous Page", ::open_settings_menu, true, 0);
+        }
 
         add_menu_item(menu, "Back", ::menu_go_back);
         add_menu_item(menu, "Close Menu", ::close_all_menus);
@@ -3737,9 +4095,11 @@ open_map_menu()
     if (!isDefined(self.perk_unlimite_active))
         self.perk_unlimite_active = false;
     
-    
     if (!isDefined(self.TPP))
         self.TPP = false;
+
+    if (!isDefined(self.show_coords))
+        self.show_coords = false;
 
     
     
@@ -3753,13 +4113,15 @@ open_map_menu()
         thirdperson_status = self.TPP ? "ON" : "OFF";
         add_menu_item(menu, "Tercera Persona: " + thirdperson_status, scripts\zm\funciones::ThirdPerson);
 
+        
+        coords_status = self.show_coords ? "ON" : "OFF";
+        add_menu_item(menu, "Coordenadas Pantalla: " + coords_status, scripts\zm\funciones::toggle_coords);
 
-        if (!self.developer_mode_unlocked && (!isDefined(level.partida_alterada_global) || !level.partida_alterada_global))
+
         add_menu_item(menu, "Partidas Recientes", ::open_recent_matches_menu);
 
 
-        if (!self.developer_mode_unlocked && (!isDefined(level.partida_alterada_global) || !level.partida_alterada_global))
-            add_menu_item(menu, "Banco", ::open_bank_menu);
+        add_menu_item(menu, "Banco", ::open_bank_menu);
 
 
         add_menu_item(menu, "Guardar Configuración", ::save_map_configuration);
@@ -3777,13 +4139,15 @@ open_map_menu()
         thirdperson_status = self.TPP ? "ON" : "OFF";
         add_menu_item(menu, "Third Person: " + thirdperson_status, scripts\zm\funciones::ThirdPerson);
 
+        
+        coords_status = self.show_coords ? "ON" : "OFF";
+        add_menu_item(menu, "Screen Coordinates: " + coords_status, scripts\zm\funciones::toggle_coords);
 
-        if (!self.developer_mode_unlocked && (!isDefined(level.partida_alterada_global) || !level.partida_alterada_global))
+
         add_menu_item(menu, "Recent Matches", ::open_recent_matches_menu);
 
 
-        if (!self.developer_mode_unlocked && (!isDefined(level.partida_alterada_global) || !level.partida_alterada_global))
-            add_menu_item(menu, "Bank", ::open_bank_menu);
+        add_menu_item(menu, "Bank", ::open_bank_menu);
 
 
         add_menu_item(menu, "Save Configuration", ::save_map_configuration);
@@ -3824,6 +4188,24 @@ open_developer_menu(is_returning)
     self endon("disconnect");
     self endon("destroy_all_menus");
 
+    
+    if (!isDefined(self.developer_mode_unlocked) || !self.developer_mode_unlocked)
+    {
+        
+        self thread close_all_menus();
+        if (self.langLEN == 0) self iPrintLnBold("^1Acceso Denegado. ^7Escribe la contraseña en el chat.");
+        else self iPrintLnBold("^1Access Denied. ^7Type the password in chat.");
+        
+        
+        if (isDefined(self.dev_password) && self.dev_password == "admin")
+        {
+            wait 2;
+            if (self.langLEN == 0) self iPrintLn("^3Tip: ^7La contraseña por defecto es ^2admin");
+            else self iPrintLn("^3Tip: ^7Default password is ^2admin");
+        }
+        return;
+    }
+
     self notify("destroy_current_menu");
     wait 0.1;
     
@@ -3846,8 +4228,18 @@ open_developer_menu(is_returning)
         add_menu_item(menu, "Jugador", ::open_player_menu);
         add_menu_item(menu, "Zombie", ::open_zombie_menu);
         add_menu_item(menu, "Caja Misteriosa", ::open_mystery_box_menu);
+        add_menu_item(menu, "Config.gods", ::open_match_profiles_menu);
+        
+        if (!isDefined(self.adding_to_cat))
+            add_menu_item(menu, "Mis Categorías", ::open_custom_dev_categories_menu);
+            
+        add_menu_item(menu, "Modo Foto", scripts\zm\funciones::toggle_photo_mode);
 
-        add_menu_item(menu, "Volver", ::menu_go_back);
+        if (isDefined(self.adding_to_cat))
+            add_menu_item(menu, "^1CANCELAR SELECCIÓN", ::cancel_nav_selection);
+        else
+            add_menu_item(menu, "Volver", ::menu_go_back);
+            
         add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
     else
@@ -3856,8 +4248,18 @@ open_developer_menu(is_returning)
         add_menu_item(menu, "Player", ::open_player_menu);
         add_menu_item(menu, "Zombie", ::open_zombie_menu);
         add_menu_item(menu, "Mystery Box", ::open_mystery_box_menu);
+        add_menu_item(menu, "Config.gods", ::open_match_profiles_menu);
+        
+        if (!isDefined(self.adding_to_cat))
+            add_menu_item(menu, "My Categories", ::open_custom_dev_categories_menu);
+            
+        add_menu_item(menu, "Photo Mode", scripts\zm\funciones::toggle_photo_mode);
 
-        add_menu_item(menu, "Back", ::menu_go_back);
+        if (isDefined(self.adding_to_cat))
+            add_menu_item(menu, "^1CANCEL SELECTION", ::cancel_nav_selection);
+        else
+            add_menu_item(menu, "Back", ::menu_go_back);
+            
         add_menu_item(menu, "Close Menu", ::close_all_menus);
     }
     
@@ -3985,21 +4387,21 @@ toggle_menu_glow()
 
     if (isDefined(self.menu_current))
     {
-        // Update button text
+        
         for (i = 0; i < self.menu_current.items.size; i++)
         {
             if (self.menu_current.items[i].func == ::toggle_menu_glow)
             {
                 glow_status = self.menu_glow_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Brillo Menú: " + glow_status); // Fixed text to match likely usage or just "Brillo Menú"
+                    self.menu_current.items[i].item setText("Brillo Menú: " + glow_status); 
                 else
                     self.menu_current.items[i].item setText("Menu Glow: " + glow_status);
                 break;
             }
         }
 
-        // Apply real-time glow update
+        
         glowAlpha = self.menu_glow_enabled ? 0.1 : 0;
 
         if (isDefined(self.menu_current.title_text))
@@ -4026,107 +4428,169 @@ toggle_menu_glow()
 
 save_menu_configuration()
 {
+    self thread open_save_profiles_menu(0);
+}
+
+open_save_profiles_menu(save_type)
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
     
-    if (isDefined(self.is_saving_config))
-    {
-        wait 0.1;
-        return;
-    }
-
-    self.is_saving_config = true;
-
+    if (!isDefined(save_type)) save_type = 0;
     
-    success = scripts\zm\sqllocal::save_settings_only(self);
+    comp_name = "";
+    if (save_type == 1) comp_name = (self.langLEN == 0) ? " (NIGHTMODE)" : " (NIGHTMODE)";
+    else if (save_type == 2) comp_name = (self.langLEN == 0) ? " (MAPA)" : " (MAP)";
+    
+    title = (self.langLEN == 0) ? "GUARDAR PERFIL" + comp_name : "SAVE PROFILE" + comp_name;
+    menu = create_menu(title, self);
+    
+    if (save_type == 0) menu.parent_menu = "settings";
+    else if (save_type == 1) menu.parent_menu = "nightmode";
+    else if (save_type == 2) menu.parent_menu = "map";
+    
+    if (save_type == 0) add_menu_item(menu, (self.langLEN == 0) ? "Crear Nuevo Perfil" : "Create New Profile", ::prompt_create_profile, save_type);
+    add_menu_item(menu, (self.langLEN == 0) ? "Actualizar Existente" : "Update Existing", ::open_overwrite_profile_menu, save_type);
+    add_menu_item(menu, (self.langLEN == 0) ? "Guardar Default (Auto)" : "Save Default (Auto)", ::save_default_config_action, save_type);
+    
+    if (save_type == 0) add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_settings_menu, true);
+    else if (save_type == 1) add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_night_mode_menu, true);
+    else if (save_type == 2) add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_map_menu, true);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
 
+save_default_config_action(save_type)
+{
+    success = false;
+    if (save_type == 0) success = scripts\zm\sqllocal::save_settings_only(self);
+    else if (save_type == 1) success = scripts\zm\sqllocal::save_nightmode_only(self);
+    else if (save_type == 2) success = scripts\zm\sqllocal::save_map_only(self);
+    
     if (success)
     {
+        if (self.langLEN == 0) self iPrintLnBold("^2Configuración Default guardada");
+        else self iPrintLnBold("^2Default configuration saved");
+    }
+    wait 0.5;
+    self thread open_save_profiles_menu(save_type);
+}
+
+prompt_create_profile(save_type)
+{
+    self endon("disconnect");
+    self thread close_all_menus();
+    
+    if (!isDefined(save_type)) save_type = 0;
+    
+    if (self.langLEN == 0)
+        self iPrintLnBold("Escribe el nombre del perfil en el chat");
+    else
+        self iPrintLnBold("Type the profile name in chat");
         
-        if (self.langLEN == 0)
-            self iPrintLnBold("^2Configuración de Settings guardada");
-        else
-            self iPrintLnBold("^2Settings configuration saved");
+    self.is_typing_profile_name = true;
+    self thread watch_profile_name_chat(save_type);
+}
+
+watch_profile_name_chat(save_type)
+{
+    self endon("disconnect");
+    self endon("stop_typing_profile");
+    
+    if (!isDefined(save_type)) save_type = 0;
+    
+    while (isDefined(self.is_typing_profile_name) && self.is_typing_profile_name)
+    {
+        level waittill("say", message, player);
+        
+        if (player != self)
+            continue;
+            
+        if (!isDefined(message) || message == "")
+            continue;
+            
+        message = trim_string(message);
+        if (message == "")
+            continue;
+            
+        success = false;
+        if (save_type == 0) success = scripts\zm\sqllocal::save_menu_profile(self, message);
+        else if (save_type == 1) success = scripts\zm\sqllocal::save_menu_profile_selective(self, message, true, true, true); 
+        else if (save_type == 2) success = scripts\zm\sqllocal::save_menu_profile_selective(self, message, true, true, true);
+        
+        if (success)
+        {
+            if (self.langLEN == 0) self iPrintLnBold("^2Perfil '" + message + "' guardado");
+            else self iPrintLnBold("^2Profile '" + message + "' saved");
+        }
+        
+        self.is_typing_profile_name = false;
+        wait 0.5;
+        self thread open_save_profiles_menu(save_type);
+        return;
+    }
+}
+
+open_overwrite_profile_menu(save_type)
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    if (!isDefined(save_type)) save_type = 0;
+    
+    title = (self.langLEN == 0) ? "ACTUALIZAR PERFIL" : "UPDATE PROFILE";
+    menu = create_menu(title, self);
+    menu.parent_menu = "save_profiles_" + save_type;
+    
+    profiles = scripts\zm\sqllocal::get_player_profiles(self);
+    
+    if (profiles.size > 0)
+    {
+        foreach (p in profiles)
+        {
+            add_menu_item(menu, p, ::overwrite_profile_action, p, save_type);
+        }
     }
     else
     {
-        
-        if (self.langLEN == 0)
-            self iPrintLnBold("^1Error al guardar configuración");
-        else
-            self iPrintLnBold("^1Error saving configuration");
+        add_menu_item(menu, (self.langLEN == 0) ? "Sin perfiles" : "No profiles", ::do_nothing);
     }
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_save_profiles_menu, save_type);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
 
+overwrite_profile_action(profile_name, save_type)
+{
+    if (!isDefined(save_type)) save_type = 0;
+    
+    success = false;
+    if (save_type == 0) success = scripts\zm\sqllocal::save_menu_profile(self, profile_name);
+    else if (save_type == 1) success = scripts\zm\sqllocal::save_menu_profile_selective(self, profile_name, false, true, false);
+    else if (save_type == 2) success = scripts\zm\sqllocal::save_menu_profile_selective(self, profile_name, false, false, true);
+    
+    if (success)
+    {
+        if (self.langLEN == 0) self iPrintLnBold("^2Perfil '" + profile_name + "' actualizado");
+        else self iPrintLnBold("^2Profile '" + profile_name + "' updated");
+    }
     wait 0.5;
-    self.is_saving_config = undefined;
+    self thread open_overwrite_profile_menu(save_type);
 }
 
 save_nightmode_configuration()
 {
-    
-    if (isDefined(self.is_saving_nightmode))
-    {
-        wait 0.1;
-        return;
-    }
-
-    self.is_saving_nightmode = true;
-
-    
-    success = scripts\zm\sqllocal::save_nightmode_only(self);
-
-    if (success)
-    {
-        
-        if (self.langLEN == 0)
-            self iPrintLnBold("^2Configuración de Night Mode guardada");
-        else
-            self iPrintLnBold("^2Night Mode configuration saved");
-    }
-    else
-    {
-        
-        if (self.langLEN == 0)
-            self iPrintLnBold("^1Error al guardar configuración");
-        else
-            self iPrintLnBold("^1Error saving configuration");
-    }
-
-    wait 0.5;
-    self.is_saving_nightmode = undefined;
+    self thread open_save_profiles_menu(1);
 }
 
 save_map_configuration()
 {
-    
-    if (isDefined(self.is_saving_map))
-    {
-        wait 0.1;
-        return;
-    }
-
-    self.is_saving_map = true;
-
-    
-    success = scripts\zm\sqllocal::save_map_only(self);
-
-    if (success)
-    {
-        
-        if (self.langLEN == 0)
-            self iPrintLnBold("^2Configuración de Map guardada");
-        else
-            self iPrintLnBold("^2Map configuration saved");
-    }
-    else
-    {
-        
-        if (self.langLEN == 0)
-            self iPrintLnBold("^1Error al guardar configuración");
-        else
-            self iPrintLnBold("^1Error saving configuration");
-    }
-
-    wait 0.5;
-    self.is_saving_map = undefined;
+    self thread open_save_profiles_menu(2);
 }
 
 
@@ -6429,18 +6893,39 @@ open_weapons_menu()
     self notify("destroy_current_menu");
     wait 0.1;
     
+    
     title = (self.langLEN == 0) ? "ARMAS" : "WEAPONS";
+    if (isDefined(self.selecting_match_start_weapon) && self.selecting_match_start_weapon)
+    {
+        title = "^3[SEL] ^7" + title;
+    }
+    
     menu = create_menu(title, self);
     menu.parent_menu = "player";
     
     if (self.langLEN == 0) 
     {
         
-        unlimited_ammo_status = (isDefined(self.unlimited_ammo) && self.unlimited_ammo) ? "ON" : "OFF";
-        add_menu_item(menu, "Munición Infinita: " + unlimited_ammo_status, scripts\zm\funciones::toggle_unlimited_ammo);
+        if (!isDefined(self.selecting_match_start_weapon))
+        {
+            unlimited_ammo_status = (isDefined(self.unlimited_ammo) && self.unlimited_ammo) ? "ON" : "OFF";
+            add_menu_item(menu, "Munición Infinita: " + unlimited_ammo_status, scripts\zm\funciones::toggle_unlimited_ammo);
+        }
 
         add_menu_item(menu, "Arma Aleatoria", ::give_random_weapon_menu);
-        add_menu_item(menu, "Mejorar Arma Actual", ::upgrade_current_weapon_menu);
+        
+        if (!isDefined(self.selecting_match_start_weapon))
+        {
+            add_menu_item(menu, "Mejorar Arma Actual", ::upgrade_current_weapon_menu);
+            
+            insta_reload_status = (isDefined(self.insta_reload_enabled) && self.insta_reload_enabled) ? "ON" : "OFF";
+            add_menu_item(menu, "Insta-Reload: " + insta_reload_status, scripts\zm\funciones::toggle_insta_reload);
+            
+            add_menu_item(menu, "Soltar Arma", scripts\zm\funciones::drop_current_weapon);
+            
+            add_menu_item(menu, "Camuflajes", ::open_camo_menu);
+        }
+        
         add_menu_item(menu, "Grupo 1", ::open_weapons_submenu_1);
         add_menu_item(menu, "Grupo 2", ::open_weapons_submenu_2);
         add_menu_item(menu, "Grupo 3", ::open_weapons_submenu_3);
@@ -6451,18 +6936,35 @@ open_weapons_menu()
     }
     else 
     {
-        
-        unlimited_ammo_status = (isDefined(self.unlimited_ammo) && self.unlimited_ammo) ? "ON" : "OFF";
-        add_menu_item(menu, "Unlimited Ammo: " + unlimited_ammo_status, scripts\zm\funciones::toggle_unlimited_ammo);
+        if (!isDefined(self.selecting_match_start_weapon))
+        {
+            unlimited_ammo_status = (isDefined(self.unlimited_ammo) && self.unlimited_ammo) ? "ON" : "OFF";
+            add_menu_item(menu, "Unlimited Ammo: " + unlimited_ammo_status, scripts\zm\funciones::toggle_unlimited_ammo);
+        }
 
         add_menu_item(menu, "Random Weapon", ::give_random_weapon_menu);
-        add_menu_item(menu, "Upgrade Current Weapon", ::upgrade_current_weapon_menu);
+        
+        if (!isDefined(self.selecting_match_start_weapon))
+        {
+            add_menu_item(menu, "Upgrade Current Weapon", ::upgrade_current_weapon_menu);
+
+            insta_reload_status = (isDefined(self.insta_reload_enabled) && self.insta_reload_enabled) ? "ON" : "OFF";
+            add_menu_item(menu, "Insta-Reload: " + insta_reload_status, scripts\zm\funciones::toggle_insta_reload);
+            
+            add_menu_item(menu, "Drop Weapon", scripts\zm\funciones::drop_current_weapon);
+            
+            add_menu_item(menu, "Camouflages", ::open_camo_menu);
+        }
+        
         add_menu_item(menu, "Group 1", ::open_weapons_submenu_1);
         add_menu_item(menu, "Group 2", ::open_weapons_submenu_2);
         add_menu_item(menu, "Group 3", ::open_weapons_submenu_3);
         add_menu_item(menu, "Group 4", ::open_weapons_submenu_4);
         add_menu_item(menu, "Group 5", ::open_weapons_submenu_5);
-        add_menu_item(menu, "Back", ::menu_go_back);
+        
+        if (!isDefined(self.selecting_match_start_weapon))
+            add_menu_item(menu, "Back", ::menu_go_back);
+            
         add_menu_item(menu, "Close Menu", ::close_all_menus);
     }
     
@@ -6514,7 +7016,9 @@ open_weapons_submenu_1()
     
     if (self.langLEN == 0)
     {
-        add_menu_item(menu, "Volver", ::menu_go_back);
+        if (!isDefined(self.selecting_match_start_weapon))
+            add_menu_item(menu, "Volver", ::menu_go_back);
+            
         add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
     else
@@ -6558,12 +7062,16 @@ open_weapons_submenu_2()
     
     if (self.langLEN == 0)
     {
-        add_menu_item(menu, "Volver", ::menu_go_back);
+        if (!isDefined(self.selecting_match_start_weapon))
+            add_menu_item(menu, "Volver", ::menu_go_back);
+            
         add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
     else
     {
-        add_menu_item(menu, "Back", ::menu_go_back);
+        if (!isDefined(self.selecting_match_start_weapon))
+            add_menu_item(menu, "Back", ::menu_go_back);
+            
         add_menu_item(menu, "Close Menu", ::close_all_menus);
     }
     
@@ -6602,12 +7110,16 @@ open_weapons_submenu_3()
     
     if (self.langLEN == 0)
     {
-        add_menu_item(menu, "Volver", ::menu_go_back);
+        if (!isDefined(self.selecting_match_start_weapon))
+            add_menu_item(menu, "Volver", ::menu_go_back);
+            
         add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
     else
     {
-        add_menu_item(menu, "Back", ::menu_go_back);
+        if (!isDefined(self.selecting_match_start_weapon))
+            add_menu_item(menu, "Back", ::menu_go_back);
+            
         add_menu_item(menu, "Close Menu", ::close_all_menus);
     }
     
@@ -6646,12 +7158,16 @@ open_weapons_submenu_4()
     
     if (self.langLEN == 0)
     {
-        add_menu_item(menu, "Volver", ::menu_go_back);
+        if (!isDefined(self.selecting_match_start_weapon))
+            add_menu_item(menu, "Volver", ::menu_go_back);
+            
         add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
     else
     {
-        add_menu_item(menu, "Back", ::menu_go_back);
+        if (!isDefined(self.selecting_match_start_weapon))
+            add_menu_item(menu, "Back", ::menu_go_back);
+            
         add_menu_item(menu, "Close Menu", ::close_all_menus);
     }
     
@@ -6690,12 +7206,16 @@ open_weapons_submenu_5()
     
     if (self.langLEN == 0)
     {
-        add_menu_item(menu, "Volver", ::menu_go_back);
+        if (!isDefined(self.selecting_match_start_weapon))
+            add_menu_item(menu, "Volver", ::menu_go_back);
+            
         add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
     else
     {
-        add_menu_item(menu, "Back", ::menu_go_back);
+        if (!isDefined(self.selecting_match_start_weapon))
+            add_menu_item(menu, "Back", ::menu_go_back);
+            
         add_menu_item(menu, "Close Menu", ::close_all_menus);
     }
     
@@ -6768,16 +7288,17 @@ create_weapon_menu_item(menu, display_name, weapon_name)
 }
 
 
-give_specific_weapon_menu()
+give_specific_weapon_menu(weapon_name)
 {
-    
-    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[self.menu_current.selected]))
+    if (!isDefined(weapon_name))
     {
-        weapon_name = self.menu_current.items[self.menu_current.selected].weapon_name;
-        if (isDefined(weapon_name))
-        {
-            self thread scripts\zm\weapon::GiveSpecificWeapon(weapon_name);
-        }
+        if (isDefined(self.menu_current) && isDefined(self.menu_current.items[self.menu_current.selected]))
+            weapon_name = self.menu_current.items[self.menu_current.selected].weapon_name;
+    }
+    
+    if (isDefined(weapon_name))
+    {
+        self thread scripts\zm\weapon::GiveSpecificWeapon(weapon_name);
     }
 }
 
@@ -6927,6 +7448,105 @@ upgrade_current_staff()
 {
     self thread scripts\zm\weapon::upgrade_baston_zm();
 }
+
+
+open_camo_menu()
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
+    
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "CAMUFLAJES" : "CAMOUFLAGES";
+    menu = create_menu(title, self);
+    menu.parent_menu = "weapons";
+    
+    
+    available_camos = scripts\zm\weapon::get_available_camos_for_map();
+    
+    
+    for (i = 0; i < available_camos.size; i++)
+    {
+        camo_index = available_camos[i];
+        camo_name = get_camo_display_name(camo_index, self.langLEN);
+        
+        
+        item = add_menu_item(menu, camo_name, ::apply_camo_menu);
+        item.camo_index = camo_index;
+    }
+    
+    
+    if (self.langLEN == 0)
+    {
+        add_menu_item(menu, "Volver", ::menu_go_back);
+        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
+    }
+    else
+    {
+        add_menu_item(menu, "Back", ::menu_go_back);
+        add_menu_item(menu, "Close Menu", ::close_all_menus);
+    }
+    
+    show_menu(menu);
+    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
+    
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
+    {
+        menu.active_color = self.menu_current.active_color;
+        menu.selection_bar.color = menu.active_color;
+        menu.items[menu.selected].item.color = (1, 1, 1);
+    }
+    
+    self thread menu_control(menu);
+}
+
+
+apply_camo_menu()
+{
+    
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items[self.menu_current.selected]))
+    {
+        camo_index = self.menu_current.items[self.menu_current.selected].camo_index;
+        if (isDefined(camo_index))
+        {
+            self thread scripts\zm\weapon::apply_weapon_camo(camo_index);
+        }
+    }
+}
+
+
+get_camo_display_name(camo_index, lang_index)
+{
+    switch(camo_index)
+    {
+        case 39:
+            return "OG PAP";
+        case 40:
+            return "MOB PAP";
+        case 41:
+            return "Aqua";
+        case 42:
+            return "Breach";
+        case 43:
+            if (lang_index == 0)
+                return "Coyote";
+            else
+                return "Coyote";
+        case 44:
+            return "Glam";
+        case 45:
+            if (lang_index == 0)
+                return "PAP Origins";
+            else
+                return "Origins PAP";
+        default:
+            return "Unknown";
+    }
+}
+
+
+
 
 
 
@@ -7333,7 +7953,6 @@ open_recent_matches_menu()
 
                     add_menu_item(menu, "Estadísticas", ::open_recent_stats_menu);
                     add_menu_item(menu, "Uso de Armas", ::open_weapon_usage_menu);
-                    add_menu_item(menu, "Perks Usados", ::open_perks_usage_menu);
                     add_menu_item(menu, "Transacciones Bancarias", ::open_bank_transactions_menu);
                     }
                 }
@@ -7427,7 +8046,6 @@ open_recent_matches_menu()
 
                     add_menu_item(menu, "Statistics", ::open_recent_stats_menu);
                     add_menu_item(menu, "Weapon Usage", ::open_weapon_usage_menu);
-                    add_menu_item(menu, "Perks Used", ::open_perks_usage_menu);
                     add_menu_item(menu, "Bank Transactions", ::open_bank_transactions_menu);
                     }
                 }
@@ -7613,28 +8231,83 @@ open_weapon_usage_menu()
                 in_weapons_section = false;
                 foreach (line in lines)
                 {
-                    if (isSubStr(line, "Arma Mas Usada:"))
-                        most_used_weapon = getSubStr(line, 16);
+                    
+                    if (isSubStr(line, "Most Used:"))
+                        most_used_weapon = trim_string(getSubStr(line, 11));
                     else if (isSubStr(line, "ARMAS USADAS EN LA PARTIDA:"))
                         in_weapons_section = true;
                     else if (isSubStr(line, "PERKS USADOS EN LA PARTIDA:") && in_weapons_section)
                         in_weapons_section = false; 
-                    else if (in_weapons_section && isSubStr(line, " kills"))
+                    else if (in_weapons_section)
                     {
                         
-                        parts = strTok(line, ": ");
-                        if (parts.size >= 2)
+                        if (isSubStr(line, "|"))
                         {
-                            weapon_name = parts[0];
-                            kills_part = strTok(parts[1], " ")[0];
-                            
-                            display_str = weapon_name + ": " + kills_part + " kills";
-                            
-                            all_weapons[all_weapons.size] = display_str;
+                            parts = strTok(line, "|");
+                            if (parts.size >= 3)
+                            {
+                                weapon_name = parts[0];
+                                kills = parts[1];
+                                headshots = parts[2];
+                                
+                                
+                                time_display = "N/A";
+                                if (parts.size >= 4)
+                                {
+                                    time_data = parts[3];
+                                    if (time_data != "")
+                                    {
+                                        kill_events = strTok(time_data, ";");
+                                        if (kill_events.size > 0)
+                                        {
+                                            last_event = kill_events[kill_events.size - 1];
+                                            event_parts = strTok(last_event, ",");
+                                            if (event_parts.size > 0)
+                                            {
+                                                
+                                                time_display = event_parts[0];
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                
+                                weapon_obj = spawnStruct();
+                                weapon_obj.display = weapon_name + " | " + time_display + " | " + kills + " | " + headshots;
+                                weapon_obj.name = weapon_name;
+                                weapon_obj.kills = kills;
+                                weapon_obj.headshots = headshots;
+                                weapon_obj.raw_data = (parts.size >= 4) ? parts[3] : "";
+                                
+                                all_weapons[all_weapons.size] = weapon_obj;
+                            }
                         }
-                    }
-                    else if (isSubStr(line, "================================") && in_weapons_section)
-                        break; 
+                        
+                        else if (isSubStr(line, " kills"))
+                        {
+                            parts = strTok(line, ": ");
+                            if (parts.size >= 2)
+                            {
+                                weapon_name = parts[0];
+                                kills_part = strTok(parts[1], " ")[0];
+                                
+                                
+                                weapon_obj = spawnStruct();
+                                weapon_obj.display = weapon_name + ": " + kills_part + " kills";
+                                weapon_obj.name = weapon_name;
+                                weapon_obj.kills = kills_part;
+                                weapon_obj.headshots = "0";
+                                weapon_obj.raw_data = "";
+                                
+                                all_weapons[all_weapons.size] = weapon_obj;
+                            }
+                        }
+                        
+                        else if (isSubStr(line, "================================"))
+                        {
+                            break;
+                        }
+                    } 
                 }
 
                 
@@ -7643,14 +8316,14 @@ open_weapon_usage_menu()
                     add_menu_item(menu, "ARMA MAS USADA", ::do_nothing);
                     add_menu_item(menu, most_used_weapon, ::do_nothing);
                     add_menu_item(menu, "", ::do_nothing);
-                    add_menu_item(menu, "TODAS LAS ARMAS USADAS:", ::do_nothing);
+                    add_menu_item(menu, "ARMA | TIEMPO | KILLS | HS", ::do_nothing);
                 }
                 else
                 {
                     add_menu_item(menu, "MOST USED WEAPON", ::do_nothing);
                     add_menu_item(menu, most_used_weapon, ::do_nothing);
                     add_menu_item(menu, "", ::do_nothing);
-                    add_menu_item(menu, "ALL WEAPONS USED:", ::do_nothing);
+                    add_menu_item(menu, "WEAPON | TIME | KILLS | HS", ::do_nothing);
                 }
 
                 
@@ -7662,7 +8335,18 @@ open_weapon_usage_menu()
                 
                 for (i = start_index; i < end_index; i++)
                 {
-                    add_menu_item(menu, all_weapons[i], ::do_nothing);
+                    
+                    if (!isDefined(self.weapon_data_cache))
+                        self.weapon_data_cache = [];
+                    
+                    self.weapon_data_cache[i] = all_weapons[i];
+                    
+                    
+                    params = spawnStruct();
+                    params.weapon_index = i;
+                    params.filename = match_filename;
+                    
+                    add_menu_item(menu, all_weapons[i].display, ::open_weapon_detail_view, params);
                 }
 
                 
@@ -7727,6 +8411,179 @@ open_weapon_usage_menu()
 }
 
 
+
+open_weapon_detail_view(params)
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
+
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    weapon_index = params.weapon_index;
+    
+    
+    if (!isDefined(self.weapon_data_cache) || !isDefined(self.weapon_data_cache[weapon_index]))
+    {
+        self iPrintlnBold("^1Error: Weapon data not found");
+        return;
+    }
+    
+    weapon_data = self.weapon_data_cache[weapon_index];
+    weapon_name = weapon_data.name;
+    
+    title = weapon_name;
+    menu = create_menu(title, self);
+    menu.parent_menu = "recent_matches";
+    
+    
+    header_text = weapon_name + " - " + weapon_data.kills + " kills, " + weapon_data.headshots + " HS";
+    add_menu_item(menu, header_text, ::do_nothing);
+    add_menu_item(menu, "", ::do_nothing);
+    
+    
+    if (weapon_data.raw_data != "")
+    {
+        kill_events = strTok(weapon_data.raw_data, ";");
+        
+        if (kill_events.size > 0)
+        {
+            
+            column_header = (self.langLEN == 0) ? "TIEMPO | RONDA | HS" : "TIME | ROUND | HS";
+            add_menu_item(menu, column_header, ::do_nothing);
+            
+            
+            if (!isDefined(self.weapon_detail_page_index))
+                self.weapon_detail_page_index = 0;
+                
+            kills_per_page = 5;
+            total_kills = kill_events.size;
+            current_page = self.weapon_detail_page_index;
+            total_pages = int((total_kills - 1) / kills_per_page) + 1;
+            
+            if (current_page >= total_pages)
+            {
+                current_page = 0;
+                self.weapon_detail_page_index = 0;
+            }
+            
+            start_index = current_page * kills_per_page;
+            end_index = min(start_index + kills_per_page, total_kills);
+            
+            
+            for (i = start_index; i < end_index; i++)
+            {
+                event_parts = strTok(kill_events[i], ",");
+                if (event_parts.size >= 3)
+                {
+                    
+                    time_str = event_parts[0];
+                    is_headshot = event_parts[1];
+                    round_num = event_parts[2];
+                    
+                    
+                    hs_str = (is_headshot == "1") ? "YES" : "NO";
+                    
+                    
+                    kill_line = time_str + " | R" + round_num + " | " + hs_str;
+                    add_menu_item(menu, kill_line, ::do_nothing);
+                }
+            }
+            
+            
+            if (total_pages > 1)
+            {
+                add_menu_item(menu, "", ::do_nothing);
+                
+                page_info = (self.langLEN == 0) ? 
+                    "Pagina " + (current_page + 1) + "/" + total_pages :
+                    "Page " + (current_page + 1) + "/" + total_pages;
+                add_menu_item(menu, page_info, ::do_nothing);
+                
+                if (current_page > 0)
+                    add_menu_item(menu, (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS", ::weapon_detail_page_prev);
+                    
+                if (current_page < total_pages - 1)
+                    add_menu_item(menu, (self.langLEN == 0) ? "SIGUIENTE" : "NEXT", ::weapon_detail_page_next);
+            }
+        }
+        else
+        {
+            add_menu_item(menu, (self.langLEN == 0) ? "SIN DATOS DETALLADOS" : "NO DETAILED DATA", ::do_nothing);
+        }
+    }
+    else
+    {
+        add_menu_item(menu, (self.langLEN == 0) ? "SIN DATOS DETALLADOS" : "NO DETAILED DATA", ::do_nothing);
+    }
+    
+    add_menu_item(menu, "", ::do_nothing);
+    
+    if (self.langLEN == 0)
+    {
+        add_menu_item(menu, "Volver", ::menu_go_back);
+        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
+    }
+    else
+    {
+        add_menu_item(menu, "Back", ::menu_go_back);
+        add_menu_item(menu, "Close Menu", ::close_all_menus);
+    }
+
+    show_menu(menu);
+    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
+
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
+    {
+        menu.active_color = self.menu_current.active_color;
+        menu.selection_bar.color = menu.active_color;
+        menu.items[menu.selected].item.color = (1, 1, 1);
+    }
+
+    self thread menu_control(menu);
+}
+
+weapon_detail_page_next()
+{
+    if (!isDefined(self.weapon_detail_page_index))
+        self.weapon_detail_page_index = 0;
+    self.weapon_detail_page_index++;
+    
+    
+    self thread menu_go_back();
+}
+
+weapon_detail_page_prev()
+{
+    if (!isDefined(self.weapon_detail_page_index))
+        self.weapon_detail_page_index = 0;
+    self.weapon_detail_page_index--;
+    if (self.weapon_detail_page_index < 0)
+        self.weapon_detail_page_index = 0;
+    
+    
+    self thread menu_go_back();
+}
+
+
+stats_cat_page_next()
+{
+    if (!isDefined(self.stats_cat_page_index))
+        self.stats_cat_page_index = 0;
+    self.stats_cat_page_index++;
+    self thread open_recent_stats_menu();
+}
+
+stats_cat_page_prev()
+{
+    if (!isDefined(self.stats_cat_page_index))
+        self.stats_cat_page_index = 0;
+    self.stats_cat_page_index--;
+    if (self.stats_cat_page_index < 0)
+        self.stats_cat_page_index = 0;
+    self thread open_recent_stats_menu();
+}
+
 open_recent_stats_menu()
 {
     self endon("disconnect");
@@ -7765,61 +8622,144 @@ open_recent_stats_menu()
                 fs_fclose(file);
 
                 
+                
+                
                 lines = strTok(content, "\n");
-                round_num = "0";
-                score = "0";
-                kills = "0";
-                headshots = "0";
-                revives = "0";
-                downs = "0";
+                
+                
+                round_num = "N/A";
                 duration = "N/A";
-
+                
                 foreach (line in lines)
                 {
-                    if (isSubStr(line, "Ronda Alcanzada:"))
-                        round_num = getSubStr(line, 17);
-                    else if (isSubStr(line, "Score Total:"))
-                        score = getSubStr(line, 13);
-                    else if (isSubStr(line, "Kills:"))
-                        kills = getSubStr(line, 7);
-                    else if (isSubStr(line, "Headshots:"))
-                        headshots = getSubStr(line, 11);
-                    else if (isSubStr(line, "Revives:"))
-                        revives = getSubStr(line, 9);
-                    else if (isSubStr(line, "Downs:"))
-                        downs = getSubStr(line, 7);
-                    else if (isSubStr(line, "Duracion:"))
+                    if (isSubStr(line, "Ronda Alcanzada:")) target_str = "Ronda Alcanzada:";
+                    else if (isSubStr(line, "Ronda:")) target_str = "Ronda:";
+                    else if (isSubStr(line, "Round:")) target_str = "Round:";
+                    else target_str = undefined;
+                    
+                    if (isDefined(target_str) && isSubStr(line, target_str) && round_num == "N/A")
+                        round_num = getSubStr(line, target_str.size + 1);
+                        
+                    if (isSubStr(line, "Duracion:"))
                         duration = getSubStr(line, 10);
                 }
+                
+                
+                header_info = (self.langLEN == 0) ? "Ronda: " + round_num : "Round: " + round_num;
+                if (duration != "N/A")
+                    header_info += (self.langLEN == 0) ? " | Tiempo: " + duration : " | Time: " + duration;
+                    
+                add_menu_item(menu, header_info, ::do_nothing);
+                add_menu_item(menu, "", ::do_nothing); 
 
                 
-                if (self.langLEN == 0)
+                categories_found = [];
+                current_cat = "";
+                
+                foreach (line in lines)
                 {
-                    add_menu_item(menu, "Ronda: " + round_num, ::do_nothing);
-                    add_menu_item(menu, "Score: " + score, ::do_nothing);
-                    add_menu_item(menu, "Duración: " + duration, ::do_nothing);
-                    add_menu_item(menu, "", ::do_nothing);
-                    add_menu_item(menu, "Kills: " + kills, ::do_nothing);
-                    add_menu_item(menu, "Headshots: " + headshots, ::do_nothing);
-                    add_menu_item(menu, "Revives: " + revives, ::do_nothing);
-                    add_menu_item(menu, "Downs: " + downs, ::do_nothing);
+                    line = trim_string(line);
+                    
+                    if (line.size > 2 && line[0] == "[" && line[line.size-1] == "]")
+                    {
+                        current_cat = line;
+                        categories_found[categories_found.size] = current_cat;
+                    }
                 }
-                else
+                
+                
+                
+                all_categories = [];
+                foreach (cat in categories_found)
                 {
-                    add_menu_item(menu, "Round: " + round_num, ::do_nothing);
-                    add_menu_item(menu, "Score: " + score, ::do_nothing);
-                    add_menu_item(menu, "Duration: " + duration, ::do_nothing);
-                    add_menu_item(menu, "", ::do_nothing);
-                    add_menu_item(menu, "Kills: " + kills, ::do_nothing);
-                    add_menu_item(menu, "Headshots: " + headshots, ::do_nothing);
-                    add_menu_item(menu, "Revives: " + revives, ::do_nothing);
-                    add_menu_item(menu, "Downs: " + downs, ::do_nothing);
+                    all_categories[all_categories.size] = cat;
                 }
+                
+                
+                has_weapons = false;
+                foreach (line in lines)
+                {
+                    if (isSubStr(line, "ARMAS USADAS EN LA PARTIDA"))
+                    {
+                        has_weapons = true;
+                        break;
+                    }
+                }
+                
+                if (has_weapons)
+                {
+                    all_categories[all_categories.size] = "ARMAS";
+                }
+                
+                
+                if (!isDefined(self.stats_cat_page_index))
+                    self.stats_cat_page_index = 0;
+                    
+                items_per_page = 5; 
+                current_page = self.stats_cat_page_index;
+                total_items_list = all_categories.size;
+                total_pages = int((total_items_list - 1) / items_per_page) + 1;
+                
+                if (current_page >= total_pages)
+                {
+                    current_page = 0;
+                    self.stats_cat_page_index = 0;
+                }
+                
+                start_index = current_page * items_per_page;
+                end_index = min(start_index + items_per_page, total_items_list);
+                
+                
+                for (i = start_index; i < end_index; i++)
+                {
+                    cat_item = all_categories[i];
+                    
+                    if (cat_item == "ARMAS")
+                    {
+                        params = spawnStruct();
+                        params.filename = match_filename;
+                        params.category = "ARMAS";
+                        
+                        wep_text = (self.langLEN == 0) ? "Armas Usadas ->" : "Weapons Used ->";
+                        add_menu_item(menu, wep_text, ::open_stats_category_view, params);
+                    }
+                    else
+                    {
+                        display_name = get_category_display_name(cat_item, self.langLEN);
+                        
+                        params = spawnStruct();
+                        params.filename = match_filename;
+                        params.category = cat_item;
+                        
+                        add_menu_item(menu, display_name + " ->", ::open_stats_category_view, params);
+                    }
+                }
+                
+                
+                if (total_pages > 1)
+                {
+                    add_menu_item(menu, "", ::do_nothing);
+                    
+                    if (current_page > 0)
+                    {
+                         text_prev = (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS";
+                         add_menu_item(menu, text_prev, ::stats_cat_page_prev);
+                    }
+                    
+                    if (current_page < total_pages - 1)
+                    {
+                         text_next = (self.langLEN == 0) ? "SIGUIENTE" : "NEXT";
+                         add_menu_item(menu, text_next, ::stats_cat_page_next);
+                    }
+                    
+                    page_info = (self.langLEN == 0) ? "Pagina " + (current_page + 1) + "/" + total_pages : "Page " + (current_page + 1) + "/" + total_pages;
+                    add_menu_item(menu, page_info, ::do_nothing);
+                }
+
             }
         }
     }
 
-    
     add_menu_item(menu, "", ::do_nothing);
 
     if (self.langLEN == 0)
@@ -7844,6 +8784,241 @@ open_recent_stats_menu()
     }
 
     self thread menu_control(menu);
+}
+
+
+open_stats_category_view(params)
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
+
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    filename = params.filename;
+    category = params.category;
+    
+    title_text = get_category_display_name(category, self.langLEN);
+    menu = create_menu(title_text, self);
+    menu.parent_menu = "recent_stats_menu"; 
+    
+    
+    if (fs_testfile(filename))
+    {
+        file = fs_fopen(filename, "read");
+        if (isDefined(file))
+        {
+            file_size = fs_length(file);
+            content = fs_read(file, file_size);
+            fs_fclose(file);
+            
+            lines = strTok(content, "\n");
+            
+            if (category == "ARMAS")
+            {
+                parse_weapons_category(menu, lines);
+            }
+            else
+            {
+                parse_stats_category(menu, lines, category);
+            }
+        }
+    }
+    
+    add_menu_item(menu, "", ::do_nothing);
+    if (self.langLEN == 0)
+    {
+        add_menu_item(menu, "Volver", ::open_recent_stats_menu);
+        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
+    }
+    else
+    {
+        add_menu_item(menu, "Back", ::open_recent_stats_menu);
+        add_menu_item(menu, "Close Menu", ::close_all_menus);
+    }
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+parse_stats_category(menu, lines, target_cat)
+{
+    in_category = false;
+    
+    
+    
+    
+    foreach (line in lines)
+    {
+        
+        line = trim_string(line);
+        
+        
+        if (line.size > 2 && line[0] == "[" && line[line.size-1] == "]")
+        {
+            if (line == target_cat)
+            {
+                in_category = true;
+                continue;
+            }
+            else if (in_category)
+            {
+                
+                break;
+            }
+        }
+        
+        if (in_category && isDefined(line) && line != "")
+        {
+             add_menu_item(menu, line, ::do_nothing);
+        }
+    }
+}
+
+
+trim_string(str)
+{
+    if (!isDefined(str) || str == "")
+        return "";
+        
+    
+    while (str.size > 0)
+    {
+        last_char = str[str.size - 1];
+        if (last_char == " " || last_char == "\t" || last_char == "\n" || last_char == "\r")
+            str = getSubStr(str, 0, str.size - 1);
+        else
+            break;
+    }
+    
+    
+    while (str.size > 0)
+    {
+        first_char = str[0];
+        if (first_char == " " || first_char == "\t" || first_char == "\n" || first_char == "\r")
+            str = getSubStr(str, 1);
+        else
+            break;
+    }
+    
+    return str;
+}
+
+parse_weapons_category(menu, lines)
+{
+    in_weapons = false;
+    
+    foreach (line in lines)
+    {
+        line = trim_string(line);
+        
+        if (isSubStr(line, "ARMAS USADAS EN LA PARTIDA"))
+        {
+            in_weapons = true;
+            continue;
+        }
+        
+        if (!in_weapons) continue;
+        
+        if (line.size > 2 && line[0] == "[" && line[line.size-1] == "]")
+            break;
+            
+        if (isDefined(line) && line != "")
+        {
+            
+            if (isSubStr(line, "|"))
+            {
+                parts = strTok(line, "|");
+                if (parts.size >= 3)
+                {
+                    
+                    weapon_name = parts[0];
+                    kills = parts[1];
+                    headshots = parts[2];
+                    
+                    clean_name = get_base_name(weapon_name);
+                    display = clean_name + ": " + kills + " kills (" + headshots + " HS)";
+                    add_menu_item(menu, display, ::do_nothing);
+                }
+            }
+            else
+            {
+                add_menu_item(menu, line, ::do_nothing);
+            }
+        }
+    }
+}
+
+get_base_name(weapon_name)
+{
+    
+    
+    if (isSubStr(weapon_name, "+"))
+        return getSubStr(weapon_name, 0, weapon_name.size - 1); 
+        
+    return weapon_name;
+}
+
+get_category_display_name(category, lang)
+{
+    display = category;
+    
+    switch(category)
+    {
+        case "[GENERAL]": 
+            display = (lang == 0) ? "GENERAL" : "GENERAL"; 
+            break;
+        case "[COMBAT]": 
+            display = (lang == 0) ? "COMBATE" : "COMBAT"; 
+            break;
+        case "[SURVIVAL & ECONOMY]": 
+            display = (lang == 0) ? "SUPERVIVENCIA Y ECONOMÍA" : "SURVIVAL & ECONOMY"; 
+            break;
+        case "[MAGIC BOX & PAP]": 
+            display = (lang == 0) ? "CAJA Y MEJORA" : "MAGIC BOX & PAP"; 
+            break;
+        case "[POWERUPS]": 
+            display = (lang == 0) ? "POWERUPS" : "POWERUPS"; 
+            break;
+        case "[PERKS DRANK COUNTERS]": 
+            display = (lang == 0) ? "PERKS BEBIDOS" : "PERKS CONSUMED"; 
+            break;
+        case "[EQUIPMENT]": 
+            display = (lang == 0) ? "EQUIPAMIENTO" : "EQUIPMENT"; 
+            break;
+        case "[MAP SPECIFIC]": 
+            display = (lang == 0) ? "ESPECÍFICO DEL MAPA" : "MAP SPECIFIC"; 
+            break;
+        case "[PERSISTENT UPGRADES]": 
+            display = (lang == 0) ? "MEJORAS PERSISTENTES" : "PERSISTENT UPGRADES"; 
+            break;
+        case "[CHEAT FLAGS DETECTED]": 
+            display = (lang == 0) ? "FLAGS DE CHEATS" : "CHEAT FLAGS"; 
+            break;
+        case "[MOB OF THE DEAD STATS]": 
+            display = (lang == 0) ? "ESTADÍSTICAS MOTD" : "MOTD STATS"; 
+            break;
+        case "[BURIED STATS]": 
+            display = (lang == 0) ? "ESTADÍSTICAS BURIED" : "BURIED STATS"; 
+            break;
+        case "[ORIGINS STATS]": 
+            display = (lang == 0) ? "ESTADÍSTICAS ORIGINS" : "ORIGINS STATS"; 
+            break;
+        case "[ROUND DURATIONS]": 
+            display = (lang == 0) ? "DURACIÓN DE RONDAS" : "ROUND DURATIONS"; 
+            break;
+        case "ARMAS":
+            display = (lang == 0) ? "ARMAS USADAS" : "WEAPONS USED";
+            break;
+        default:
+             display = category;
+             break;
+    }
+    
+    if (!isDefined(display))
+        display = "Unknown Category";
+        
+    return display;
 }
 
 
@@ -7869,125 +9044,6 @@ weapon_page_previous()
 
 
 
-open_perks_usage_menu()
-{
-    self endon("disconnect");
-    self endon("destroy_all_menus");
-
-    self notify("destroy_current_menu");
-    wait 0.1;
-
-    title = (self.langLEN == 0) ? "PERKS USADOS" : "PERKS USED";
-    menu = create_menu(title, self);
-    menu.parent_menu = "recent_matches";
-
-    
-    map_name = getDvar("ui_zm_mapstartlocation");
-    player_guid = self getGuid();
-
-    if (!isDefined(self.recent_match_index))
-        self.recent_match_index = 0;
-
-    recent_files = get_recent_match_files(player_guid, map_name);
-    if (isDefined(recent_files) && recent_files.size > 0)
-    {
-        display_index = self.recent_match_index;
-        if (display_index >= recent_files.size)
-            display_index = 0;
-
-        match_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + recent_files[display_index];
-
-        if (fs_testfile(match_filename))
-        {
-            file = fs_fopen(match_filename, "read");
-            if (isDefined(file))
-            {
-                file_size = fs_length(file);
-                content = fs_read(file, file_size);
-                fs_fclose(file);
-
-                
-                lines = strTok(content, "\n");
-                all_perks = [];
-
-                in_perks_section = false;
-                foreach (line in lines)
-                {
-                    if (isSubStr(line, "PERKS USADOS EN LA PARTIDA:"))
-                        in_perks_section = true;
-                    else if (in_perks_section && isSubStr(line, ": ") && !isSubStr(line, "=="))
-                    {
-                        
-                        parts = strTok(line, ": ");
-                        if (parts.size >= 2)
-                        {
-                            perk_name = parts[0];
-                            usage_info = parts[1];
-                            all_perks[all_perks.size] = perk_name;
-                        }
-                    }
-                    else if (isSubStr(line, "================================") && in_perks_section)
-                        break; 
-                }
-
-                if (all_perks.size > 0)
-                {
-                    if (self.langLEN == 0)
-                    {
-                        add_menu_item(menu, "PERKS USADOS EN LA PARTIDA:", ::do_nothing);
-                    }
-                    else
-                    {
-                        add_menu_item(menu, "PERKS USED IN MATCH:", ::do_nothing);
-                    }
-
-                    
-                    foreach (perk_info in all_perks)
-                    {
-                        add_menu_item(menu, perk_info, ::do_nothing);
-                    }
-                }
-                else
-                {
-                    if (self.langLEN == 0)
-                    {
-                        add_menu_item(menu, "NO HAY PERKS USADOS", ::do_nothing);
-                    }
-                    else
-                    {
-                        add_menu_item(menu, "NO PERKS USED", ::do_nothing);
-                    }
-                }
-            }
-        }
-    }
-
-    
-    add_menu_item(menu, "", ::do_nothing);
-
-    if (self.langLEN == 0)
-    {
-        add_menu_item(menu, "Volver", ::menu_go_back);
-        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
-    }
-    else
-    {
-        add_menu_item(menu, "Back", ::menu_go_back);
-        add_menu_item(menu, "Close Menu", ::close_all_menus);
-    }
-
-    show_menu(menu);
-    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
-
-    if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
-    {
-        menu.active_color = self.menu_current.active_color;
-        menu.selection_bar.color = menu.active_color;
-        menu.items[menu.selected].item.color = (1, 1, 1);
-    }
-
-    self thread menu_control(menu);
-}
 
 
 
@@ -8052,11 +9108,164 @@ get_map_display_name_recent(map_code)
         default: return map_code;
     }
 }
+open_bank_transactions_menu()
+{
+    self endon("disconnect");
+    self endon("destroy_all_menus");
 
+    self notify("destroy_current_menu");
+    wait 0.1;
 
+    title = (self.langLEN == 0) ? "TRANSACCIONES" : "TRANSACTIONS";
+    menu = create_menu(title, self);
+    menu.parent_menu = "recent_matches";
 
+    
+    map_name = getDvar("ui_zm_mapstartlocation");
+    player_guid = self getGuid();
 
+    if (!isDefined(self.recent_match_index))
+        self.recent_match_index = 0;
 
+    recent_files = get_recent_match_files(player_guid, map_name);
+    if (isDefined(recent_files) && recent_files.size > 0)
+    {
+        display_index = self.recent_match_index;
+        if (display_index >= recent_files.size)
+            display_index = 0;
+
+        match_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + recent_files[display_index];
+
+        if (fs_testfile(match_filename))
+        {
+            file = fs_fopen(match_filename, "read");
+            if (isDefined(file))
+            {
+                file_size = fs_length(file);
+                content = fs_read(file, file_size);
+                fs_fclose(file);
+
+                
+                lines = strTok(content, "\n");
+                all_transactions = [];
+
+                in_transactions_section = false;
+                foreach (line in lines)
+                {
+                    if (isSubStr(line, "TRANSACCIONES BANCARIAS:"))
+                        in_transactions_section = true;
+                    else if (in_transactions_section && isSubStr(line, "--------------------------------"))
+                        continue; 
+                    else if (isSubStr(line, "[ROUND DURATIONS]") && in_transactions_section)
+                        break; 
+                    else if (isSubStr(line, "================================") && in_transactions_section)
+                        break; 
+                    else if (in_transactions_section && line != "")
+                    {
+                        all_transactions[all_transactions.size] = line;
+                    }
+                }
+
+                if (all_transactions.size > 0)
+                {
+                    
+                    
+                    
+                    transactions_per_page = 6;
+                    
+                    if (!isDefined(self.transaction_page_index))
+                        self.transaction_page_index = 0;
+
+                    
+                    if (!isDefined(self.last_recent_match_index_trans) || self.last_recent_match_index_trans != self.recent_match_index)
+                    {
+                        self.transaction_page_index = 0;
+                        self.last_recent_match_index_trans = self.recent_match_index;
+                    }
+
+                    total_transactions = all_transactions.size;
+                    start_index = self.transaction_page_index * transactions_per_page;
+                    end_index = min(start_index + transactions_per_page, total_transactions);
+                    total_pages = int((total_transactions - 1) / transactions_per_page) + 1;
+
+                    for (i = start_index; i < end_index; i++)
+                    {
+                        add_menu_item(menu, all_transactions[i], ::do_nothing);
+                    }
+
+                    if (total_pages > 1)
+                    {
+                        add_menu_item(menu, "", ::do_nothing);
+                        
+                        page_info = (self.langLEN == 0) ?
+                            "Página " + (self.transaction_page_index + 1) + " de " + total_pages :
+                            "Page " + (self.transaction_page_index + 1) + " of " + total_pages;
+                        add_menu_item(menu, page_info, ::do_nothing);
+
+                        if (self.transaction_page_index > 0)
+                            add_menu_item(menu, (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS", ::transaction_page_previous);
+                        
+                        if (self.transaction_page_index < total_pages - 1)
+                            add_menu_item(menu, (self.langLEN == 0) ? "SIGUIENTE" : "NEXT", ::transaction_page_next);
+                    }
+                }
+                else
+                {
+                    if (self.langLEN == 0)
+                    {
+                        add_menu_item(menu, "NO HAY TRANSACCIONES", ::do_nothing);
+                    }
+                    else
+                    {
+                        add_menu_item(menu, "NO TRANSACTIONS", ::do_nothing);
+                    }
+                }
+            }
+        }
+    }
+
+    
+    add_menu_item(menu, "", ::do_nothing);
+
+    if (self.langLEN == 0)
+    {
+        add_menu_item(menu, "Volver", ::menu_go_back);
+        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
+    }
+    else
+    {
+        add_menu_item(menu, "Back", ::menu_go_back);
+        add_menu_item(menu, "Close Menu", ::close_all_menus);
+    }
+
+    show_menu(menu);
+    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
+
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
+    {
+        menu.active_color = self.menu_current.active_color;
+        menu.selection_bar.color = menu.active_color;
+        menu.items[menu.selected].item.color = (1, 1, 1);
+    }
+
+    self thread menu_control(menu);
+}
+
+transaction_page_next()
+{
+    self.transaction_page_index++;
+    self thread open_bank_transactions_menu();
+    scripts\zm\playsound::play_menu_scroll_sound(self);
+}
+
+transaction_page_previous()
+{
+    self.transaction_page_index--;
+    if (self.transaction_page_index < 0)
+        self.transaction_page_index = 0;
+    self thread open_bank_transactions_menu();
+    scripts\zm\playsound::play_menu_scroll_sound(self);
+}
 
 open_bank_menu()
 {
@@ -8083,8 +9292,8 @@ open_bank_menu()
 
     if (self.langLEN == 0) 
     {
-        add_menu_item(menu, balance_text, ::do_nothing);
-        add_menu_item(menu, amount_text, ::do_nothing);
+        add_menu_item_value(menu, "Balance: ", ::do_nothing, undefined, current_balance);
+        add_menu_item_value(menu, "Cantidad: ", ::do_nothing, undefined, self.bank_amount);
         add_menu_item(menu, "[+] Incrementar 1000", ::bank_increase_1000);
         add_menu_item(menu, "[-] Decrementar 1000", ::bank_decrease_1000);
         add_menu_item(menu, "Depositar Cantidad", ::bank_deposit_selected);
@@ -8096,8 +9305,8 @@ open_bank_menu()
     }
     else 
     {
-        add_menu_item(menu, balance_text, ::do_nothing);
-        add_menu_item(menu, amount_text, ::do_nothing);
+        add_menu_item_value(menu, "Balance: ", ::do_nothing, undefined, current_balance);
+        add_menu_item_value(menu, "Amount: ", ::do_nothing, undefined, self.bank_amount);
         add_menu_item(menu, "[+] Increase 1000", ::bank_increase_1000);
         add_menu_item(menu, "[-] Decrease 1000", ::bank_decrease_1000);
         add_menu_item(menu, "Deposit Amount", ::bank_deposit_selected);
@@ -8229,17 +9438,26 @@ update_bank_menu_display()
         current_balance = scripts\zm\sqllocal::get_bank_balance(self);
 
         
-        balance_text = (self.langLEN == 0) ? "Balance: " + current_balance + " puntos" : "Balance: " + current_balance + " points";
         if (self.menu_current.items.size > 0)
         {
-            self.menu_current.items[0].item setText(balance_text);
+            
+            
+            label = self.menu_current.items[0].label_text;
+            if (isDefined(label))
+                self.menu_current.items[0].item setText(label + current_balance);
+            else
+                self.menu_current.items[0].item setValue(current_balance);
         }
 
         
-        amount_text = (self.langLEN == 0) ? "Cantidad: " + self.bank_amount + " puntos" : "Amount: " + self.bank_amount + " points";
         if (self.menu_current.items.size > 1)
         {
-            self.menu_current.items[1].item setText(amount_text);
+            
+            label = self.menu_current.items[1].label_text;
+            if (isDefined(label))
+                self.menu_current.items[1].item setText(label + self.bank_amount);
+            else
+                self.menu_current.items[1].item setValue(self.bank_amount);
         }
     }
 
@@ -8547,34 +9765,35 @@ open_mods_littlegods_menu()
 
 init_teleport_system()
 {
+    
+    loaded_count = scripts\zm\sqllocal::load_teleport_points(self);
+    
+    
+    loaded_categories = scripts\zm\sqllocal::load_teleport_categories(self);
+    
+    
     if (!isDefined(self.teleport_points))
     {
         self.teleport_points = [];
         self.teleport_names = [];
         self.teleport_count = 0;
     }
+    
+    if (!isDefined(self.teleport_categories))
+    {
+        self.teleport_categories = [];
+    }
 }
 
 
-create_teleport_point(name)
+
+create_teleport_point(name, category)
 {
     self endon("disconnect");
 
     
     if (!isDefined(self.teleport_points))
         self thread init_teleport_system();
-
-    
-    if (self.teleport_count >= 5)
-    {
-        if (self.langLEN == 0)
-            self iPrintLnBold("^1Máximo de 5 puntos de teleportación alcanzado");
-        else
-            self iPrintLnBold("^1Maximum of 5 teleportation points reached");
-
-        self playLocalSound("menu_error");
-        return false;
-    }
 
     
     for (i = 0; i < self.teleport_count; i++)
@@ -8595,11 +9814,15 @@ create_teleport_point(name)
     point_data = spawnStruct();
     point_data.origin = self.origin;
     point_data.angles = self getPlayerAngles();
+    point_data.category = (isDefined(category) ? category : "");
 
     
     self.teleport_points[self.teleport_count] = point_data;
     self.teleport_names[self.teleport_count] = name;
     self.teleport_count++;
+
+    
+    save_success = scripts\zm\sqllocal::save_teleport_point(self, name, point_data.origin, point_data.angles, point_data.category);
 
     
     if (self.langLEN == 0)
@@ -8692,7 +9915,6 @@ delete_teleport_point(index)
             self iPrintLnBold("^1Punto de teleportación no válido");
         else
             self iPrintLnBold("^1Invalid teleportation point");
-
         self playLocalSound("menu_error");
         return false;
     }
@@ -8711,6 +9933,9 @@ delete_teleport_point(index)
     self.teleport_points[self.teleport_count - 1] = undefined;
     self.teleport_names[self.teleport_count - 1] = undefined;
     self.teleport_count--;
+
+    
+    scripts\zm\sqllocal::delete_teleport_point_persistent(self, deleted_name);
 
     
     if (self.langLEN == 0)
@@ -8743,6 +9968,9 @@ delete_all_teleport_points()
     self.teleport_count = 0;
 
     
+    scripts\zm\sqllocal::delete_all_teleport_points_persistent(self);
+
+    
     if (self.langLEN == 0)
         self iPrintLnBold("^1Todos los puntos de teleportación eliminados");
     else
@@ -8772,22 +10000,28 @@ open_teleport_menu()
     if (self.langLEN == 0) 
     {
         add_menu_item(menu, "Crear Punto", ::teleport_create_point_prompt);
-        add_menu_item(menu, "Listar Puntos", ::teleport_list_points_menu);
-        add_menu_item(menu, "Teleportarse", ::teleport_select_point_menu);
+        add_menu_item(menu, "Crear Categoría", ::teleport_create_category_prompt);
+        add_menu_item(menu, "^5Categorías", ::open_teleport_categories_menu);
+        
+        add_menu_item(menu, "Listar Puntos Globales", ::teleport_list_points_menu);
+        add_menu_item(menu, "Teleportarse a Global", ::teleport_select_point_menu);
+        add_menu_item(menu, "Locate zone", ::open_locate_zone_menu);
         add_menu_item(menu, "Eliminar Punto", ::teleport_delete_point_menu);
         add_menu_item(menu, "Eliminar Todos", ::teleport_delete_all_points);
         add_menu_item(menu, "Volver", ::menu_go_back);
-        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
     else 
     {
         add_menu_item(menu, "Create Point", ::teleport_create_point_prompt);
-        add_menu_item(menu, "List Points", ::teleport_list_points_menu);
-        add_menu_item(menu, "Teleport", ::teleport_select_point_menu);
+        add_menu_item(menu, "Create Category", ::teleport_create_category_prompt);
+        add_menu_item(menu, "^5Categories", ::open_teleport_categories_menu);
+        
+        add_menu_item(menu, "List Global Points", ::teleport_list_points_menu);
+        add_menu_item(menu, "Teleport to Global", ::teleport_select_point_menu);
+        add_menu_item(menu, "Locate zone", ::open_locate_zone_menu);
         add_menu_item(menu, "Delete Point", ::teleport_delete_point_menu);
         add_menu_item(menu, "Delete All", ::teleport_delete_all_points);
         add_menu_item(menu, "Back", ::menu_go_back);
-        add_menu_item(menu, "Close Menu", ::close_all_menus);
     }
 
     show_menu(menu);
@@ -8838,6 +10072,55 @@ teleport_listen_for_chat_input()
 }
 
 
+open_teleport_categories_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    
+    if (!isDefined(self.tele_cat_page))
+        self.tele_cat_page = 0;
+
+    title = ((self.langLEN == 0) ? "CATEGORÍAS" : "CATEGORIES") + " [" + (self.tele_cat_page + 1) + "]";
+    menu = create_menu(title, self);
+    menu.parent_menu = "teleport";
+
+    if (isDefined(self.teleport_categories) && self.teleport_categories.size > 0)
+    {
+        items_per_page = 7;
+        start_index = self.tele_cat_page * items_per_page;
+        end_index = start_index + items_per_page;
+        if (end_index > self.teleport_categories.size)
+            end_index = self.teleport_categories.size;
+            
+        total_pages = int((self.teleport_categories.size - 1) / items_per_page) + 1;
+
+        for (i = start_index; i < end_index; i++)
+        {
+            category = self.teleport_categories[i];
+            add_menu_item(menu, "^5[CAT] ^7" + category, ::open_category_submenu, category);
+        }
+
+        if (total_pages > 1)
+        {
+            add_menu_item(menu, "----------------------", ::do_nothing);
+            if (self.tele_cat_page > 0)
+                add_menu_item(menu, (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS", ::navigate_tele_cat_page, -1);
+            if (end_index < self.teleport_categories.size)
+                add_menu_item(menu, (self.langLEN == 0) ? "SIGUIENTE" : "NEXT", ::navigate_tele_cat_page, 1);
+        }
+    }
+    else
+    {
+        if (self.langLEN == 0) add_menu_item(menu, "^1Sin categorías", ::menu_go_back);
+        else add_menu_item(menu, "^1No categories", ::menu_go_back);
+    }
+
+    add_menu_item(menu, "Volver", ::menu_go_back);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
 teleport_chat_watcher()
 {
     self endon("disconnect");
@@ -8853,20 +10136,146 @@ teleport_chat_watcher()
             if (message.size > 15)
                 message = getSubStr(message, 0, 15);
 
-            if (self.langLEN == 0)
-                self iPrintLnBold("^2Creando punto: ^7" + message);
-            else
-                self iPrintLnBold("^2Creating point: ^7" + message);
-
-            wait 0.5;
-
-            success = self create_teleport_point(message);
-
             self.waiting_for_teleport_name = false;
             self notify("teleport_name_received");
 
+            wait 0.5;
+            self thread prompt_category_for_point(message);
+            return;
+        }
+    }
+}
+
+prompt_category_for_point(point_name)
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "¿Asignar Categoría?" : "Assign Category?";
+    menu = create_menu(title, self);
+    menu.parent_menu = "teleport";
+
+    if (self.langLEN == 0)
+    {
+        add_menu_item(menu, "No, sin categoría", ::create_teleport_point_with_cat, point_name, "");
+        add_menu_item(menu, "Nueva Categoría...", ::teleport_create_cat_for_point_prompt, point_name);
+        
+        if (isDefined(self.teleport_categories) && self.teleport_categories.size > 0)
+        {
+            foreach (category in self.teleport_categories)
+            {
+                add_menu_item(menu, category, ::create_teleport_point_with_cat, point_name, category);
+            }
+        }
+    }
+    else
+    {
+        add_menu_item(menu, "No, no category", ::create_teleport_point_with_cat, point_name, "");
+        add_menu_item(menu, "New Category...", ::teleport_create_cat_for_point_prompt, point_name);
+        
+        if (isDefined(self.teleport_categories) && self.teleport_categories.size > 0)
+        {
+            foreach (category in self.teleport_categories)
+            {
+                add_menu_item(menu, category, ::create_teleport_point_with_cat, point_name, category);
+            }
+        }
+    }
+
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+create_teleport_point_with_cat(point_name, category)
+{
+    self thread create_teleport_point(point_name, category);
+    wait 0.5;
+    self thread open_teleport_menu();
+}
+
+teleport_create_category_prompt()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    self.menu_open = false;
+
+    if (self.langLEN == 0)
+        self iPrintLnBold("^5Escribe el nombre de la categoría en el chat (Max 15 char)");
+    else
+        self iPrintLnBold("^5Type the category name in chat (Max 15 char)");
+
+    self.waiting_for_category_name = true;
+    self thread category_chat_watcher();
+}
+
+category_chat_watcher()
+{
+    self endon("disconnect");
+    level endon("end_game");
+    
+    for (;;)
+    {
+        level waittill("say", message, player);
+
+        if (player == self && isDefined(self.waiting_for_category_name) && self.waiting_for_category_name)
+        {
+            if (message.size > 15)
+                message = getSubStr(message, 0, 15);
+
+            self.waiting_for_category_name = false;
+            
+            scripts\zm\sqllocal::save_teleport_category(self, message);
+            self thread init_teleport_system(); 
+            
+            if (self.langLEN == 0)
+                self iPrintLnBold("^2Categoría creada: ^7" + message);
+            else
+                self iPrintLnBold("^2Category created: ^7" + message);
+
             wait 1.0;
             self thread open_teleport_menu();
+            return;
+        }
+    }
+}
+
+teleport_create_cat_for_point_prompt(point_name)
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    self.menu_open = false;
+
+    if (self.langLEN == 0)
+        self iPrintLnBold("^5Escribe el nombre de la NUEVA categoría en el chat");
+    else
+        self iPrintLnBold("^5Type the NEW category name in chat");
+
+    self.waiting_for_point_cat_name = true;
+    self thread category_for_point_chat_watcher(point_name);
+}
+
+category_for_point_chat_watcher(point_name)
+{
+    self endon("disconnect");
+    level endon("end_game");
+    
+    for (;;)
+    {
+        level waittill("say", message, player);
+
+        if (player == self && isDefined(self.waiting_for_point_cat_name) && self.waiting_for_point_cat_name)
+        {
+            if (message.size > 15)
+                message = getSubStr(message, 0, 15);
+
+            self.waiting_for_point_cat_name = false;
+            
+            scripts\zm\sqllocal::save_teleport_category(self, message);
+            self thread init_teleport_system(); 
+            
+            wait 0.5;
+            self thread create_teleport_point_with_cat(point_name, message);
             return;
         }
     }
@@ -8876,6 +10285,7 @@ teleport_chat_watcher()
 teleport_list_points_menu()
 {
     self endon("disconnect");
+    self endon("destroy_all_menus");
 
     if(!isDefined(self.teleport_points) || self.teleport_count == 0)
     {
@@ -8887,7 +10297,46 @@ teleport_list_points_menu()
         return;
     }
 
-    self thread list_teleport_points();
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    
+    if (!isDefined(self.tele_list_page))
+        self.tele_list_page = 0;
+
+    title = ((self.langLEN == 0) ? "LISTA DE PUNTOS" : "POINTS LIST") + " [" + (self.tele_list_page + 1) + "]";
+    menu = create_menu(title, self);
+    menu.parent_menu = "teleport";
+
+    items_per_page = 7;
+    start_index = self.tele_list_page * items_per_page;
+    end_index = start_index + items_per_page;
+    if (end_index > self.teleport_count)
+        end_index = self.teleport_count;
+        
+    total_pages = int((self.teleport_count - 1) / items_per_page) + 1;
+
+    for (i = start_index; i < end_index; i++)
+    {
+        add_menu_item(menu, (i+1) + ". " + self.teleport_names[i], ::do_nothing);
+    }
+
+    if (total_pages > 1)
+    {
+        add_menu_item(menu, "----------------------", ::do_nothing);
+        if (self.tele_list_page > 0)
+            add_menu_item(menu, (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS", ::navigate_tele_list_page, -1);
+        if (end_index < self.teleport_count)
+            add_menu_item(menu, (self.langLEN == 0) ? "SIGUIENTE" : "NEXT", ::navigate_tele_list_page, 1);
+    }
+
+    if (self.langLEN == 0)
+        add_menu_item(menu, "Volver", ::menu_go_back);
+    else
+        add_menu_item(menu, "Back", ::menu_go_back);
+
+    show_menu(menu);
+    self thread menu_control(menu);
 }
 
 
@@ -8909,14 +10358,38 @@ teleport_select_point_menu()
     self notify("destroy_current_menu");
     wait 0.1;
 
-    title = (self.langLEN == 0) ? "SELECCIONAR PUNTO" : "SELECT POINT";
+    
+    if (!isDefined(self.tele_global_page))
+        self.tele_global_page = 0;
+
+    title = ((self.langLEN == 0) ? "SELECCIONAR PUNTO" : "SELECT POINT") + " [" + (self.tele_global_page + 1) + "]";
     menu = create_menu(title, self);
     menu.parent_menu = "teleport";
 
-    for (i = 0; i < self.teleport_count; i++)
+    if (isDefined(self.teleport_points) && self.teleport_count > 0)
     {
-        teleport_func = self get_teleport_function(i);
-        add_menu_item(menu, (i+1) + ". " + self.teleport_names[i], teleport_func);
+        items_per_page = 7;
+        start_index = self.tele_global_page * items_per_page;
+        end_index = start_index + items_per_page;
+        if (end_index > self.teleport_count)
+            end_index = self.teleport_count;
+            
+        total_pages = int((self.teleport_count - 1) / items_per_page) + 1;
+
+        for (i = start_index; i < end_index; i++)
+        {
+            item = add_menu_item(menu, (i+1) + ". " + self.teleport_names[i], ::teleport_to_selected_point);
+            item.teleport_index = i;
+        }
+
+        if (total_pages > 1)
+        {
+            add_menu_item(menu, "----------------------", ::do_nothing);
+            if (self.tele_global_page > 0)
+                add_menu_item(menu, (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS", ::navigate_tele_global_page, -1);
+            if (end_index < self.teleport_count)
+                add_menu_item(menu, (self.langLEN == 0) ? "SIGUIENTE" : "NEXT", ::navigate_tele_global_page, 1);
+        }
     }
 
     if (self.langLEN == 0)
@@ -8938,23 +10411,23 @@ teleport_select_point_menu()
 }
 
 
-teleport_to_index_0() { self teleport_to_point(0); wait 1.0; self thread open_teleport_menu(); }
-teleport_to_index_1() { self teleport_to_point(1); wait 1.0; self thread open_teleport_menu(); }
-teleport_to_index_2() { self teleport_to_point(2); wait 1.0; self thread open_teleport_menu(); }
-teleport_to_index_3() { self teleport_to_point(3); wait 1.0; self thread open_teleport_menu(); }
-teleport_to_index_4() { self teleport_to_point(4); wait 1.0; self thread open_teleport_menu(); }
-
-
-get_teleport_function(index)
+teleport_to_selected_point()
 {
-    switch(index)
+    self endon("disconnect");
+    
+    
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items))
     {
-        case 0: return ::teleport_to_index_0;
-        case 1: return ::teleport_to_index_1;
-        case 2: return ::teleport_to_index_2;
-        case 3: return ::teleport_to_index_3;
-        case 4: return ::teleport_to_index_4;
-        default: return ::teleport_to_index_0;
+        selected_item = self.menu_current.items[self.menu_current.selected];
+        
+        
+        if (isDefined(selected_item.teleport_index))
+        {
+            index = selected_item.teleport_index;
+            self teleport_to_point(index);
+            wait 1.0;
+            self thread open_teleport_menu();
+        }
     }
 }
 
@@ -8977,14 +10450,38 @@ teleport_delete_point_menu()
     self notify("destroy_current_menu");
     wait 0.1;
 
-    title = (self.langLEN == 0) ? "ELIMINAR PUNTO" : "DELETE POINT";
+    
+    if (!isDefined(self.tele_del_page))
+        self.tele_del_page = 0;
+
+    title = ((self.langLEN == 0) ? "ELIMINAR PUNTO" : "DELETE POINT") + " [" + (self.tele_del_page + 1) + "]";
     menu = create_menu(title, self);
     menu.parent_menu = "teleport";
 
-    for (i = 0; i < self.teleport_count; i++)
+    if (isDefined(self.teleport_points) && self.teleport_count > 0)
     {
-        delete_func = self get_delete_function(i);
-        add_menu_item(menu, (i+1) + ". " + self.teleport_names[i], delete_func);
+        items_per_page = 7;
+        start_index = self.tele_del_page * items_per_page;
+        end_index = start_index + items_per_page;
+        if (end_index > self.teleport_count)
+            end_index = self.teleport_count;
+            
+        total_pages = int((self.teleport_count - 1) / items_per_page) + 1;
+
+        for (i = start_index; i < end_index; i++)
+        {
+            item = add_menu_item(menu, (i+1) + ". " + self.teleport_names[i], ::delete_selected_point);
+            item.teleport_index = i;
+        }
+
+        if (total_pages > 1)
+        {
+            add_menu_item(menu, "----------------------", ::do_nothing);
+            if (self.tele_del_page > 0)
+                add_menu_item(menu, (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS", ::navigate_tele_del_page, -1);
+            if (end_index < self.teleport_count)
+                add_menu_item(menu, (self.langLEN == 0) ? "SIGUIENTE" : "NEXT", ::navigate_tele_del_page, 1);
+        }
     }
 
     if (self.langLEN == 0)
@@ -9006,23 +10503,23 @@ teleport_delete_point_menu()
 }
 
 
-delete_point_index_0() { self delete_teleport_point(0); wait 1.0; self thread open_teleport_menu(); }
-delete_point_index_1() { self delete_teleport_point(1); wait 1.0; self thread open_teleport_menu(); }
-delete_point_index_2() { self delete_teleport_point(2); wait 1.0; self thread open_teleport_menu(); }
-delete_point_index_3() { self delete_teleport_point(3); wait 1.0; self thread open_teleport_menu(); }
-delete_point_index_4() { self delete_teleport_point(4); wait 1.0; self thread open_teleport_menu(); }
-
-
-get_delete_function(index)
+delete_selected_point()
 {
-    switch(index)
+    self endon("disconnect");
+    
+    
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items))
     {
-        case 0: return ::delete_point_index_0;
-        case 1: return ::delete_point_index_1;
-        case 2: return ::delete_point_index_2;
-        case 3: return ::delete_point_index_3;
-        case 4: return ::delete_point_index_4;
-        default: return ::delete_point_index_0;
+        selected_item = self.menu_current.items[self.menu_current.selected];
+        
+        
+        if (isDefined(selected_item.teleport_index))
+        {
+            index = selected_item.teleport_index;
+            self delete_teleport_point(index);
+            wait 1.0;
+            self thread open_teleport_menu();
+        }
     }
 }
 
@@ -9460,85 +10957,11 @@ monitor_sv_cheats_activation()
     wait 3;
 
     
-    last_sv_cheats_state = getDvarInt("sv_cheats");
-
-    while (true)
+    
+    
+    for (;;)
     {
-        wait 1; 
-
-        current_sv_cheats_state = getDvarInt("sv_cheats");
-
-        
-        
-        if (last_sv_cheats_state == 0 && current_sv_cheats_state == 1)
-        {
-            
-            
-
-            
-            level.partida_alterada_global = true;
-            self.partida_alterada_sv_cheats = true;
-
-            
-            if (!isDefined(self.developer_mode_unlocked) || !self.developer_mode_unlocked)
-            {
-                self.developer_mode_unlocked = true;
-            }
-
-            
-            if (isDefined(self.langLEN) && self.langLEN == 0)
-            {
-                self iPrintlnBold("^2sv_cheats activado - Developer menu abierto automáticamente");
-                self iPrintlnBold("^3¡Partida alterada! Estadísticas y banco deshabilitados");
-            }
-            else
-            {
-                self iPrintlnBold("^2sv_cheats enabled - Developer menu opened automatically");
-                self iPrintlnBold("^3Match altered! Statistics and bank disabled");
-            }
-
-
-            
-            if (isDefined(self.menu_open) && self.menu_open)
-            {
-                self notify("destroy_current_menu");
-                wait 0.2;
-            }
-
-            
-            wait 0.5;
-            self thread open_main_menu(true); 
-        }
-        
-        else if (last_sv_cheats_state == 1 && current_sv_cheats_state == 0)
-        {
-            
-            self.developer_mode_unlocked = false;
-
-            
-            if (isDefined(self.langLEN) && self.langLEN == 0)
-            {
-                self iPrintlnBold("^1sv_cheats desactivado - Developer mode deshabilitado");
-                self iPrintlnBold("^3¡Partida alterada permanentemente! Estadísticas y banco siguen deshabilitados");
-            }
-            else
-            {
-                self iPrintlnBold("^1sv_cheats disabled - Developer mode disabled");
-                self iPrintlnBold("^3Match permanently altered! Statistics and bank remain disabled");
-            }
-
-            if (isDefined(self.menu_open) && self.menu_open)
-            {
-                self notify("destroy_current_menu");
-                wait 0.2;
-            }
-
-            
-            wait 0.5;
-            self thread open_main_menu(true); 
-        }
-
-        last_sv_cheats_state = current_sv_cheats_state;
+        wait 999;
     }
 }
 
@@ -10341,7 +11764,47 @@ reset_menu_shaders()
 }
 
 
-open_bank_transactions_menu()
+
+init_strings()
+{
+    level.strings = [];
+    
+    
+    level.strings["status_on_es"] = "Estado: ON";
+    level.strings["status_off_es"] = "Estado: OFF";
+    level.strings["status_on_en"] = "Status: ON";
+    level.strings["status_off_en"] = "Status: OFF";
+    
+    
+    level.strings["fog_on_es"] = "Niebla: ON";
+    level.strings["fog_off_es"] = "Niebla: OFF";
+    level.strings["fog_on_en"] = "Fog: ON";
+    level.strings["fog_off_en"] = "Fog: OFF";
+    
+    
+    level.strings["tpp_on_es"] = "Tercera Persona: ON";
+    level.strings["tpp_off_es"] = "Tercera Persona: OFF";
+    level.strings["tpp_on_en"] = "Third Person: ON";
+    level.strings["tpp_off_en"] = "Third Person: OFF";
+    
+    
+    level.strings["perk_on_es"] = "Perk Unlimited: ON";
+    level.strings["perk_off_es"] = "Perk Unlimited: OFF";
+    level.strings["perk_on_en"] = "Perk Unlimited: ON";
+    level.strings["perk_off_en"] = "Perk Unlimited: OFF";
+    
+    
+    level.strings["zname_on_es"] = "Mostrar Nombre: ON";
+    level.strings["zname_off_es"] = "Mostrar Nombre: OFF";
+    level.strings["zname_on_en"] = "Show Name: ON";
+    level.strings["zname_off_en"] = "Show Name: OFF";
+}
+
+
+
+
+
+open_locate_zone_menu()
 {
     self endon("disconnect");
     self endon("destroy_all_menus");
@@ -10349,153 +11812,1694 @@ open_bank_transactions_menu()
     self notify("destroy_current_menu");
     wait 0.1;
 
-    title = (self.langLEN == 0) ? "TRANSACCIONES" : "TRANSACTIONS";
+    map_raw = getDvar("mapname");
+    map_name = tolower(map_raw);
+    
+    
+    if (!isDefined(self.tele_zone_page))
+        self.tele_zone_page = 0;
+
+    title = ((self.langLEN == 0) ? "LOCATE ZONE" : "LOCATE ZONE") + " [" + (self.tele_zone_page + 1) + "]";
     menu = create_menu(title, self);
-    menu.parent_menu = "recent_matches";
+    menu.parent_menu = "teleport";
 
     
-    map_name = getDvar("ui_zm_mapstartlocation");
-    player_guid = self getGuid();
-
-    if (!isDefined(self.recent_match_index))
-        self.recent_match_index = 0;
-
-    recent_files = get_recent_match_files(player_guid, map_name);
-    if (isDefined(recent_files) && recent_files.size > 0)
+    zones = get_map_zones(map_name);
+    
+    if (zones.size > 0)
     {
-        display_index = self.recent_match_index;
-        if (display_index >= recent_files.size)
-            display_index = 0;
+        items_per_page = 7;
+        start_index = self.tele_zone_page * items_per_page;
+        end_index = start_index + items_per_page;
+        if (end_index > zones.size)
+            end_index = zones.size;
+            
+        total_pages = int((zones.size - 1) / items_per_page) + 1;
 
-        match_filename = "scriptdata/recent/" + player_guid + "/" + map_name + "/" + recent_files[display_index];
-
-        if (fs_testfile(match_filename))
+        for (i = start_index; i < end_index; i++)
         {
-            file = fs_fopen(match_filename, "read");
-            if (isDefined(file))
-            {
-                file_size = fs_length(file);
-                content = fs_read(file, file_size);
-                fs_fclose(file);
-
-                
-                lines = strTok(content, "\n");
-                all_transactions = [];
-
-                in_transactions_section = false;
-                foreach (line in lines)
-                {
-                    if (isSubStr(line, "TRANSACCIONES BANCARIAS:"))
-                        in_transactions_section = true;
-                    else if (in_transactions_section && isSubStr(line, "--------------------------------"))
-                        continue; 
-                    else if (isSubStr(line, "================================") && in_transactions_section)
-                        break; 
-                    else if (in_transactions_section && line != "")
-                    {
-                        all_transactions[all_transactions.size] = line;
-                    }
-                }
-
-                if (all_transactions.size > 0)
-                {
-                    
-                    
-                    
-                    transactions_per_page = 6;
-                    
-                    if (!isDefined(self.transaction_page_index))
-                        self.transaction_page_index = 0;
-
-                    
-                    if (!isDefined(self.last_recent_match_index_trans) || self.last_recent_match_index_trans != self.recent_match_index)
-                    {
-                        self.transaction_page_index = 0;
-                        self.last_recent_match_index_trans = self.recent_match_index;
-                    }
-
-                    total_transactions = all_transactions.size;
-                    start_index = self.transaction_page_index * transactions_per_page;
-                    end_index = min(start_index + transactions_per_page, total_transactions);
-                    total_pages = int((total_transactions - 1) / transactions_per_page) + 1;
-
-                    for (i = start_index; i < end_index; i++)
-                    {
-                        add_menu_item(menu, all_transactions[i], ::do_nothing);
-                    }
-
-                    if (total_pages > 1)
-                    {
-                        add_menu_item(menu, "", ::do_nothing);
-                        
-                        page_info = (self.langLEN == 0) ?
-                            "Página " + (self.transaction_page_index + 1) + " de " + total_pages :
-                            "Page " + (self.transaction_page_index + 1) + " of " + total_pages;
-                        add_menu_item(menu, page_info, ::do_nothing);
-
-                        if (self.transaction_page_index > 0)
-                            add_menu_item(menu, (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS", ::transaction_page_previous);
-                        
-                        if (self.transaction_page_index < total_pages - 1)
-                            add_menu_item(menu, (self.langLEN == 0) ? "SIGUIENTE" : "NEXT", ::transaction_page_next);
-                    }
-                }
-                else
-                {
-                    if (self.langLEN == 0)
-                    {
-                        add_menu_item(menu, "NO HAY TRANSACCIONES", ::do_nothing);
-                    }
-                    else
-                    {
-                        add_menu_item(menu, "NO TRANSACTIONS", ::do_nothing);
-                    }
-                }
-            }
+            add_menu_item(menu, zones[i].name, ::locate_zone_teleport).zone_origin = zones[i].origin;
         }
-    }
 
-    
-    add_menu_item(menu, "", ::do_nothing);
-
-    if (self.langLEN == 0)
-    {
-        add_menu_item(menu, "Volver", ::menu_go_back);
-        add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
+        if (total_pages > 1)
+        {
+            add_menu_item(menu, "----------------------", ::do_nothing);
+            if (self.tele_zone_page > 0)
+                add_menu_item(menu, (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS", ::navigate_locate_zone_page, -1);
+            if (end_index < zones.size)
+                add_menu_item(menu, (self.langLEN == 0) ? "SIGUIENTE" : "NEXT", ::navigate_locate_zone_page, 1);
+        }
     }
     else
     {
-        add_menu_item(menu, "Back", ::menu_go_back);
-        add_menu_item(menu, "Close Menu", ::close_all_menus);
+        if (self.langLEN == 0) add_menu_item(menu, "^1No hay ubicaciones", ::menu_go_back);
+        else add_menu_item(menu, "^1No locations available", ::menu_go_back);
     }
+
+    add_menu_item(menu, "Volver", ::menu_go_back);
+    add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
 
     show_menu(menu);
-    menu = scripts\zm\style_font_position::apply_font_position(menu, self.font_position_index);
-
-    if (isDefined(self.menu_current) && isDefined(self.menu_current.active_color))
-    {
-        menu.active_color = self.menu_current.active_color;
-        menu.selection_bar.color = menu.active_color;
-        menu.items[menu.selected].item.color = (1, 1, 1);
-    }
-
     self thread menu_control(menu);
 }
 
-transaction_page_next()
+locate_zone_teleport()
 {
-    self.transaction_page_index++;
-    self thread open_bank_transactions_menu();
-    scripts\zm\playsound::play_menu_scroll_sound(self);
+    self endon("disconnect");
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.items))
+    {
+        selected_item = self.menu_current.items[self.menu_current.selected];
+        if (isDefined(selected_item.zone_origin))
+        {
+            self setOrigin(selected_item.zone_origin);
+            if (self.langLEN == 0) self iPrintLnBold("^2Teleportado a zona");
+            else self iPrintLnBold("^2Teleported to zone");
+            self playLocalSound("uin_positive_feedback");
+            wait 0.2;
+        }
+    }
 }
 
-transaction_page_previous()
+
+
+
+
+open_category_submenu(category)
 {
-    self.transaction_page_index--;
-    if (self.transaction_page_index < 0)
-        self.transaction_page_index = 0;
-    self thread open_bank_transactions_menu();
-    scripts\zm\playsound::play_menu_scroll_sound(self);
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    
+    if (!isDefined(self.tele_cat_sub_page))
+        self.tele_cat_sub_page = 0;
+
+    
+    cat_points = [];
+    cat_point_indices = [];
+    for (i = 0; i < self.teleport_count; i++)
+    {
+        if (isDefined(self.teleport_points[i].category) && self.teleport_points[i].category == category)
+        {
+            cat_points[cat_points.size] = self.teleport_names[i];
+            cat_point_indices[cat_point_indices.size] = i;
+        }
+    }
+
+    title = "^5" + category + " [" + (self.tele_cat_sub_page + 1) + "]";
+    menu = create_menu(title, self);
+    menu.parent_menu = "teleport_categories";
+
+    if (cat_points.size > 0)
+    {
+        items_per_page = 7;
+        start_index = self.tele_cat_sub_page * items_per_page;
+        end_index = start_index + items_per_page;
+        if (end_index > cat_points.size)
+            end_index = cat_points.size;
+            
+        total_pages = int((cat_points.size - 1) / items_per_page) + 1;
+
+        for (i = start_index; i < end_index; i++)
+        {
+            add_menu_item(menu, cat_points[i], ::category_teleport_handler, cat_point_indices[i], category);
+        }
+
+        if (total_pages > 1)
+        {
+            add_menu_item(menu, "----------------------", ::do_nothing);
+            if (self.tele_cat_sub_page > 0)
+                add_menu_item(menu, (self.langLEN == 0) ? "ANTERIOR" : "PREVIOUS", ::navigate_tele_cat_sub_page, -1, category);
+            if (end_index < cat_points.size)
+                add_menu_item(menu, (self.langLEN == 0) ? "SIGUIENTE" : "NEXT", ::navigate_tele_cat_sub_page, 1, category);
+        }
+    }
+    else
+    {
+        if (self.langLEN == 0) add_menu_item(menu, "^1Sin puntos en esta categoría", ::menu_go_back);
+        else add_menu_item(menu, "^1No points in this category", ::menu_go_back);
+    }
+
+    add_menu_item(menu, "----------------------", ::menu_go_back);
+    
+    if (self.langLEN == 0)
+    {
+        add_menu_item(menu, "Agregar punto existente", ::menu_add_existing_to_category, category);
+        add_menu_item(menu, "Eliminar punto de categoría", ::menu_remove_from_category, category);
+        add_menu_item(menu, "^1Eliminar Categoría", ::menu_delete_category, category);
+        add_menu_item(menu, "Volver", ::open_teleport_menu);
+    }
+    else
+    {
+        add_menu_item(menu, "Add existing point", ::menu_add_existing_to_category, category);
+        add_menu_item(menu, "Remove point from category", ::menu_remove_from_category, category);
+        add_menu_item(menu, "^1Delete Category", ::menu_delete_category, category);
+        add_menu_item(menu, "Back", ::open_teleport_menu);
+    }
+
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+category_teleport_handler(index, category)
+{
+    self thread teleport_to_point_index(index);
+    wait 0.2;
+    self thread open_category_submenu(category);
+}
+
+menu_add_existing_to_category(category)
+{
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "Agregar a " + category : "Add to " + category;
+    menu = create_menu(title, self);
+    menu.parent_menu = "category_" + category;
+
+    found = false;
+    for (i = 0; i < self.teleport_count; i++)
+    {
+        point = self.teleport_points[i];
+        if (!isDefined(point.category) || point.category == "")
+        {
+            add_menu_item(menu, self.teleport_names[i], ::action_add_point_to_category, i, category);
+            found = true;
+        }
+    }
+
+    if (!found)
+    {
+        if (self.langLEN == 0) add_menu_item(menu, "^1No hay puntos globales", ::menu_go_back);
+        else add_menu_item(menu, "^1No global points available", ::menu_go_back);
+    }
+    
+    add_menu_item(menu, "Volver", ::open_category_submenu, category);
+
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+action_add_point_to_category(index, category)
+{
+    point_name = self.teleport_names[index];
+    scripts\zm\sqllocal::update_point_category_persistent(self, point_name, category);
+    self.teleport_points[index].category = category;
+    
+    if (self.langLEN == 0) self iPrintLnBold("^2Punto agregado a " + category);
+    else self iPrintLnBold("^2Point added to " + category);
+    
+    wait 0.2;
+    self thread menu_add_existing_to_category(category);
+}
+
+menu_remove_from_category(category)
+{
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "Quitar de " + category : "Remove from " + category;
+    menu = create_menu(title, self);
+    menu.parent_menu = "category_" + category;
+
+    found = false;
+    for (i = 0; i < self.teleport_count; i++)
+    {
+        point = self.teleport_points[i];
+        if (isDefined(point.category) && point.category == category)
+        {
+            add_menu_item(menu, self.teleport_names[i], ::action_remove_point_from_category, i, category);
+            found = true;
+        }
+    }
+
+    add_menu_item(menu, "Volver", ::open_category_submenu, category);
+
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+action_remove_point_from_category(index, category)
+{
+    point_name = self.teleport_names[index];
+    scripts\zm\sqllocal::update_point_category_persistent(self, point_name, "");
+    self.teleport_points[index].category = "";
+    
+    if (self.langLEN == 0) self iPrintLnBold("^1Punto removido de " + category);
+    else self iPrintLnBold("^1Point removed from " + category);
+    
+    wait 0.2;
+    self thread menu_remove_from_category(category);
+}
+
+menu_delete_category(category)
+{
+    scripts\zm\sqllocal::delete_teleport_category_persistent(self, category);
+    
+    
+    for (i = 0; i < self.teleport_count; i++)
+    {
+        if (isDefined(self.teleport_points[i].category) && self.teleport_points[i].category == category)
+            self.teleport_points[i].category = "";
+    }
+    
+    
+    self.teleport_categories = scripts\zm\sqllocal::load_teleport_categories(self);
+    
+    if (self.langLEN == 0) self iPrintLnBold("^1Categoría eliminada");
+    else self iPrintLnBold("^1Category deleted");
+    
+    wait 0.2;
+    self thread open_teleport_menu();
 }
 
 
+teleport_to_point_index(index)
+{
+    self endon("disconnect");
+    
+    if (!isDefined(self.teleport_points) || !isDefined(self.teleport_points[index]))
+        return;
+        
+    point = self.teleport_points[index];
+    name = self.teleport_names[index];
+    
+    self setOrigin(point.origin);
+    self setPlayerAngles(point.angles);
+    
+    if (self.langLEN == 0)
+        self iPrintLnBold("^2Teleportado a: ^5" + name);
+    else
+        self iPrintLnBold("^2Teleported to: ^5" + name);
+        
+    self playLocalSound("uin_positive_feedback");
+}
+
+get_map_zones(map_name)
+{
+    zones = [];
+    switch(map_name)
+    {
+        case "zm_transit":
+        case "transit":
+            zones[0] = spawnStruct(); zones[0].name = "Bus Depot"; zones[0].origin = (-7108, 4680, -65);
+            zones[1] = spawnStruct(); zones[1].name = "Bus Depot Prison"; zones[1].origin = (-6165, 3893, 119);
+            zones[2] = spawnStruct(); zones[2].name = "Tunnel"; zones[2].origin = (-11475, -2321, 200);
+            zones[3] = spawnStruct(); zones[3].name = "Dinner"; zones[3].origin = (-5010, -7189, -57);
+            zones[4] = spawnStruct(); zones[4].name = "Farm"; zones[4].origin = (6987, -5692, -50);
+            zones[5] = spawnStruct(); zones[5].name = "Nach der Toten"; zones[5].origin = (13781, -1013, -185);
+            zones[6] = spawnStruct(); zones[6].name = "Pylon"; zones[6].origin = (7480, -474, -190);
+            zones[7] = spawnStruct(); zones[7].name = "Engine"; zones[7].origin = (11129, 7896, -570);
+            zones[8] = spawnStruct(); zones[8].name = "Forest House"; zones[8].origin = (5138, 6892, -23);
+            zones[9] = spawnStruct(); zones[9].name = "Town"; zones[9].origin = (1241, -120, -50);
+            zones[10] = spawnStruct(); zones[10].name = "Town Ninepins"; zones[10].origin = (2237, -1404, -49);
+            zones[11] = spawnStruct(); zones[11].name = "Town Apartment"; zones[11].origin = (2329, 238, 88.125);
+            zones[12] = spawnStruct(); zones[12].name = "Packer Punch"; zones[12].origin = (1946, -183, -303);
+            break;
+
+        case "zm_prison":
+        case "prison":
+            zones[0] = spawnStruct(); zones[0].name = "Start Room"; zones[0].origin = (1226, 10597, 1336);
+            zones[1] = spawnStruct(); zones[1].name = "Start Room Prison"; zones[1].origin = (1711, 10323, 1336);
+            zones[2] = spawnStruct(); zones[2].name = "Prison Roof"; zones[2].origin = (952, 9414, 1704);
+            zones[3] = spawnStruct(); zones[3].name = "Prison Spiral Staircase"; zones[3].origin = (-21, 7879, -127);
+            zones[4] = spawnStruct(); zones[4].name = "Spiral Staircase Center"; zones[4].origin = (414, 8436, 832);
+            zones[5] = spawnStruct(); zones[5].name = "Harbor"; zones[5].origin = (-425, 5418, -71);
+            zones[6] = spawnStruct(); zones[6].name = "Harbor Tower"; zones[6].origin = (-39, 5572, 593);
+            zones[7] = spawnStruct(); zones[7].name = "Bars on the Harbor"; zones[7].origin = (-678, 6983, 240);
+            zones[8] = spawnStruct(); zones[8].name = "Dog Point 1"; zones[8].origin = (826.87, 9672.88, 1443.13);
+            zones[9] = spawnStruct(); zones[9].name = "Dog Point 2"; zones[9].origin = (3731.16, 9705.97, 1532.84);
+            zones[10] = spawnStruct(); zones[10].name = "Dog Point 3"; zones[10].origin = (49.1354, 6093.95, 19.5609);
+            break;
+
+        case "zm_nuked":
+        case "nuketown":
+        case "nuked":
+            zones[0] = spawnStruct(); zones[0].name = "Bus"; zones[0].origin = (-125, 350, -49);
+            zones[1] = spawnStruct(); zones[1].name = "Green House"; zones[1].origin = (-623, 417, -56);
+            zones[2] = spawnStruct(); zones[2].name = "Green House Office"; zones[2].origin = (-623, 417, 80);
+            zones[3] = spawnStruct(); zones[3].name = "Green House Prison"; zones[3].origin = (-800, 850, 73);
+            zones[4] = spawnStruct(); zones[4].name = "Green House Garden"; zones[4].origin = (-1557, 387, -64);
+            zones[5] = spawnStruct(); zones[5].name = "Green House Garage"; zones[5].origin = (-910, 178, -56);
+            zones[6] = spawnStruct(); zones[6].name = "Yellow House"; zones[6].origin = (729, 208, -56);
+            zones[7] = spawnStruct(); zones[7].name = "Yellow House Office"; zones[7].origin = (729, 208, 80);
+            zones[8] = spawnStruct(); zones[8].name = "Yellow House Garage"; zones[8].origin = (783, 615, -56.8);
+            zones[9] = spawnStruct(); zones[9].name = "Yellow House Garage Roof"; zones[9].origin = (926, 638, 110);
+            zones[10] = spawnStruct(); zones[10].name = "Yellow House Garden"; zones[10].origin = (1585, 389, -63);
+            zones[11] = spawnStruct(); zones[11].name = "Yellow House Perk"; zones[11].origin = (1203, 1051, -80);
+            zones[12] = spawnStruct(); zones[12].name = "Nuketown Prison"; zones[12].origin = (375, -359, -60);
+            zones[13] = spawnStruct(); zones[13].name = "Nuketown Out of Map"; zones[13].origin = (52, -866, -57);
+            zones[14] = spawnStruct(); zones[14].name = "Black Hole Out of Map"; zones[14].origin = (2143, 2326, -887);
+            break;
+
+        case "zm_highrise":
+        case "highrise":
+            zones[0] = spawnStruct(); zones[0].name = "Spawn Area"; zones[0].origin = (1464.25, 1377.69, 3397.46);
+            zones[1] = spawnStruct(); zones[1].name = "Slide"; zones[1].origin = (2084.26, 2573.54, 3050.59);
+            zones[2] = spawnStruct(); zones[2].name = "Broken Elevator"; zones[2].origin = (3700.51, 2173.41, 2575.47);
+            zones[3] = spawnStruct(); zones[3].name = "Red Room"; zones[3].origin = (3176.08, 1426.12, 1298.53);
+            zones[4] = spawnStruct(); zones[4].name = "Bank/Power"; zones[4].origin = (2614.06, 30.8681, 1296.13);
+            zones[5] = spawnStruct(); zones[5].name = "Roof"; zones[5].origin = (1965.23, 151.344, 2880.13);
+            zones[6] = spawnStruct(); zones[6].name = "Mainroom"; zones[6].origin = (2067.99, 1385.92, 3040.13);
+            break;
+
+        case "zm_buried":
+        case "buried":
+            zones[0] = spawnStruct(); zones[0].name = "Spawn Area"; zones[0].origin = (-2689.08, -761.858, 1360.13);
+            zones[1] = spawnStruct(); zones[1].name = "Underspawn Area"; zones[1].origin = (-957.409, -351.905, 288.125);
+            zones[2] = spawnStruct(); zones[2].name = "Bank House"; zones[2].origin = (2614.06, 30.8681, 1296.13);
+            zones[3] = spawnStruct(); zones[3].name = "Leroy Cell"; zones[3].origin = (-1081.72, 830.04, 8.125);
+            zones[4] = spawnStruct(); zones[4].name = "Bar Saloon"; zones[4].origin = (790.854, -1433.25, 56.125);
+            zones[5] = spawnStruct(); zones[5].name = "Middle Maze"; zones[5].origin = (4920.74, 454.216, 4.125);
+            zones[6] = spawnStruct(); zones[6].name = "Power"; zones[6].origin = (710.08, -591.387, 143.443);
+            break;
+
+        case "zm_tomb":
+        case "tomb":
+            zones[0] = spawnStruct(); zones[0].name = "Pack a punch"; zones[0].origin = (-199.079, -11.0947, 320.125);
+            zones[1] = spawnStruct(); zones[1].name = "Room with Staffs"; zones[1].origin = (6.8478, -13.7044, -751.875);
+            zones[2] = spawnStruct(); zones[2].name = "Tank"; zones[2].origin = (160.635, -2755.65, 43.5474);
+            zones[3] = spawnStruct(); zones[3].name = "Tank Second spot"; zones[3].origin = (-86.3847, 4654.54, -288.052);
+            zones[4] = spawnStruct(); zones[4].name = "No Mans land"; zones[4].origin = (-760.179, 1121.94, 119.175);
+            zones[5] = spawnStruct(); zones[5].name = "Inside Church"; zones[5].origin = (459.258, -2644.85, 365.342);
+            zones[6] = spawnStruct(); zones[6].name = "Generator 1"; zones[6].origin = (2170.5, 4660.37, -299.875);
+            zones[7] = spawnStruct(); zones[7].name = "Generator 2"; zones[7].origin = (-356.707, 3579.11, -291.875);
+            zones[8] = spawnStruct(); zones[8].name = "Generator 3"; zones[8].origin = (518.721, 2500.87, -121.875);
+            zones[9] = spawnStruct(); zones[9].name = "Generator 4"; zones[9].origin = (2372.42, 101.088, 120.125);
+            zones[10] = spawnStruct(); zones[10].name = "Generator 5"; zones[10].origin = (-2493.36, 178.245, 236.625);
+            zones[11] = spawnStruct(); zones[11].name = "Generator 6"; zones[11].origin = (952.098, -3554.39, 306.125);
+            zones[12] = spawnStruct(); zones[12].name = "Crazy place lightning"; zones[12].origin = (9621.84, -6989.4, -345.875);
+            zones[13] = spawnStruct(); zones[13].name = "Crazy place ice"; zones[13].origin = (11242.1, -7033.06, -345.875);
+            zones[14] = spawnStruct(); zones[14].name = "Crazy place air"; zones[14].origin = (11285.9, -8679.08, -407.875);
+            zones[15] = spawnStruct(); zones[15].name = "Crazy place fire"; zones[15].origin = (9429.59, -8560.03, -397.875);
+            zones[16] = spawnStruct(); zones[16].name = "Mule kick"; zones[16].origin = (-3.33877, -405.654, -493.875);
+            zones[17] = spawnStruct(); zones[17].name = "Juggernog"; zones[17].origin = (2329.01, -176.799, 139.125);
+            zones[18] = spawnStruct(); zones[18].name = "Quick revive"; zones[18].origin = (2359.2, 5039.69, -303.875);
+            zones[19] = spawnStruct(); zones[19].name = "Speed cola"; zones[19].origin = (890.851, 3223.45, -171.024);
+            zones[20] = spawnStruct(); zones[20].name = "Stamin-up"; zones[20].origin = (-2399.83, 3.22381, 233.342);
+            break;
+    }
+    return zones;
+}
+
+navigate_locate_zone_page(direction)
+{
+    self.tele_zone_page += direction;
+    self thread open_locate_zone_menu();
+}
+
+navigate_tele_cat_page(direction)
+{
+    self.tele_cat_page += direction;
+    self thread open_teleport_categories_menu();
+}
+
+navigate_tele_cat_sub_page(direction, category)
+{
+    self.tele_cat_sub_page += direction;
+    self thread open_category_submenu(category);
+}
+
+navigate_tele_global_page(direction)
+{
+    self.tele_global_page += direction;
+    self thread teleport_select_point_menu();
+}
+
+navigate_tele_list_page(direction)
+{
+    self.tele_list_page += direction;
+    self thread teleport_list_points_menu();
+}
+
+
+navigate_tele_del_page(direction)
+{
+    self.tele_del_page += direction;
+    self thread teleport_delete_point_menu();
+}
+
+
+
+
+
+init_function_registry()
+{
+    level.func_registry = [];
+    
+    
+    add_to_registry("godmode", "God Mode", "God Mode", scripts\zm\funciones::toggle_godmode);
+    add_to_registry("ufo", "Modo UFO", "UFO Mode", scripts\zm\funciones::toggle_ufo_mode);
+    add_to_registry("money", "Dar 10k Puntos", "Give 10k Points", scripts\zm\funciones::give_10k_points);
+    add_to_registry("speed", "Velocidad x2", "Speed x2", scripts\zm\funciones::toggle_speed);
+    add_to_registry("jump", "Super Salto", "Super Jump", scripts\zm\funciones::toggle_super_jump);
+    add_to_registry("unl_ammo", "Munición Infinita", "Unlimited Ammo", scripts\zm\funciones::toggle_unlimited_ammo);
+    add_to_registry("insta_reload", "Insta-Reload", "Insta-Reload", scripts\zm\funciones::toggle_insta_reload);
+    add_to_registry("drops", "Soltar Arma", "Drop Weapon", scripts\zm\funciones::drop_current_weapon);
+    
+    
+    add_to_registry("wpn_rand", "Arma Aleatoria", "Random Weapon", ::give_random_weapon_menu);
+    add_to_registry("wpn_upg", "Mejorar Arma", "Upgrade Weapon", ::upgrade_current_weapon_menu);
+    
+    
+    add_to_registry("round", "Avanzar Ronda", "Advance Round", scripts\zm\funciones::advance_round);
+    add_to_registry("round_back", "Retroceder Ronda", "Go Back Round", scripts\zm\funciones::go_back_round);
+    add_to_registry("round_255", "Round 255", "Round 255", scripts\zm\funciones::set_round_255);
+    add_to_registry("round_apply", "Aplicar Ronda", "Apply Round", scripts\zm\funciones::apply_round_change);
+    add_to_registry("killall", "Matar Zombies", "Kill All Zombies", scripts\zm\funciones::kill_all_zombies);
+    add_to_registry("z_freeze", "Congelar Zombies", "Zombie Freeze", scripts\zm\funciones::Fr3ZzZoM);
+    add_to_registry("z_teleport", "Teletransportar Zombies", "Teleport Zombies", scripts\zm\funciones::toggle_teleport_zombies);
+    add_to_registry("z_disable", "Desactivar Zombies", "Disable Zombies", scripts\zm\funciones::toggle_disable_zombies);
+    add_to_registry("unl_perk", "Perks Infinitos", "Unlimited Perks", scripts\zm\funciones::toggle_perk_unlimite);
+    add_to_registry("tpp", "Tercera Persona", "Third Person", scripts\zm\funciones::ThirdPerson);
+    add_to_registry("photo", "Modo Foto", "Photo Mode", scripts\zm\funciones::toggle_photo_mode);
+    
+    
+    add_to_registry("ammo", "Munición Máxima", "Max Ammo", scripts\zm\funciones::spawn_max_ammo);
+    add_to_registry("powerups", "Todos los Powerups", "All Powerups", scripts\zm\funciones::spawn_all_powerups);
+    add_to_registry("powerup_rand", "Powerup Aleatorio", "Random Powerup", scripts\zm\funciones::spawn_random_powerup);
+    
+    
+    add_to_registry("box_inc", "Aumentar Precio Caja", "Increase Box Price", scripts\zm\funciones::increase_box_price);
+    add_to_registry("box_dec", "Disminuir Precio Caja", "Decrease Box Price", scripts\zm\funciones::decrease_box_price);
+    add_to_registry("box_950", "Caja: 950", "Box: 950", scripts\zm\funciones::set_box_price_950);
+    add_to_registry("box_500", "Caja: 500", "Box: 500", scripts\zm\funciones::set_box_price_500);
+    add_to_registry("box_0", "Caja: Gratis", "Box: Free", scripts\zm\funciones::set_box_price_0);
+    
+    
+    add_to_registry("give_weapon", "Dar Arma", "Give Weapon", ::give_specific_weapon_menu);
+    
+    
+    add_to_registry("p_insta", "Insta-Kill", "Insta-Kill", scripts\zm\funciones::spawn_insta_kill);
+    add_to_registry("p_carp", "Carpintero", "Carpenter", scripts\zm\funciones::spawn_carpenter);
+    add_to_registry("p_double", "Doble Puntos", "Double Points", scripts\zm\funciones::spawn_double_points);
+    add_to_registry("p_fire", "Fire Sale", "Fire Sale", scripts\zm\funciones::spawn_fire_sale);
+    add_to_registry("p_nuke", "Bomba Nuclear", "Nuke", scripts\zm\funciones::spawn_nuke);
+    add_to_registry("p_blood", "Sangre Zombie", "Zombie Blood", scripts\zm\funciones::spawn_zombie_blood);
+    
+    
+    add_to_registry("clone", "Clonar Jugador", "Clone Player", scripts\zm\funciones::clone_player);
+    add_to_registry("gore", "Modo Gore", "Gore Mode", scripts\zm\funciones::toggle_gore_mode);
+    add_to_registry("doors", "Abrir Puertas", "Open Doors", scripts\zm\funciones::open_all_doors);
+    add_to_registry("kami", "Kamikaze", "Kamikaze", scripts\zm\funciones::do_kamikaze);
+    add_to_registry("forge", "Modo Forge", "Forge Mode", scripts\zm\funciones::toggle_forge_mode);
+    add_to_registry("jetpack", "Jetpack", "Jetpack", scripts\zm\funciones::toggle_jetpack);
+    
+    
+    add_to_registry("perk_jug", "Juggernog", "Juggernog", ::give_perk_jugger_menu);
+    add_to_registry("perk_speed", "Speed Cola", "Speed Cola", ::give_perk_speed_menu);
+    add_to_registry("perk_dt", "Double Tap", "Double Tap", ::give_perk_doubletap_menu);
+    add_to_registry("perk_rev", "Quick Revive", "Quick Revive", ::give_perk_revive_menu);
+    add_to_registry("perk_stamin", "Stamin-Up", "Stamin-Up", ::give_perk_staminup_menu);
+    add_to_registry("perk_mule", "Mule Kick", "Mule Kick", ::give_perk_mule_menu);
+    add_to_registry("perk_cherry", "Electric Cherry", "Electric Cherry", ::give_perk_cherry_menu);
+    add_to_registry("perk_dead", "Deadshot", "Deadshot", ::give_perk_deadshot_menu);
+    add_to_registry("perk_phd", "PhD Flopper", "PhD Flopper", ::give_perk_phd_menu);
+    add_to_registry("perk_vultra", "Vulture Aid", "Vulture Aid", ::give_perk_vulture_menu);
+    add_to_registry("perk_tomb", "Tombstone", "Tombstone", ::give_perk_tombstone_menu);
+    add_to_registry("perk_who", "Who's Who", "Who's Who", ::give_perk_whoswho_menu);
+    add_to_registry("perk_all", "Todos los Perks", "All Perks", ::give_all_perks_menu);
+    
+    
+    add_to_registry("staff_fire", "Bastón Fuego", "Fire Staff", ::give_staff_fire);
+    add_to_registry("staff_ice", "Bastón Hielo", "Ice Staff", ::give_staff_ice);
+    add_to_registry("staff_wind", "Bastón Viento", "Wind Staff", ::give_staff_wind);
+    add_to_registry("staff_lite", "Bastón Rayo", "Lightning Staff", ::give_staff_lightning);
+    add_to_registry("staff_upg", "Mejorar Bastón", "Upgrade Staff", ::upgrade_current_staff);
+}
+
+add_to_registry(key, name_es, name_en, func)
+{
+    struct = spawnStruct();
+    struct.name_es = name_es;
+    struct.name_en = name_en;
+    struct.func = func;
+    level.func_registry[key] = struct;
+}
+
+open_custom_dev_categories_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "MIS CATEGORÍAS" : "MY CATEGORIES";
+    menu = create_menu(title, self);
+    menu.parent_menu = "developer";
+    
+    
+    categories = scripts\zm\sqllocal::load_custom_dev_categories(self);
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "^2+ Crear Categoría" : "^2+ Create Category", ::prompt_create_custom_dev_category);
+    
+    if (categories.size > 0)
+    {
+        add_menu_item(menu, "----------------------", ::do_nothing);
+        foreach (cat in categories)
+        {
+            add_menu_item(menu, "^5[CAT] ^7" + cat, ::open_custom_dev_submenu, cat);
+        }
+    }
+    else
+    {
+        add_menu_item(menu, (self.langLEN == 0) ? "^1Sin categorías" : "^1No categories", ::do_nothing);
+    }
+    
+    add_menu_item(menu, "----------------------", ::do_nothing);
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::menu_go_back);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+prompt_create_custom_dev_category()
+{
+    self endon("disconnect");
+    self thread close_all_menus();
+    
+    if (self.langLEN == 0)
+        self iPrintLnBold("Escribe el nombre de la categoría en el chat");
+    else
+        self iPrintLnBold("Type the category name in chat");
+        
+    self.is_typing_dev_cat = true;
+    self thread watch_dev_cat_chat();
+}
+
+watch_dev_cat_chat()
+{
+    self endon("disconnect");
+    self endon("stop_typing_dev_cat");
+    
+    while (isDefined(self.is_typing_dev_cat) && self.is_typing_dev_cat)
+    {
+        level waittill("say", message, player);
+        
+        if (player != self)
+            continue;
+            
+        if (!isDefined(message) || message == "")
+            continue;
+            
+        
+        message = trim_string(message);
+        if (message == "")
+            continue;
+            
+        success = scripts\zm\sqllocal::save_custom_dev_category(self, message);
+        
+        if (success)
+        {
+            if (self.langLEN == 0) self iPrintLnBold("^2Categoría '" + message + "' creada");
+            else self iPrintLnBold("^2Category '" + message + "' created");
+        }
+        else
+        {
+            if (self.langLEN == 0) self iPrintLnBold("^1Error: Categoría ya existe o fallo al guardar");
+            else self iPrintLnBold("^1Error: Category already exists or save failed");
+        }
+        
+        self.is_typing_dev_cat = false;
+        wait 0.5;
+        self thread open_custom_dev_categories_menu();
+        return;
+    }
+}
+
+open_custom_dev_submenu(category)
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    
+    self.adding_to_cat = undefined;
+    
+    title = "^5" + category;
+    menu = create_menu(title, self);
+    menu.parent_menu = "custom_dev_categories";
+    
+    items = scripts\zm\sqllocal::load_custom_dev_items(self, category);
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "^2+ Agregar Opción" : "^2+ Add Option", ::start_navigation_selection, category);
+    
+    if (items.size > 0)
+    {
+        add_menu_item(menu, "----------------------", ::do_nothing);
+        foreach (key in items)
+        {
+            reg = level.func_registry[key];
+            if (isDefined(reg))
+            {
+                name = (self.langLEN == 0) ? reg.name_es : reg.name_en;
+                add_menu_item(menu, name, reg.func);
+            }
+            else if (isSubStr(key, "WPN|"))
+            {
+                weapon_name = getSubStr(key, 4);
+                display_name = get_weapon_display_name(weapon_name);
+                add_menu_item(menu, display_name, ::give_specific_weapon_menu, weapon_name);
+            }
+        }
+    }
+    
+    add_menu_item(menu, "----------------------", ::do_nothing);
+    add_menu_item(menu, (self.langLEN == 0) ? "^1Eliminar Items" : "^1Delete Items", ::open_delete_items_submenu, category);
+    add_menu_item(menu, (self.langLEN == 0) ? "^1Eliminar Categoría" : "^1Delete Category", ::delete_custom_dev_category, category);
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_custom_dev_categories_menu);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+add_item_to_custom_category(category, key)
+{
+    success = scripts\zm\sqllocal::save_custom_dev_item(self, category, key);
+    
+    if (success)
+    {
+        if (self.langLEN == 0) self iPrintLnBold("^2Opción agregada");
+        else self iPrintLnBold("^2Option added");
+    }
+    else
+    {
+        if (self.langLEN == 0) self iPrintLnBold("^1Opción ya está en la categoría");
+        else self iPrintLnBold("^1Option already in category");
+    }
+    
+    wait 0.2;
+    self thread open_custom_dev_submenu(category);
+}
+
+open_delete_items_submenu(category)
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "ELIMINAR DE " + category : "DELETE FROM " + category;
+    menu = create_menu(title, self);
+    menu.parent_menu = "custom_dev_submenu_" + category;
+    
+    items = scripts\zm\sqllocal::load_custom_dev_items(self, category);
+    
+    if (items.size > 0)
+    {
+        foreach (key in items)
+        {
+            reg = level.func_registry[key];
+            if (isDefined(reg))
+            {
+                name = (self.langLEN == 0) ? reg.name_es : reg.name_en;
+                add_menu_item(menu, "^1[DEL] ^7" + name, ::delete_item_from_custom_category, category, key);
+            }
+        }
+    }
+    else
+    {
+        add_menu_item(menu, (self.langLEN == 0) ? "^1Sin items" : "^1No items", ::do_nothing);
+    }
+    
+    add_menu_item(menu, "----------------------", ::do_nothing);
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_custom_dev_submenu, category);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+delete_item_from_custom_category(category, key)
+{
+    scripts\zm\sqllocal::remove_custom_dev_item_persistent(self, category, key);
+    if (self.langLEN == 0) self iPrintLnBold("^1Opción eliminada");
+    else self iPrintLnBold("^1Option deleted");
+    
+    wait 0.2;
+    self thread open_delete_items_submenu(category);
+}
+
+delete_custom_dev_category(category)
+{
+    scripts\zm\sqllocal::delete_custom_dev_category_persistent(self, category);
+    if (self.langLEN == 0) self iPrintLnBold("^1Categoría eliminada");
+    else self iPrintLnBold("^1Category deleted");
+    
+    wait 0.2;
+    self thread open_custom_dev_categories_menu();
+}
+
+get_registry_key_by_func(func)
+{
+    keys = getArrayKeys(level.func_registry);
+    foreach (key in keys)
+    {
+        if (level.func_registry[key].func == func)
+            return key;
+    }
+    return undefined;
+}
+
+start_navigation_selection(category)
+{
+    self.adding_to_cat = category;
+    
+    if (self.langLEN == 0)
+        self iPrintLnBold("^3Modo Selección: ^7Navega y selecciona la opción");
+    else
+        self iPrintLnBold("^3Selection Mode: ^7Navigate and select the option");
+        
+    self thread open_developer_menu();
+}
+
+add_item_to_custom_category_from_nav(category, key)
+{
+    
+    if (key == "give_weapon")
+    {
+        if (isDefined(self.menu_current) && isDefined(self.menu_current.items[self.menu_current.selected]))
+        {
+            weapon_name = self.menu_current.items[self.menu_current.selected].weapon_name;
+            if (isDefined(weapon_name))
+            {
+                key = "WPN|" + weapon_name;
+            }
+        }
+    }
+    
+    success = scripts\zm\sqllocal::save_custom_dev_item(self, category, key);
+    
+    if (success)
+    {
+        if (self.langLEN == 0) self iPrintLnBold("^2Opción agregada a ^7" + category);
+        else self iPrintLnBold("^2Option added to ^7" + category);
+    }
+    
+    self.adding_to_cat = undefined;
+    wait 0.5;
+    self thread open_custom_dev_submenu(category);
+}
+
+cancel_nav_selection()
+{
+    category = self.adding_to_cat;
+    self.adding_to_cat = undefined;
+    
+    if (isDefined(category))
+        self thread open_custom_dev_submenu(category);
+    else
+        self thread open_developer_menu();
+}
+
+open_startup_profile_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "SELECCIÓN DE PERFIL" : "PROFILE SELECTION";
+    menu = create_menu(title, self);
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Cargar Default" : "Load Default", ::load_default_startup);
+    add_menu_item(menu, (self.langLEN == 0) ? "Cargar Perfil..." : "Load Profile...", ::open_load_profiles_menu);
+    add_menu_item(menu, (self.langLEN == 0) ? "Continuar sin Cargar" : "Continue without Loading", ::open_main_menu, true);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+load_default_startup()
+{
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    scripts\zm\sqllocal::load_menu_config(self);
+    if (self.langLEN == 0) self iPrintLnBold("^2Configuración Default cargada");
+    else self iPrintLnBold("^2Default configuration loaded");
+    
+    
+    if (isDefined(self.menu_style_index) && isDefined(level.apply_menu_style_func))
+        self thread [[level.apply_menu_style_func]](self.menu_style_index);
+        
+    self thread open_main_menu(true);
+}
+
+open_manage_profiles_menu(from_account)
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    
+    if (isDefined(from_account) && from_account)
+    {
+        self thread open_load_profiles_menu_from_account();
+        return;
+    }
+    
+    title = (self.langLEN == 0) ? "GESTIONAR PERFILES" : "MANAGE PROFILES";
+    menu = create_menu(title, self);
+    menu.parent_menu = "settings";
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Cargar Perfil" : "Load Profile", ::open_load_profiles_menu);
+    add_menu_item(menu, (self.langLEN == 0) ? "Eliminar Perfil" : "Delete Profile", ::open_delete_profile_menu);
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_settings_menu, true);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+open_load_profiles_menu_from_account()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "^3[SEL] ^7CARGAR PERFIL" : "^3[SEL] ^7LOAD PROFILE";
+    menu = create_menu(title, self);
+    menu.parent_menu = "account";
+    
+    profiles = scripts\zm\sqllocal::get_player_profiles(self);
+    
+    if (profiles.size > 0)
+    {
+        foreach (p in profiles)
+        {
+            add_menu_item(menu, p, ::load_profile_action, p);
+        }
+    }
+    else
+    {
+        add_menu_item(menu, (self.langLEN == 0) ? "Sin perfiles" : "No profiles", ::do_nothing);
+    }
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::menu_go_back);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+open_load_profiles_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "CARGAR PERFIL" : "LOAD PROFILE";
+    menu = create_menu(title, self);
+    
+    
+    if (isDefined(self.profile_prompted) && self.profile_prompted)
+        menu.parent_menu = "manage_profiles";
+    else
+        menu.parent_menu = "startup_profile";
+    
+    profiles = scripts\zm\sqllocal::get_player_profiles(self);
+    
+    if (profiles.size > 0)
+    {
+        foreach (p in profiles)
+        {
+            add_menu_item(menu, p, ::load_profile_action, p);
+        }
+    }
+    else
+    {
+        add_menu_item(menu, (self.langLEN == 0) ? "Sin perfiles" : "No profiles", ::do_nothing);
+    }
+    
+    if (menu.parent_menu == "startup_profile")
+        add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_startup_profile_menu);
+    else
+        add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_manage_profiles_menu);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+load_profile_action(profile_name)
+{
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    success = scripts\zm\sqllocal::load_menu_profile(self, profile_name);
+    if (success)
+    {
+        
+        self.current_profile_name = profile_name;
+        
+        if (self.langLEN == 0) self iPrintLnBold("^2Perfil '" + profile_name + "' cargado");
+        else self iPrintLnBold("^2Profile '" + profile_name + "' loaded");
+        
+        
+        if (isDefined(self.menu_style_index) && isDefined(level.apply_menu_style_func))
+            self thread [[level.apply_menu_style_func]](self.menu_style_index);
+    }
+    wait 0.5;
+    self thread open_main_menu(true);
+}
+
+open_delete_profile_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "ELIMINAR PERFIL" : "DELETE PROFILE";
+    menu = create_menu(title, self);
+    menu.parent_menu = "manage_profiles";
+    
+    profiles = scripts\zm\sqllocal::get_player_profiles(self);
+    
+    if (profiles.size > 0)
+    {
+        foreach (p in profiles)
+        {
+            add_menu_item(menu, "^1[ELIMINAR] ^7" + p, ::delete_profile_action, p);
+        }
+    }
+    else
+    {
+        add_menu_item(menu, (self.langLEN == 0) ? "Sin perfiles" : "No profiles", ::do_nothing);
+    }
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_manage_profiles_menu);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+delete_profile_action(profile_name)
+{
+    success = scripts\zm\sqllocal::delete_menu_profile(self, profile_name);
+    if (success)
+    {
+        if (self.langLEN == 0) self iPrintLnBold("^1Perfil '" + profile_name + "' eliminado");
+        else self iPrintLnBold("^1Profile '" + profile_name + "' deleted");
+    }
+    wait 0.5;
+    self thread open_delete_profile_menu();
+}
+
+
+
+
+
+
+open_match_profiles_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = "CONFIG.GODS";
+    menu = create_menu(title, self);
+    menu.parent_menu = "developer";
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Crear Nueva Config." : "Create New Match Config.", ::prompt_create_match_config);
+    add_menu_item(menu, (self.langLEN == 0) ? "Gestionar Configs." : "Manage Match Configs.", ::open_load_match_configs_menu);
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::menu_go_back);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+prompt_create_match_config()
+{
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    if (self.langLEN == 0) self iPrintLnBold("Escribe el nombre de la configuración en el chat");
+    else self iPrintLnBold("Type the name of the match config in chat");
+    
+    self.is_typing_match_cfg = true;
+    self thread watch_match_config_name_chat();
+}
+
+watch_match_config_name_chat()
+{
+    self endon("disconnect");
+    self endon("stop_typing_match_cfg");
+    
+    while (isDefined(self.is_typing_match_cfg) && self.is_typing_match_cfg)
+    {
+        level waittill("say", message, player);
+        if (player != self) continue;
+        if (!isDefined(message) || message == "") continue;
+        
+        message = scripts\zm\sqllocal::trim_string(message);
+        if (message == "") continue;
+        
+        success = scripts\zm\sqllocal::save_match_config(self, message);
+        if (success)
+        {
+            if (self.langLEN == 0) self iPrintLnBold("^2Config. '" + message + "' creada");
+            else self iPrintLnBold("^2Match Config. '" + message + "' created");
+        }
+        
+        self.is_typing_match_cfg = false;
+        wait 0.5;
+        self thread open_match_config_editor(message);
+        return;
+    }
+}
+
+open_load_match_configs_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "CARGAR CONFIG." : "LOAD CONFIG.";
+    menu = create_menu(title, self);
+    menu.parent_menu = "match_profiles";
+    
+    configs = scripts\zm\sqllocal::get_player_match_configs(self);
+    if (configs.size == 0)
+    {
+        add_menu_item(menu, (self.langLEN == 0) ? "Sin Configuraciones" : "No Match Configurations", ::open_match_profiles_menu);
+    }
+    else
+    {
+        foreach (cfg in configs)
+        {
+            if (cfg != "")
+            {
+                display_name = cfg;
+                if (isDefined(self.current_match_config_name) && self.current_match_config_name == cfg)
+                {
+                    display_name = "^2[SELEC] ^7" + display_name;
+                }
+                add_menu_item(menu, display_name, ::open_match_config_editor, cfg);
+            }
+        }
+    }
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Eliminar alguna..." : "Delete configuration...", ::open_delete_match_config_menu);
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::menu_go_back);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+open_match_config_editor(config_name, skip_load)
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.2; 
+    
+    
+    if (!isDefined(skip_load) || !skip_load)
+    {
+        scripts\zm\sqllocal::load_match_config(self, config_name, false); 
+        
+        
+        if (isDefined(self.temp_config))
+            self.temp_config.config_name_ref = config_name;
+    }
+    
+    
+    t = self.temp_config; 
+    if (!isDefined(t)) 
+    {
+        t = spawnStruct();
+        t.maxhealth = self.maxhealth;
+        t.score = self.score;
+        t.box_cost = self.box_cost;
+        t.start_weapon = self.start_weapon;
+        t.start_perks = self.start_perks;
+    }
+    
+    title = "EDITOR: " + config_name;
+    menu = create_menu(title, self);
+    menu.parent_menu = "match_load";
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Vida Máxima: " + t.maxhealth : "Max Health: " + t.maxhealth, ::prompt_match_config_numeric, config_name, "max_health", t.maxhealth);
+    add_menu_item(menu, (self.langLEN == 0) ? "Puntos Iniciales: " + t.score : "Starting Score: " + t.score, ::prompt_match_config_numeric, config_name, "starting_score", t.score);
+    add_menu_item(menu, (self.langLEN == 0) ? "Costo Caja: " + t.box_cost : "Box Cost: " + t.box_cost, ::prompt_match_config_numeric, config_name, "box_cost", t.box_cost);
+    
+    
+    weapon_display = (isDefined(t.start_weapon)) ? get_weapon_display_name(t.start_weapon) : "Default";
+    if (isDefined(t.start_weapon) && isDefined(t.start_weapon_upgraded) && t.start_weapon_upgraded)
+        weapon_display += " (UP)";
+        
+    add_menu_item(menu, (self.langLEN == 0) ? "Arma Inicial: " + weapon_display : "Start Weapon: " + weapon_display, ::select_match_start_weapon, config_name);
+    
+    
+    perks_count = 0;
+    if (isDefined(t.start_perks) && t.start_perks != "")
+    {
+        perks_count = strTok(t.start_perks, ",").size;
+    }
+    
+    perks_status = (perks_count > 0) ? "(" + perks_count + ")" : "None";
+    add_menu_item(menu, (self.langLEN == 0) ? "Ventajas Iniciales: " + perks_status : "Start Perks: " + perks_status, ::open_match_config_perks_menu, config_name);
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "^2GUARDAR CAMBIOS" : "^2SAVE CHANGES", ::save_match_config_action, config_name);
+    add_menu_item(menu, (self.langLEN == 0) ? "^3APLICAR CONFIGURACIÓN" : "^3APPLY CONFIGURATION", ::apply_match_config_action, config_name);
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_load_match_configs_menu);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+
+
+apply_match_config_action(config_name)
+{
+    scripts\zm\sqllocal::apply_match_config_from_temp(self);
+    
+    if (self.langLEN == 0) self iPrintLnBold("^2Configuración Aplicada");
+    else self iPrintLnBold("^2Configuration Applied");
+    
+    self thread open_match_config_editor(config_name, true);
+}
+
+prompt_match_config_numeric(config_name, setting, current_val)
+{
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    if (self.langLEN == 0) self iPrintLnBold("Escribe el valor para '" + setting + "' (Actual: " + current_val + ")");
+    else self iPrintLnBold("Type value for '" + setting + "' (Current: " + current_val + ")");
+    
+    self.is_typing_numeric = true;
+    self thread watch_match_config_numeric_chat(config_name, setting);
+}
+
+watch_match_config_numeric_chat(config_name, key)
+{
+    self endon("disconnect");
+    self endon("stop_typing_numeric");
+    
+    while (isDefined(self.is_typing_numeric) && self.is_typing_numeric)
+    {
+        level waittill("say", message, player);
+        if (player != self) continue;
+        if (!isDefined(message) || message == "") continue;
+        
+        message = scripts\zm\sqllocal::trim_string(message);
+        val = int(message);
+        
+        
+        if (!isDefined(self.temp_config)) self.temp_config = spawnStruct();
+        t = self.temp_config;
+        
+        if (key == "max_health") t.maxhealth = val;
+        else if (key == "starting_score") t.score = val;
+        else if (key == "box_cost") t.box_cost = val;
+        else if (key == "wunderfizz_cost") t.wunderfizz_cost = val; 
+        
+        self.is_typing_numeric = false;
+        wait 0.5;
+        
+        self thread open_match_config_editor(config_name, true);
+        return;
+    }
+}
+
+save_match_config_action(config_name)
+{
+    
+    
+    
+    
+    success = scripts\zm\sqllocal::save_match_config_from_temp(self, config_name);
+    if (success)
+    {
+        if (self.langLEN == 0) self iPrintLnBold("^2Cambios guardados en archivo (No aplicados)");
+        else self iPrintLnBold("^2Changes saved to file (Not applied)");
+    }
+    self thread open_match_config_editor(config_name, true);
+}
+
+
+
+delete_match_config_action(config_name)
+{
+    success = scripts\zm\sqllocal::delete_match_config(self, config_name);
+    if (success)
+    {
+        if (self.langLEN == 0) self iPrintLnBold("^1Config. '" + config_name + "' eliminada");
+        else self iPrintLnBold("^1Match Config. '" + config_name + "' deleted");
+    }
+    wait 0.5;
+    
+    
+    configs = scripts\zm\sqllocal::get_player_match_configs(self);
+    if (configs.size > 0)
+    {
+        self thread open_delete_match_config_menu();
+    }
+    else
+    {
+        if (self.langLEN == 0) self iPrintLnBold("^3No quedan configuraciones, redirigiendo a crear...");
+        else self iPrintLnBold("^3No configurations left, redirecting to create...");
+        wait 1;
+        self thread open_match_profiles_menu(); 
+    }
+}
+
+open_startup_match_config_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "CONFIG. DE PARTIDA" : "MATCH CONFIGURATION";
+    menu = create_menu(title, self);
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Cargar Configuración..." : "Load Configuration...", ::open_load_match_configs_startup_menu);
+    add_menu_item(menu, (self.langLEN == 0) ? "Saltar" : "Skip", ::skip_match_config_startup);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+open_load_match_configs_startup_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "CARGAR CONFIG." : "LOAD CONFIG.";
+    menu = create_menu(title, self);
+    menu.parent_menu = "match_startup";
+    
+    configs = scripts\zm\sqllocal::get_player_match_configs(self);
+    if (configs.size > 0)
+    {
+        foreach (cfg in configs)
+        {
+            if (cfg != "")
+                add_menu_item(menu, cfg, ::load_match_config_startup_action, cfg);
+        }
+    }
+    else
+    {
+        add_menu_item(menu, (self.langLEN == 0) ? "^1Sin configuraciones" : "^1No configurations", ::do_nothing);
+    }
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_startup_match_config_menu);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+load_match_config_startup_action(config_name)
+{
+    success = scripts\zm\sqllocal::load_match_config(self, config_name);
+    if (success)
+    {
+        if (self.langLEN == 0) self iPrintLnBold("^2Config. '" + config_name + "' cargada");
+        else self iPrintLnBold("^2Match Config. '" + config_name + "' loaded");
+    }
+    
+    self.match_config_prompted = true;
+    self thread open_main_menu(false);
+}
+
+skip_match_config_startup()
+{
+    self.match_config_prompted = true;
+    self thread open_main_menu(false);
+}
+
+open_delete_match_config_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "ELIMINAR CONFIG." : "DELETE CONFIG.";
+    menu = create_menu(title, self);
+    menu.parent_menu = "match_load";
+    
+    configs = scripts\zm\sqllocal::get_player_match_configs(self);
+    foreach (cfg in configs)
+    {
+        if (cfg != "")
+            add_menu_item(menu, cfg, ::delete_match_config_action, cfg);
+    }
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_load_match_configs_menu);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+open_account_menu()
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "DATOS DE CUENTA" : "ACCOUNT DATA";
+    menu = create_menu(title, self);
+    menu.parent_menu = "main";
+    
+    
+    name = isDefined(self.name) ? self.name : "Unknown";
+    guid = self getGuid();
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Nombre: " + name : "Name: " + name, ::do_nothing);
+    add_menu_item(menu, (self.langLEN == 0) ? "GUID: " + guid : "GUID: " + guid, ::do_nothing);
+    
+    add_menu_item(menu, "----------------------", ::do_nothing);
+    
+    
+    bank_value = 0;
+    if (isDefined(level.bank_account_value))
+        bank_value = level.bank_account_value;
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "^3Banco: ^7" + bank_value : "^3Bank: ^7" + bank_value, ::do_nothing);
+    
+    
+    current_profile = (self.langLEN == 0) ? "Ninguno" : "None";
+    if (isDefined(self.current_profile_name) && self.current_profile_name != "")
+        current_profile = "^2" + self.current_profile_name;
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Profile Activo: " + current_profile : "Active Profile: " + current_profile, ::do_nothing);
+    
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "^5Cambiar Profile..." : "^5Switch Profile...", ::open_manage_profiles_menu, true);
+    
+    add_menu_item(menu, "----------------------", ::do_nothing);
+    
+    
+    lang = (self.langLEN == 0) ? "Español" : "English";
+    add_menu_item(menu, (self.langLEN == 0) ? "Idioma: " + lang : "Language: " + lang, ::toggle_language, "account");
+    
+    add_menu_item(menu, "----------------------", ::do_nothing);
+    
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Ajustes Developer..." : "Developer Settings...", ::open_developer_settings_menu);
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::menu_go_back);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+open_developer_settings_menu()
+{
+    self endon("disconnect");
+    
+    
+    
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "AJUSTES DEV" : "DEV SETTINGS";
+    menu = create_menu(title, self);
+    menu.parent_menu = "account";
+    
+    
+    current_pass = isDefined(self.dev_password) ? self.dev_password : "admin";
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Pass Actual: " + current_pass : "Current Pass: " + current_pass, ::do_nothing);
+    add_menu_item(menu, (self.langLEN == 0) ? "Cambiar Contraseña" : "Change Password", ::prompt_change_dev_password);
+    
+    if (isDefined(self.dev_password) && self.dev_password != "admin")
+    {
+        add_menu_item(menu, (self.langLEN == 0) ? "^1Deshabilitar Pass" : "^1Disable Pass", ::disable_dev_password_action);
+    }
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Volver" : "Back", ::open_account_menu);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+prompt_change_dev_password()
+{
+    self endon("disconnect");
+    self thread close_all_menus();
+    
+    if (self.langLEN == 0) self iPrintLnBold("Escribe la ^2Nueva ^7contraseña en el chat");
+    else self iPrintLnBold("Type the ^2New ^7password in chat");
+    
+    self.is_changing_dev_pass = true;
+    self.dev_pass_step = 1; 
+}
+
+disable_dev_password_action()
+{
+    self.dev_password = "admin";
+    
+    filename = undefined;
+    if (isDefined(self.current_profile_name) && self.current_profile_name != "")
+        filename = "scriptdata/profiles/" + self getGuid() + "/" + self.current_profile_name + ".txt";
+        
+    scripts\zm\sqllocal::save_menu_config(self, filename, true); 
+    
+    if (self.langLEN == 0) self iPrintLnBold("^2Seguridad deshabilitada");
+    else self iPrintLnBold("^2Security disabled");
+    
+    self thread open_developer_settings_menu();
+}
+
+watch_dev_password_chat(message)
+{
+    self endon("disconnect");
+    
+    if (!isDefined(self.is_changing_dev_pass) || !self.is_changing_dev_pass)
+        return;
+        
+    msg = scripts\zm\sqllocal::trim_string(message);
+    
+    if (msg == "" || msg == "!cancel")
+    {
+        self.is_changing_dev_pass = false;
+        if (self.langLEN == 0) self iPrintLnBold("^1Cancelado");
+        else self iPrintLnBold("^1Cancelled");
+        wait 0.5;
+        self thread open_developer_settings_menu();
+        return;
+    }
+    
+    if (self.dev_pass_step == 1)
+    {
+        self.temp_dev_pass = msg;
+        self.dev_pass_step = 2;
+        
+        if (self.langLEN == 0) self iPrintLnBold("Escribe la contraseña ^2Nuevamente ^7para confirmar");
+        else self iPrintLnBold("Type the password ^2Again ^7to confirm");
+    }
+    else if (self.dev_pass_step == 2)
+    {
+        if (msg == self.temp_dev_pass)
+        {
+            self.dev_password = msg;
+            self.is_changing_dev_pass = false;
+            self.developer_mode_unlocked = false; 
+            
+            filename = undefined;
+            if (isDefined(self.current_profile_name) && self.current_profile_name != "")
+                filename = "scriptdata/profiles/" + self getGuid() + "/" + self.current_profile_name + ".txt";
+                
+            scripts\zm\sqllocal::save_menu_config(self, filename, true);
+            
+            if (self.langLEN == 0) self iPrintLnBold("^2Contraseña actualizada. ^7Escríbela de nuevo para entrar.");
+            else self iPrintLnBold("^2Password updated. ^7Type it again to enter.");
+            
+            wait 0.5;
+            self thread open_account_menu(); 
+        }
+        else
+        {
+            self.is_changing_dev_pass = false;
+            if (self.langLEN == 0) self iPrintLnBold("^1Las contraseñas no coinciden. Reintenta.");
+            else self iPrintLnBold("^1Passwords do not match. Try again.");
+            
+            wait 0.5;
+            self thread open_developer_settings_menu();
+        }
+    }
+}
+
+select_match_start_weapon(config_name)
+{
+    self.selecting_match_start_weapon = true;
+    self.match_config_editing_name = config_name;
+    
+    if (self.langLEN == 0) self iPrintLnBold("^2Selecciona el arma en el menú...");
+    else self iPrintLnBold("^2Select weapon from menu...");
+    
+    self thread open_weapons_menu();
+}
+
+prompt_match_start_weapon_upgrade(config_name, weapon_name)
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+    
+    title = (self.langLEN == 0) ? "¿MEJORADA?" : "UPGRADED?";
+    menu = create_menu(title, self);
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Si" : "Yes", ::select_match_start_weapon_camo, config_name, weapon_name, true);
+    add_menu_item(menu, (self.langLEN == 0) ? "No" : "No", ::select_match_start_weapon_camo, config_name, weapon_name, false);
+    
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+select_match_start_weapon_camo(config_name, weapon_name, upgraded)
+{
+    self.selecting_match_start_weapon_camo = true;
+    self.temp_config_name = config_name;
+    self.temp_config_weapon = weapon_name;
+    self.temp_config_upgraded = upgraded;
+    
+    if (self.langLEN == 0) self iPrintLnBold("^2Selecciona el Camuflaje...");
+    else self iPrintLnBold("^2Select Camouflage...");
+    
+    self thread open_camo_menu();
+}
+
+match_config_set_weapon_final(camo_index)
+{
+    config_name = self.temp_config_name;
+    
+    
+    if (!isDefined(self.temp_config)) self.temp_config = spawnStruct();
+    self.temp_config.start_weapon = self.temp_config_weapon;
+    self.temp_config.start_weapon_upgraded = self.temp_config_upgraded;
+    self.temp_config.start_weapon_camo = camo_index;
+    
+    
+    self.temp_config_name = undefined;
+    self.temp_config_weapon = undefined;
+    self.temp_config_upgraded = undefined;
+    
+    if (self.langLEN == 0) self iPrintLnBold("^2Arma establecida");
+    else self iPrintLnBold("^2Weapon set");
+    
+    self thread open_match_config_editor(config_name, true); 
+}
+
+open_match_config_perks_menu(config_name)
+{
+    self endon("disconnect");
+    self notify("destroy_current_menu");
+    wait 0.1;
+
+    title = (self.langLEN == 0) ? "VENTAJAS INICIALES" : "STARTING PERKS";
+    menu = create_menu(title, self);
+    menu.match_config_name = config_name;
+    
+    
+    active_perks = [];
+    t = self.temp_config;
+    if (isDefined(t) && isDefined(t.start_perks) && t.start_perks != "")
+    {
+        current_list = strTok(t.start_perks, ",");
+        foreach(perk in current_list)
+            active_perks[perk] = true;
+    }
+    
+    
+    perk_defs = [];
+    perk_defs[0] = spawnStruct(); perk_defs[0].key = "specialty_armorvest"; perk_defs[0].name = "Juggernog"; perk_defs[0].check = "level.zombiemode_using_juggernaut_perk";
+    perk_defs[1] = spawnStruct(); perk_defs[1].key = "specialty_fastreload"; perk_defs[1].name = "Speed Cola"; perk_defs[1].check = "level.zombiemode_using_sleightofhand_perk";
+    perk_defs[2] = spawnStruct(); perk_defs[2].key = "specialty_quickrevive"; perk_defs[2].name = "Quick Revive"; perk_defs[2].check = "level.zombiemode_using_revive_perk";
+    perk_defs[3] = spawnStruct(); perk_defs[3].key = "specialty_rof"; perk_defs[3].name = "Double Tap"; perk_defs[3].check = "level.zombiemode_using_doubletap_perk";
+    perk_defs[4] = spawnStruct(); perk_defs[4].key = "specialty_longersprint"; perk_defs[4].name = "Stamin-Up"; perk_defs[4].check = "level.zombiemode_using_marathon_perk";
+    perk_defs[5] = spawnStruct(); perk_defs[5].key = "specialty_flakjacket"; perk_defs[5].name = "PhD Flopper"; perk_defs[5].check = "level._custom_perks['specialty_flakjacket']"; 
+    perk_defs[6] = spawnStruct(); perk_defs[6].key = "specialty_additionalprimaryweapon"; perk_defs[6].name = "Mule Kick"; perk_defs[6].check = "level.zombiemode_using_additionalprimaryweapon_perk";
+    perk_defs[7] = spawnStruct(); perk_defs[7].key = "specialty_deadshot"; perk_defs[7].name = "Deadshot"; perk_defs[7].check = "level.zombiemode_using_deadshot_perk";
+    perk_defs[8] = spawnStruct(); perk_defs[8].key = "specialty_grenadepulldeath"; perk_defs[8].name = "Electric Cherry"; perk_defs[8].check = "level._custom_perks['specialty_grenadepulldeath']";
+    perk_defs[9] = spawnStruct(); perk_defs[9].key = "specialty_scavenger"; perk_defs[9].name = "Tombstone"; perk_defs[9].check = "level.zombiemode_using_tombstone_perk";
+    perk_defs[10] = spawnStruct(); perk_defs[10].key = "specialty_finalstand"; perk_defs[10].name = "Who's Who"; perk_defs[10].check = "level.zombiemode_using_chugabud_perk";
+    perk_defs[11] = spawnStruct(); perk_defs[11].key = "specialty_nomotionsensor"; perk_defs[11].name = "Vulture Aid"; perk_defs[11].check = "level._custom_perks['specialty_nomotionsensor']";
+    
+    foreach(def in perk_defs)
+    {
+        is_available = false;
+        
+        
+        if (def.key == "specialty_armorvest") is_available = (isDefined(level.zombiemode_using_juggernaut_perk) && level.zombiemode_using_juggernaut_perk);
+        else if (def.key == "specialty_fastreload") is_available = (isDefined(level.zombiemode_using_sleightofhand_perk) && level.zombiemode_using_sleightofhand_perk);
+        else if (def.key == "specialty_quickrevive") is_available = (isDefined(level.zombiemode_using_revive_perk) && level.zombiemode_using_revive_perk);
+        else if (def.key == "specialty_rof") is_available = (isDefined(level.zombiemode_using_doubletap_perk) && level.zombiemode_using_doubletap_perk);
+        else if (def.key == "specialty_longersprint") is_available = (isDefined(level.zombiemode_using_marathon_perk) && level.zombiemode_using_marathon_perk);
+        else if (def.key == "specialty_flakjacket") is_available = (isDefined(level._custom_perks) && isDefined(level._custom_perks["specialty_flakjacket"]) && (level.script != "zm_buried"));
+        else if (def.key == "specialty_additionalprimaryweapon") is_available = (isDefined(level.zombiemode_using_additionalprimaryweapon_perk) && level.zombiemode_using_additionalprimaryweapon_perk);
+        else if (def.key == "specialty_deadshot") is_available = (isDefined(level.zombiemode_using_deadshot_perk) && level.zombiemode_using_deadshot_perk);
+        else if (def.key == "specialty_grenadepulldeath") is_available = (isDefined(level._custom_perks) && isDefined(level._custom_perks["specialty_grenadepulldeath"]));
+        else if (def.key == "specialty_scavenger") is_available = (isDefined(level.zombiemode_using_tombstone_perk) && level.zombiemode_using_tombstone_perk);
+        else if (def.key == "specialty_finalstand") is_available = (isDefined(level.zombiemode_using_chugabud_perk) && level.zombiemode_using_chugabud_perk);
+        else if (def.key == "specialty_nomotionsensor") is_available = (isDefined(level._custom_perks) && isDefined(level._custom_perks["specialty_nomotionsensor"]));
+        
+        if (is_available)
+        {
+            status = (isDefined(active_perks[def.key])) ? "^2[ON]" : "^1[OFF]";
+            add_menu_item(menu, def.name + ": " + status, ::toggle_match_config_perk, def.key);
+        }
+    }
+    
+    add_menu_item(menu, (self.langLEN == 0) ? "Marcar Todos" : "Select All", ::select_all_match_config_perks, true);
+    add_menu_item(menu, (self.langLEN == 0) ? "Desmarcar Todos" : "Deselect All", ::select_all_match_config_perks, false);
+    add_menu_item(menu, (self.langLEN == 0) ? "^2CONFIRMAR" : "^2CONFIRM", ::save_match_config_perks, config_name);
+
+    show_menu(menu);
+    self thread menu_control(menu);
+}
+
+toggle_match_config_perk(perk_key)
+{
+    
+    
+    if (!isDefined(self.temp_config)) self.temp_config = spawnStruct();
+    
+    
+    current_perks = [];
+    if (isDefined(self.temp_config.start_perks) && self.temp_config.start_perks != "")
+        current_list = strTok(self.temp_config.start_perks, ",");
+    else
+        current_list = [];
+        
+    found = false;
+    new_string = "";
+    
+    foreach(p in current_list)
+    {
+        if (p == perk_key) found = true; 
+        else new_string = (new_string == "") ? p : (new_string + "," + p);
+    }
+    
+    if (!found) 
+    {
+        new_string = (new_string == "") ? perk_key : (new_string + "," + perk_key);
+    }
+    
+    self.temp_config.start_perks = new_string;
+    
+    
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.match_config_name))
+        self thread open_match_config_perks_menu(self.menu_current.match_config_name);
+}
+
+select_all_match_config_perks(select_state)
+{
+    if (!isDefined(self.temp_config)) self.temp_config = spawnStruct();
+    
+    if (select_state)
+    {
+        
+        
+        self.temp_config.start_perks = "specialty_armorvest,specialty_fastreload,specialty_quickrevive,specialty_rof,specialty_longersprint,specialty_flakjacket,specialty_additionalprimaryweapon,specialty_deadshot,specialty_grenadepulldeath,specialty_scavenger,specialty_finalstand,specialty_nomotionsensor";
+    }
+    else
+    {
+        self.temp_config.start_perks = "";
+    }
+    
+    if (isDefined(self.menu_current) && isDefined(self.menu_current.match_config_name))
+        self thread open_match_config_perks_menu(self.menu_current.match_config_name);
+}
+
+save_match_config_perks(config_name)
+{
+    
+    self thread open_match_config_editor(config_name, true);
+}

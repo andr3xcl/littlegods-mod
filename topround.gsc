@@ -28,7 +28,6 @@ TopRound()
         if (isDefined(player) && isPlayer(player))
         {
             scripts\zm\sqllocal::init_weapon_tracking(player);
-            scripts\zm\sqllocal::init_perks_tracking(player);
         }
     }
     
@@ -55,7 +54,6 @@ monitor_new_players()
         {
             player waittill("spawned_player");
             scripts\zm\sqllocal::init_weapon_tracking(player);
-            scripts\zm\sqllocal::init_perks_tracking(player);
         }
     }
 }

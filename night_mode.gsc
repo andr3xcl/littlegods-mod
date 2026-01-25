@@ -11,11 +11,19 @@ init()
 {
     level endon("game_ended");
     level thread on_player_connect();
-    level thread onPlayerSay();
+
     level thread monitor_end_game(); 
     level thread rotate_skydome();
     level thread change_skydome();
     level thread daynightcycle();
+    if ( level.script == "zm_prison" )
+    {
+        level._callbacks["on_player_connect"][16] = ::player_lightning_manager_override;
+    }
+}
+player_lightning_manager_override()
+{
+    self setclientfieldtoplayer( "toggle_lightning", 0 );
 }
 on_player_connect()
 {
@@ -36,6 +44,7 @@ on_players_spawned()
     
     
     self thread reset_night_mode_on_end();
+    self SetClientDvar("r_filmUseTweaks", 0);
     
     first_spawn = true;
     
@@ -1517,90 +1526,7 @@ toggle_fog_saved()
 	self SetClientDvar("r_fog_disable", "1");
 	self SetClientDvar("r_fogSunOpacity", "0");
 }
-onPlayerSay()
-{
-    level endon("end_game");
-    prefix = "#";
-    for (;;)
-    {
-        level waittill("say", message, player);
-        message = toLower(message);
-        guild_name = player getGuid();
-        if (!level.intermission && message[0] == prefix)
-        {
-            args = strtok(message, " ");
-            command = getSubStr(args[0], 1);
-            switch (command)
-            {
-            case "valuenight":
-            case "vanight":
-                if (isDefined(args[1]))
-                {
-                    if(player.nightfix == 0)
-                    {
-                        player iPrintln("Execute the command #night on");
-                    }
-                    else{
-                        i = Float(args[1]);
-                        if(i >= 4.5 && i <= 10)
-                        {
-                            player iPrintln("The darkness has been adjusted " + i );
-                            player.night_mode_darkness = i;
-                            player apply_night_vision_exposure( i );
-                        }
-                        else
-                        {
-                            player iPrintln("The valid configuration is from 4.5 to 10");
-                        }
-                    }
-                }
-                break;
-            case "filter":
-                if(isDefined(args[1]))
-                {
-                    if(player.nightfix > 0 && player.nightfix <= 1)
-                    {
-                        i = int(args[1]);
-                        if(i >=0 && i <= 35)
-                        {
-                            player thread night_mode_toggle(i);
-                        }
-                        else
-                        {
-                            player iPrintln("Available filters from 0 to 35");
-                        }
-                    }
-                }
-                break;
-            case "night":
-                if(isDefined(args[1]))
-                {
-                    if(args[1] == "d" || args[1] == "disable")
-                    {
-                        player thread disable_night_mode();
-                        self.nightfix = 2;
-                    }
-                    else if(args[1] == "on")
-                    {
 
-                        self.nightfix = 0;
-                        i = 0;
-                        player thread night_mode_toggle(i);
-                        self iPrintln("Night mode activated");
-                    }
-                }
-                break;
-            case "fog":
-                player thread fog();
-                break;
-            case "command":
-                player thread helpcommand();
-                break;
-
-            }
-        }
-    }
-}
 helpcommand()
 {
     if(self.definido_comandos == 1)

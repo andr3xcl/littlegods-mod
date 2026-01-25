@@ -16,7 +16,7 @@ init()
 {
     level endon("end_game");
     level thread on_player_connect();
-    level thread command_bar();
+    
     
 }
 on_player_connect()

@@ -1889,60 +1889,33 @@ ufo_mode_monitor()
         self.ufo_object setModel("tag_origin");
     }
 
-    self.fly_enabled = false;
-    self.last_frag_press = 0; 
+    
+    self playerLinkTo(self.ufo_object);
+    self.fly_enabled = true;
+
+    
+    if(!self.godmode_enabled && !isDefined(self.ufo_godmode_activated))
+    {
+        self enableInvulnerability();
+        self.ufo_godmode_activated = true; 
+    }
+
+    if(self.langLEN == 0)
+        self iPrintLn("^2VOLANDO...");
+    else
+        self iPrintLn("^2FLYING...");
+
 
     while(true)
     {
         
-        if(self fragButtonPressed() && (getTime() - self.last_frag_press) > 500) 
+        if(self fragButtonPressed()) 
         {
-            self.last_frag_press = getTime();
-
-            if(!self.fly_enabled)
-            {
-                
-                self playerLinkTo(self.ufo_object);
-                self.fly_enabled = true;
-
-                
-                if(!self.godmode_enabled && !isDefined(self.ufo_godmode_activated))
-                {
-                    self enableInvulnerability();
-                    self.ufo_flight_godmode = true; 
-                }
-
-                if(self.langLEN == 0)
-                    self iPrintLn("^2VOLANDO...");
-                else
-                    self iPrintLn("^2FLYING...");
-            }
-            else
-            {
-                
-                self unlink();
-                self.fly_enabled = false;
-
-                
-                if(isDefined(self.ufo_flight_godmode) && self.ufo_flight_godmode && !self.godmode_enabled)
-                {
-                    self disableInvulnerability();
-                    self.ufo_flight_godmode = undefined;
-                }
-
-                if(self.langLEN == 0)
-                    self iPrintLn("^1VUELO DETENIDO");
-                else
-                    self iPrintLn("^1FLIGHT STOPPED");
-            }
-        }
-
-        if(self.fly_enabled)
-        {
-            
             fly_origin = self.ufo_object.origin + vectorScale(anglesToForward(self getPlayerAngles()), 20);
             self.ufo_object moveTo(fly_origin, 0.01);
         }
+        
+        
 
         wait 0.01;
     }
@@ -3489,3 +3462,294 @@ box_fire_sale()
 
 
 
+
+toggle_photo_mode()
+{
+    self endon("disconnect");
+    
+    if (isDefined(self.is_toggling_photo_mode))
+    {
+        wait 0.1;
+        return;
+    }
+    
+    self.is_toggling_photo_mode = true;
+    
+    if (!isDefined(self.is_photo_mode))
+        self.is_photo_mode = false;
+        
+    self.is_photo_mode = !self.is_photo_mode;
+    
+    
+    self playLocalSound("uin_alert_closewindow");
+    
+    if (self.is_photo_mode)
+    {
+        
+        self setClientUIVisibilityFlag("hud_visible", 0);
+        
+        self setClientDvar("cg_drawGun", 0);
+        
+        if (self.langLEN == 0) 
+            self iPrintlnBold("^2Modo Foto: ^7Activado");
+        else 
+            self iPrintlnBold("^2Photo Mode: ^7Enabled");
+    }
+    else
+    {
+        
+        self setClientUIVisibilityFlag("hud_visible", 1);
+        
+        self setClientDvar("cg_drawGun", 1);
+        
+        if (self.langLEN == 0) 
+            self iPrintlnBold("^1Modo Foto: ^7Desactivado");
+        else 
+            self iPrintlnBold("^1Photo Mode: ^7Disabled");
+    }
+    
+    wait 0.2;
+    self.is_toggling_photo_mode = undefined;
+}
+
+toggle_insta_reload(menu)
+{
+    self endon("disconnect");
+    
+    if (isDefined(self.is_toggling_insta_reload))
+    {
+        wait 0.1;
+        return;
+    }
+    
+    self.is_toggling_insta_reload = true;
+    
+    if (!isDefined(self.insta_reload_enabled))
+        self.insta_reload_enabled = false;
+    
+    self.insta_reload_enabled = !self.insta_reload_enabled;
+    
+    self playLocalSound("uin_alert_closewindow");
+    
+    if (self.insta_reload_enabled)
+    {
+        self thread monitor_insta_reload();
+        
+        if (self.langLEN == 0) 
+            self iPrintlnBold("^2Insta-Reload: ^7Activado");
+        else 
+            self iPrintlnBold("^2Insta-Reload: ^7Enabled");
+    }
+    else
+    {
+        self notify("stop_insta_reload");
+        
+        if (self.langLEN == 0) 
+            self iPrintlnBold("^1Insta-Reload: ^7Desactivado");
+        else 
+            self iPrintlnBold("^1Insta-Reload: ^7Disabled");
+    }
+    
+    if (isDefined(self.menu_current))
+    {
+        for (i = 0; i < self.menu_current.items.size; i++)
+        {
+            if (isDefined(self.menu_current.items[i].func) && self.menu_current.items[i].func == ::toggle_insta_reload)
+            {
+                status = self.insta_reload_enabled ? "ON" : "OFF";
+                self.menu_current.items[i].item setText("Insta-Reload: " + status);
+                break;
+            }
+        }
+    }
+    
+    wait 0.2;
+    self.is_toggling_insta_reload = undefined;
+}
+
+
+monitor_insta_reload()
+{
+    self endon("disconnect");
+    self endon("stop_insta_reload");
+    
+    while (self.insta_reload_enabled)
+    {
+        current_weapon = self getCurrentWeapon();
+        if (isDefined(current_weapon) && current_weapon != "none")
+        {
+            
+            clip_size = weaponClipSize(current_weapon);
+            current_clip = self getWeaponAmmoClip(current_weapon);
+            
+            if (current_clip < clip_size)
+            {
+                self setWeaponAmmoClip(current_weapon, clip_size);
+            }
+        }
+        wait 0.1;
+    }
+}
+
+
+drop_current_weapon()
+{
+    self endon("disconnect");
+    
+    current_weapon = self getCurrentWeapon();
+    
+    if (!isDefined(current_weapon) || current_weapon == "none" || is_offhand_weapon(current_weapon))
+    {
+        if (self.langLEN == 0)
+            self iPrintlnBold("^1No puedes soltar esta arma");
+        else
+            self iPrintlnBold("^1Cannot drop this weapon");
+        return;
+    }
+    
+    
+    primaries = self getWeaponsListPrimaries();
+    if (primaries.size <= 1)
+    {
+        if (self.langLEN == 0)
+            self iPrintlnBold("^1No puedes soltar tu única arma");
+        else
+            self iPrintlnBold("^1Cannot drop your only weapon");
+        return;
+    }
+    
+    self dropItem(current_weapon);
+}
+
+
+is_offhand_weapon(weapon)
+{
+    
+    return (weapon == "frag_grenade_zm" || 
+            weapon == "sticky_grenade_zm" || 
+            weapon == "claymore_zm" || 
+            weapon == "emp_grenade_zm" || 
+            weapon == "cymbal_monkey_zm" ||
+            weapon == "knife_zm" ||
+            weapon == "bowie_knife_zm" ||
+            weapon == "tazer_knuckles_zm" );
+}
+
+
+toggle_coords()
+{
+    self endon("disconnect");
+    
+    if (isDefined(self.is_toggling_coords))
+    {
+        wait 0.1;
+        return;
+    }
+    
+    self.is_toggling_coords = true;
+    
+    if (!isDefined(self.show_coords))
+        self.show_coords = false;
+        
+    self.show_coords = !self.show_coords;
+    
+    self playLocalSound("uin_alert_closewindow");
+    
+    if (self.show_coords)
+    {
+        self thread monitor_coords();
+        if (self.langLEN == 0) self iPrintlnBold("^2Coordenadas: ^7Activadas");
+        else self iPrintlnBold("^2Coordinates: ^7Enabled");
+    }
+    else
+    {
+        self notify("stop_monitor_coords");
+        self destroy_coords_hud();
+        if (self.langLEN == 0) self iPrintlnBold("^1Coordenadas: ^7Desactivadas");
+        else self iPrintlnBold("^1Coordinates: ^7Disabled");
+    }
+    
+    if (isDefined(self.menu_current))
+    {
+        for (i = 0; i < self.menu_current.items.size; i++)
+        {
+            if (isDefined(self.menu_current.items[i].func) && self.menu_current.items[i].func == scripts\zm\funciones::toggle_coords)
+            {
+                status = self.show_coords ? "ON" : "OFF";
+                if (self.langLEN == 0) 
+                    self.menu_current.items[i].item setText("Coordenadas Pantalla: " + status);
+                else 
+                    self.menu_current.items[i].item setText("Screen Coordinates: " + status);
+                break;
+            }
+        }
+    }
+    
+    wait 0.2;
+    self.is_toggling_coords = undefined;
+}
+
+
+monitor_coords()
+{
+    self endon("disconnect");
+    self endon("stop_monitor_coords");
+    
+    self destroy_coords_hud();
+    self create_coords_hud();
+    
+    for (;;)
+    {
+        origin = self.origin;
+        self.coords_hud_x setValue(int(origin[0]));
+        self.coords_hud_y setValue(int(origin[1]));
+        self.coords_hud_z setValue(int(origin[2]));
+        wait 0.05;
+    }
+}
+
+
+create_coords_hud()
+{
+    self.coords_hud_x = self createFontString("default", 1.2);
+    self.coords_hud_x setPoint("BOTTOM", "BOTTOM", -60, -20);
+    self.coords_hud_x.label = &"X: ";
+    self.coords_hud_x.alpha = 1;
+    self.coords_hud_x.color = (1, 1, 1);
+    self.coords_hud_x.sort = 1;
+    self.coords_hud_x.hideWhenInMenu = true;
+
+    self.coords_hud_y = self createFontString("default", 1.2);
+    self.coords_hud_y setPoint("BOTTOM", "BOTTOM", 0, -20);
+    self.coords_hud_y.label = &"Y: ";
+    self.coords_hud_y.alpha = 1;
+    self.coords_hud_y.color = (1, 1, 1);
+    self.coords_hud_y.sort = 1;
+    self.coords_hud_y.hideWhenInMenu = true;
+
+    self.coords_hud_z = self createFontString("default", 1.2);
+    self.coords_hud_z setPoint("BOTTOM", "BOTTOM", 60, -20);
+    self.coords_hud_z.label = &"Z: ";
+    self.coords_hud_z.alpha = 1;
+    self.coords_hud_z.color = (1, 1, 1);
+    self.coords_hud_z.sort = 1;
+    self.coords_hud_z.hideWhenInMenu = true;
+}
+
+
+destroy_coords_hud()
+{
+    if (isDefined(self.coords_hud_x)) self.coords_hud_x destroy();
+    if (isDefined(self.coords_hud_y)) self.coords_hud_y destroy();
+    if (isDefined(self.coords_hud_z)) self.coords_hud_z destroy();
+}
+
+
+apply_show_coords_saved()
+{
+    self endon("disconnect");
+    if (isDefined(self.show_coords) && self.show_coords)
+    {
+        self thread monitor_coords();
+    }
+}

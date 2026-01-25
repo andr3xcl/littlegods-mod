@@ -262,40 +262,50 @@ init()
 	}
 }
 
-Upgrade_arma(powerup)
+Upgrade_arma(optional_weapon_name)
 {
     self endon("disconnect");
 
     if (!IsAlive(self))
         return;
 
-        weapon_name = self getcurrentweapon();
+    weapon_name = self getcurrentweapon();
     
+    // If a specific weapon is passed (and is not a powerup struct/string from legacy calls), use it
+    if (isDefined(optional_weapon_name) && isString(optional_weapon_name) && optional_weapon_name != "")
+    {
+        weapon_name = optional_weapon_name;
+    }
     
+    // Safety checks
     if (weapon_name == "staff_fire_zm" || weapon_name == "staff_water_zm" || weapon_name == "staff_air_zm" || weapon_name == "staff_lightning_zm")
-        {
+    {
         return;
-            }
+    }
     
+    if (weapon_name == "none")
+        return;
     
     if (!can_upgrade_weapon(weapon_name))
-            {
-            return;
-        }
+    {
+        // Try fallback? Or just fail silently as before.
+        return;
+    }
     
+    // Get upgrade name based on the TARGET weapon, not necessarily current
+    upgrade_name = self get_upgrade_weapon(weapon_name);
     
-        current_weapon = self GetCurrentWeapon();
-    upgrade_name = self get_upgrade_weapon(current_weapon);
-    weapon = get_upgrade_weapon(current_weapon, will_upgrade_weapon_as_attachment(current_weapon));
+    if (!isDefined(upgrade_name))
+        return;
+        
+    weapon = get_upgrade_weapon(weapon_name, will_upgrade_weapon_as_attachment(weapon_name));
     
+    if (!isDefined(weapon))
+        return;
     
-    self TakeWeapon(current_weapon);
-    
-    
-        self GiveWeapon(weapon);
-    
-    
-        self SwitchToWeapon(weapon);
+    self TakeWeapon(weapon_name);
+    self GiveWeapon(weapon);
+    self SwitchToWeapon(weapon);
 }
 
 weapon_baston_fire()
@@ -601,6 +611,83 @@ GiveRandomWeapon()
 
 
 
+
+
+apply_weapon_camo(camo_index)
+{
+    if (!IsAlive(self))
+        return;
+
+    self endon("disconnect");
+    
+    current_weapon = self GetCurrentWeapon();
+    
+    // Don't apply camo to special weapons
+    if (current_weapon == "none" || current_weapon == "" || 
+        isSubStr(current_weapon, "knife") || 
+        isSubStr(current_weapon, "grenade"))
+    {
+        if (self.langLEN == 0)
+            self iPrintLnBold("^1No se puede aplicar camuflaje a esta arma");
+        else
+            self iPrintLnBold("^1Cannot apply camo to this weapon");
+        return;
+    }
+    
+    // Get current ammo
+    clip_ammo = self GetWeaponAmmoClip(current_weapon);
+    stock_ammo = self GetWeaponAmmoStock(current_weapon);
+    
+    // Take current weapon
+    self TakeWeapon(current_weapon);
+    
+    // Give weapon with camo
+    self GiveWeapon(current_weapon, 0, camo_index);
+    
+    // Restore ammo
+    self SetWeaponAmmoClip(current_weapon, clip_ammo);
+    self SetWeaponAmmoStock(current_weapon, stock_ammo);
+    
+    // Switch back to weapon
+    self SwitchToWeapon(current_weapon);
+    
+    // Success message
+    if (self.langLEN == 0)
+        self iPrintLnBold("^2Camuflaje aplicado");
+    else
+        self iPrintLnBold("^2Camo applied");
+}
+
+
+get_available_camos_for_map()
+{
+    map = getDvar("ui_zm_mapstartlocation");
+    available_camos = [];
+    
+    // All maps have OG PAP (index 39)
+    available_camos[available_camos.size] = 39;
+    
+    // Mob of the Dead maps + Buried have MOB PAP (index 40)
+    if (map == "prison" || map == "cellblock" || map == "docks" || 
+        map == "showers" || map == "rooftop" ||
+        map == "processing" || map == "maze")
+    {
+        available_camos[available_camos.size] = 40;
+    }
+    
+    // Origins maps have all camos
+    if (map == "tomb" || map == "trenches" || map == "crazyplace")
+    {
+        available_camos[available_camos.size] = 40; // MOB PAP
+        available_camos[available_camos.size] = 41; // Aqua
+        available_camos[available_camos.size] = 42; // Breach
+        available_camos[available_camos.size] = 43; // Coyote
+        available_camos[available_camos.size] = 44; // Glam
+        available_camos[available_camos.size] = 45; // Origins PAP
+    }
+    
+    return available_camos;
+}
 
 
 spawn_panzer_soldat()

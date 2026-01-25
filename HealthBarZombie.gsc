@@ -85,7 +85,6 @@ on_players_spawned()
         self.sizeW = 100;
         self.sizeH = 2;
         self.sizeN = 1; 
-        self.langLEN = 1; 
         self.colorcito = (1, 1, 1); 
         
         

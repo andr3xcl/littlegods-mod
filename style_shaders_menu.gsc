@@ -55,7 +55,7 @@ on_player_connect()
         
         
         if (!isDefined(player.background_shader_index))
-            player.background_shader_index = 1; 
+            player.background_shader_index = -1; 
             
         if (!isDefined(player.header_shader_index))
             player.header_shader_index = -1; 
