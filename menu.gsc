@@ -467,18 +467,17 @@ onPlayerSpawned()
             self.godmode_enabled = false;
         }
 
-        if (isDefined(self.noclip_enabled) && self.noclip_enabled)
+        
+        
+        
+        
+        
+        if (isDefined(self.menu_style_index) && self.menu_style_index >= 0)
         {
-            self notify("noclip_off");
-            self.noclip_enabled = false;
-        }
-
-        if (self.langLEN == 0)
-            self thread scripts\zm\style_font_position::load_font_position();
-
-        if (isDefined(self.saved_menu_style))
-        {
-            self thread scripts\zm\style_menu::apply_menu_style(self.saved_menu_style);
+            if (isDefined(level.apply_menu_style_func))
+            {
+                self thread [[level.apply_menu_style_func]](self.menu_style_index);
+            }
         }
 
         if (isDefined(self.transparency_index) && isDefined(level.apply_transparency_func))
@@ -489,9 +488,16 @@ onPlayerSpawned()
         
         if (self.healthbar_enabled) 
         {
-            if (!isDefined(self.hb_bar))
+            
+            if (!isDefined(self.health_bar))
             {
-                self thread bar_funtion_and_toogle(0);
+                if (self.healthbar_position == "left")
+                    functions = 2;
+                else if (self.healthbar_position == "top_left")
+                    functions = 3;
+                else
+                    functions = 1; 
+                self thread bar_funtion_and_toogle(functions);
             }
         }
     }
