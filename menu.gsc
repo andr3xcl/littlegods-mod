@@ -453,10 +453,11 @@ onPlayerSpawned()
         
         
         self.healthbar_enabled = false;
+        if (!isDefined(self.healthbar_position)) self.healthbar_position = "right";
         if (!isDefined(self.healthbar_width)) self.healthbar_width = 100;
-        if (!isDefined(self.healthbar_height)) self.healthbar_height = 2;
+        if (!isDefined(self.healthbar_height)) self.healthbar_height = 4;
         if (!isDefined(self.healthbar_shader)) self.healthbar_shader = false;
-        if (!isDefined(self.healthbar_font_scale)) self.healthbar_font_scale = 1.1;
+        if (!isDefined(self.healthbar_font_scale)) self.healthbar_font_scale = 1.2;
 
         
         if (self.godmode_enabled)
@@ -812,8 +813,10 @@ open_healthbar_menu()
             pos_text = "IZQUIERDA";
         else if (self.healthbar_position == "top_left")
             pos_text = "ARRIBA IZQUIERDA";
-        else
+        else if (self.healthbar_position == "top")
             pos_text = "ARRIBA";
+        else
+            pos_text = "DERECHA";
         pos_item = add_menu_item(menu, "Posición: " + pos_text, ::cycle_healthbar_position);
         pos_item.item.alpha = self.healthbar_enabled ? 1 : 0;
 
@@ -848,8 +851,10 @@ open_healthbar_menu()
             pos_text = "LEFT";
         else if (self.healthbar_position == "top_left")
             pos_text = "TOP LEFT";
-        else
+        else if (self.healthbar_position == "top")
             pos_text = "TOP";
+        else
+            pos_text = "RIGHT";
         pos_item = add_menu_item(menu, "Position: " + pos_text, ::cycle_healthbar_position);
         pos_item.item.alpha = self.healthbar_enabled ? 1 : 0;
 
@@ -2845,33 +2850,19 @@ cycle_healthbar_position()
     }
 
     
-    if (self.healthbar_position == "top")
+    if (self.healthbar_position == "right")
         self.healthbar_position = "left";
     else if (self.healthbar_position == "left")
         self.healthbar_position = "top_left";
     else if (self.healthbar_position == "top_left")
         self.healthbar_position = "top";
     else
-        self.healthbar_position = "top"; 
+        self.healthbar_position = "right"; 
     
     
     if (self.healthbar_enabled)
     {
-        
-        if (isDefined(self.health_bar))
-        {
-            self notify("endbar_health");
-            wait 0.1; 
-        }
-        
-        
-        if (self.healthbar_position == "left")
-            functions = 2;
-        else if (self.healthbar_position == "top_left")
-            functions = 3;
-        else
-            functions = 1; 
-        self thread bar_funtion_and_toogle(functions);
+        self thread bar_funtion_and_toogle(0);
     }
     
     
@@ -2888,8 +2879,10 @@ cycle_healthbar_position()
                         pos_text = "IZQUIERDA";
                     else if (self.healthbar_position == "top_left")
                         pos_text = "ARRIBA IZQUIERDA";
-                    else
+                    else if (self.healthbar_position == "top")
                         pos_text = "ARRIBA";
+                    else
+                        pos_text = "DERECHA";
                     self.menu_current.items[i].item setTextUnlimited("Posición: " + pos_text);
                 }
                 else
@@ -2898,8 +2891,10 @@ cycle_healthbar_position()
                         pos_text = "LEFT";
                     else if (self.healthbar_position == "top_left")
                         pos_text = "TOP LEFT";
-                    else
+                    else if (self.healthbar_position == "top")
                         pos_text = "TOP";
+                    else
+                        pos_text = "RIGHT";
                     self.menu_current.items[i].item setTextUnlimited("Position: " + pos_text);
                 }
                 break;

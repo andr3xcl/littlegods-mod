@@ -52,26 +52,42 @@ start_clean_health_bar()
     if(isDefined(self.bg)) self.bg destroy();
 
     // 1.5 Setup dynamic layout variables
-    pos = "left";
+    pos = "right";
     if (isDefined(self.healthbar_position))
         pos = self.healthbar_position;
 
-    // Default: LEFT (Bottom-Left of screen)
-    alignX = "left";
+    // Default: RIGHT (Bottom-Right of screen)
+    alignX = "right";
     alignY = "bottom";
-    horzAlign = "left";
+    horzAlign = "right";
     vertAlign = "bottom";
     
-    bar_x = 20;
+    bar_x = -20;
     bar_y = -123;
     
-    top_text_x = 20;
+    top_text_x = -20;
     top_text_y = -130;
     
-    bottom_text_x = 20;
+    bottom_text_x = -20;
     bottom_text_y = -110;
     
-    if (pos == "top")
+    if (pos == "left")
+    {
+        alignX = "left";
+        alignY = "bottom";
+        horzAlign = "left";
+        vertAlign = "bottom";
+        
+        bar_x = 20;
+        bar_y = -123;
+        
+        top_text_x = 20;
+        top_text_y = -130;
+        
+        bottom_text_x = 20;
+        bottom_text_y = -110;
+    }
+    else if (pos == "top")
     {
         alignX = "center";
         alignY = "top";
@@ -108,11 +124,11 @@ start_clean_health_bar()
     if (isDefined(self.healthbar_width))
         bar_width = self.healthbar_width;
 
-    bar_height = 2;
+    bar_height = 4;
     if (isDefined(self.healthbar_height))
         bar_height = self.healthbar_height;
 
-    font_scale = 1.1;
+    font_scale = 1.2;
     if (isDefined(self.healthbar_font_scale))
         font_scale = self.healthbar_font_scale;
 
