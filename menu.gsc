@@ -453,7 +453,7 @@ onPlayerSpawned()
         
         
         self.healthbar_enabled = false;
-        if (!isDefined(self.healthbar_position)) self.healthbar_position = "right";
+        if (!isDefined(self.healthbar_position)) self.healthbar_position = "left";
         if (!isDefined(self.healthbar_width)) self.healthbar_width = 100;
         if (!isDefined(self.healthbar_height)) self.healthbar_height = 4;
         if (!isDefined(self.healthbar_shader)) self.healthbar_shader = false;

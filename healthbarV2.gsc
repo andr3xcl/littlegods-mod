@@ -52,39 +52,39 @@ start_clean_health_bar()
     if(isDefined(self.bg)) self.bg destroy();
 
     // 1.5 Setup dynamic layout variables
-    pos = "right";
+    pos = "left";
     if (isDefined(self.healthbar_position))
         pos = self.healthbar_position;
 
-    // Default: RIGHT (Bottom-Right of screen)
-    alignX = "right";
+    // Default: LEFT (Bottom-Left of screen)
+    alignX = "left";
     alignY = "bottom";
-    horzAlign = "right";
+    horzAlign = "left";
     vertAlign = "bottom";
     
-    bar_x = -20;
+    bar_x = 20;
     bar_y = -123;
     
-    top_text_x = -20;
+    top_text_x = 20;
     top_text_y = -130;
     
-    bottom_text_x = -20;
+    bottom_text_x = 20;
     bottom_text_y = -110;
     
-    if (pos == "left")
+    if (pos == "right")
     {
-        alignX = "left";
+        alignX = "right";
         alignY = "bottom";
-        horzAlign = "left";
+        horzAlign = "right";
         vertAlign = "bottom";
         
-        bar_x = 20;
+        bar_x = -20;
         bar_y = -123;
         
-        top_text_x = 20;
+        top_text_x = -20;
         top_text_y = -130;
         
-        bottom_text_x = 20;
+        bottom_text_x = -20;
         bottom_text_y = -110;
     }
     else if (pos == "top")
