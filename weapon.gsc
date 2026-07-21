@@ -588,14 +588,8 @@ GiveRandomWeapon()
     currentWeapon = self GetCurrentWeapon();
     randomWeaponName = undefined;
     
-    // Attempt 1: Get random weapon directly from map's mystery box chooser
-    if (isDefined(level.chests) && level.chests.size > 0 && isDefined(level.chests[0]))
-    {
-        randomWeaponName = level.chests[0] maps\mp\zombies\_zm_magicbox::treasure_chest_choose_random_weapon(self);
-    }
-    
-    // Attempt 2: Fallback to level.chest_weapons keys if available for the map
-    if (!isDefined(randomWeaponName) && isDefined(level.chest_weapons) && level.chest_weapons.size > 0)
+    // Get mystery box weapon pool from current map's chest_weapons
+    if (isDefined(level.chest_weapons) && level.chest_weapons.size > 0)
     {
         keys = getArrayKeys(level.chest_weapons);
         if (isDefined(keys) && keys.size > 0)
@@ -604,7 +598,7 @@ GiveRandomWeapon()
         }
     }
     
-    // Attempt 3: Fallback to custom level.weaponList array
+    // Fallback to level.weaponList if chest_weapons is empty
     if (!isDefined(randomWeaponName) && isDefined(level.weaponList) && level.weaponList.size > 0)
     {
         randomWeaponName = level.weaponList[randomInt(level.weaponList.size)];
@@ -612,13 +606,8 @@ GiveRandomWeapon()
     
     if (!isDefined(randomWeaponName) || randomWeaponName == "")
         return;
-        
-    is_tactical = is_tactical_weapon(randomWeaponName);
-    if (!is_tactical)
-    {
-        self TakeWeapon(currentWeapon);
-    }
-    
+
+    self TakeWeapon(currentWeapon);
     self maps\mp\zombies\_zm_weapons::weapon_give(randomWeaponName);
     self SwitchToWeapon(randomWeaponName);
 }
