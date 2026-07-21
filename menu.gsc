@@ -1307,7 +1307,7 @@ create_menu(title, player)
         menu.title_text.glowColor = (1, 1, 1);
     }
     
-    menu.title_text setText(title);
+    menu.title_text setTextUnlimited(title);
 
     
     menu.title_shadow = newClientHudElem(player);
@@ -1336,7 +1336,7 @@ create_menu(title, player)
     menu.title_shadow.alpha = 0.4; 
     menu.title_shadow.color = (0, 0, 0); 
     menu.title_shadow.sort = 0; 
-    menu.title_shadow setText(title);
+    menu.title_shadow setTextUnlimited(title);
 
     
     menu.selection_bar = newClientHudElem(player);
@@ -1450,7 +1450,7 @@ add_menu_item(menu, text, func, arg, arg2, arg3)
         item.item.glowColor = item.item.color;
     }
     
-    item.item setText(text);
+    item.item setTextUnlimited(text);
     item.func = func;
     item.arg = arg;
     item.arg2 = arg2;
@@ -1522,7 +1522,7 @@ add_menu_item_value(menu, text, func, arg, initial_value)
     
     
     item.label_text = text;
-    item.item setText(text + initial_value);
+    item.item setTextUnlimited(text + initial_value);
     
     item.func = func;
     item.arg = arg;
@@ -2546,9 +2546,9 @@ toggle_night_mode()
             {
                 status = self.night_mode_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Estado: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Estado: " + status);
                 else
-                    self.menu_current.items[i].item setText("Status: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Status: " + status);
             }
             
             else if (self.menu_current.items[i].func == ::cycle_night_filter)
@@ -2587,9 +2587,9 @@ cycle_night_filter()
             if (self.menu_current.items[i].func == ::cycle_night_filter)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Filtro: " + self.night_mode_filter);
+                    self.menu_current.items[i].item setTextUnlimited("Filtro: " + self.night_mode_filter);
                 else
-                    self.menu_current.items[i].item setText("Filter: " + self.night_mode_filter);
+                    self.menu_current.items[i].item setTextUnlimited("Filter: " + self.night_mode_filter);
                 break;
             }
         }
@@ -2633,9 +2633,9 @@ cycle_night_darkness()
             if (self.menu_current.items[i].func == ::cycle_night_darkness)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Oscuridad: " + self.night_mode_darkness);
+                    self.menu_current.items[i].item setTextUnlimited("Oscuridad: " + self.night_mode_darkness);
                 else
-                    self.menu_current.items[i].item setText("Darkness: " + self.night_mode_darkness);
+                    self.menu_current.items[i].item setTextUnlimited("Darkness: " + self.night_mode_darkness);
                 break;
             }
         }
@@ -2770,9 +2770,9 @@ toggle_healthbar()
             if (self.menu_current.items[i].func == ::toggle_healthbar)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText(self.healthbar_enabled ? level.strings["status_on_es"] : level.strings["status_off_es"]);
+                    self.menu_current.items[i].item setTextUnlimited(self.healthbar_enabled ? level.strings["status_on_es"] : level.strings["status_off_es"]);
                 else
-                    self.menu_current.items[i].item setText(self.healthbar_enabled ? level.strings["status_on_en"] : level.strings["status_off_en"]);
+                    self.menu_current.items[i].item setTextUnlimited(self.healthbar_enabled ? level.strings["status_on_en"] : level.strings["status_off_en"]);
                 break;
             }
         }
@@ -2860,7 +2860,7 @@ cycle_healthbar_position()
                         pos_text = "ARRIBA IZQUIERDA";
                     else
                         pos_text = "ARRIBA";
-                    self.menu_current.items[i].item setText("Posición: " + pos_text);
+                    self.menu_current.items[i].item setTextUnlimited("Posición: " + pos_text);
                 }
                 else
                 {
@@ -2870,7 +2870,7 @@ cycle_healthbar_position()
                         pos_text = "TOP LEFT";
                     else
                         pos_text = "TOP";
-                    self.menu_current.items[i].item setText("Position: " + pos_text);
+                    self.menu_current.items[i].item setTextUnlimited("Position: " + pos_text);
                 }
                 break;
             }
@@ -2934,9 +2934,9 @@ toggle_fog()
             if (self.menu_current.items[i].func == ::toggle_fog)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText(self.fog_enabled ? level.strings["fog_on_es"] : level.strings["fog_off_es"]);
+                    self.menu_current.items[i].item setTextUnlimited(self.fog_enabled ? level.strings["fog_on_es"] : level.strings["fog_off_es"]);
                 else
-                    self.menu_current.items[i].item setText(self.fog_enabled ? level.strings["fog_on_en"] : level.strings["fog_off_en"]);
+                    self.menu_current.items[i].item setTextUnlimited(self.fog_enabled ? level.strings["fog_on_en"] : level.strings["fog_off_en"]);
                 break;
             }
         }
@@ -3069,9 +3069,9 @@ toggle_healthbarzombie()
                 if (self.menu_current.items[i].func == ::cycle_healthbar_position)
                 {
                     if (self.langLEN == 0)
-                        self.menu_current.items[i].item setText("Posición: ARRIBA");
+                        self.menu_current.items[i].item setTextUnlimited("Posición: ARRIBA");
                     else
-                        self.menu_current.items[i].item setText("Position: TOP");
+                        self.menu_current.items[i].item setTextUnlimited("Position: TOP");
                     break;
                 }
             }
@@ -3116,9 +3116,9 @@ toggle_healthbarzombie()
             if (self.menu_current.items[i].func == ::toggle_healthbarzombie)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText(self.healthbarzombie_enabled ? level.strings["status_on_es"] : level.strings["status_off_es"]);
+                    self.menu_current.items[i].item setTextUnlimited(self.healthbarzombie_enabled ? level.strings["status_on_es"] : level.strings["status_off_es"]);
                 else
-                    self.menu_current.items[i].item setText(self.healthbarzombie_enabled ? level.strings["status_on_en"] : level.strings["status_off_en"]);
+                    self.menu_current.items[i].item setTextUnlimited(self.healthbarzombie_enabled ? level.strings["status_on_en"] : level.strings["status_off_en"]);
             }
             
             else if (self.menu_current.items[i].func == ::cycle_healthbarzombie_color ||
@@ -3266,9 +3266,9 @@ cycle_healthbarzombie_color()
             {
                 
                 if (self.langLEN == 0) 
-                    self.menu_current.items[i].item setText("Color: " + color_display_name);
+                    self.menu_current.items[i].item setTextUnlimited("Color: " + color_display_name);
                 else 
-                    self.menu_current.items[i].item setText("Color: " + color_display_name);
+                    self.menu_current.items[i].item setTextUnlimited("Color: " + color_display_name);
                 break;
             }
         }
@@ -3306,9 +3306,9 @@ cycle_healthbarzombie_width()
             if (self.menu_current.items[i].func == ::cycle_healthbarzombie_width)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Ancho: " + self.healthbarzombie_sizew);
+                    self.menu_current.items[i].item setTextUnlimited("Ancho: " + self.healthbarzombie_sizew);
                 else
-                    self.menu_current.items[i].item setText("Width: " + self.healthbarzombie_sizew);
+                    self.menu_current.items[i].item setTextUnlimited("Width: " + self.healthbarzombie_sizew);
                 break;
             }
         }
@@ -3344,9 +3344,9 @@ cycle_healthbarzombie_height()
             if (self.menu_current.items[i].func == ::cycle_healthbarzombie_height)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Alto: " + self.healthbarzombie_sizeh);
+                    self.menu_current.items[i].item setTextUnlimited("Alto: " + self.healthbarzombie_sizeh);
                 else
-                    self.menu_current.items[i].item setText("Height: " + self.healthbarzombie_sizeh);
+                    self.menu_current.items[i].item setTextUnlimited("Height: " + self.healthbarzombie_sizeh);
                 break;
             }
         }
@@ -3382,9 +3382,9 @@ cycle_healthbarzombie_namesize()
             if (self.menu_current.items[i].func == ::cycle_healthbarzombie_namesize)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Tamaño Nombre: " + self.healthbarzombie_sizen);
+                    self.menu_current.items[i].item setTextUnlimited("Tamaño Nombre: " + self.healthbarzombie_sizen);
                 else
-                    self.menu_current.items[i].item setText("Name Size: " + self.healthbarzombie_sizen);
+                    self.menu_current.items[i].item setTextUnlimited("Name Size: " + self.healthbarzombie_sizen);
                 break;
             }
         }
@@ -3435,7 +3435,7 @@ cycle_healthbarzombie_shader()
         {
             if (self.menu_current.items[i].func == ::cycle_healthbarzombie_shader)
             {
-                self.menu_current.items[i].item setText("Shader: " + self.healthbarzombie_shader);
+                self.menu_current.items[i].item setTextUnlimited("Shader: " + self.healthbarzombie_shader);
                 break;
             }
         }
@@ -3472,9 +3472,9 @@ toggle_zombie_name()
             {
                 zombieNameStatus = self.show_zombie_name ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Mostrar Nombre: " + zombieNameStatus);
+                    self.menu_current.items[i].item setTextUnlimited("Mostrar Nombre: " + zombieNameStatus);
                 else
-                    self.menu_current.items[i].item setText("Show Name: " + zombieNameStatus);
+                    self.menu_current.items[i].item setTextUnlimited("Show Name: " + zombieNameStatus);
                 break;
             }
         }
@@ -3580,13 +3580,13 @@ update_settings_menu_texts()
     
     if (isDefined(self.menu_current.title_text))
     {
-        self.menu_current.title_text setText(new_title);
+        self.menu_current.title_text setTextUnlimited(new_title);
     }
 
     
     if (isDefined(self.menu_current.title_shadow))
     {
-        self.menu_current.title_shadow setText(new_title);
+        self.menu_current.title_shadow setTextUnlimited(new_title);
     }
 
     
@@ -3596,7 +3596,7 @@ update_settings_menu_texts()
         if (isDefined(self.menu_current.items[0]))
         {
             lang = (self.langLEN == 0) ? "Español" : "Inglés";
-            self.menu_current.items[0].item setText("Idioma: " + lang);
+            self.menu_current.items[0].item setTextUnlimited("Idioma: " + lang);
         }
 
         
@@ -3604,7 +3604,7 @@ update_settings_menu_texts()
         {
             styleName = get_style_name(self.menu_style_index, self.langLEN);
             count_str = " (" + (self.menu_style_index + 1) + "/" + level.menu_styles.size + ")";
-            self.menu_current.items[1].item setText("Estilo Menú: " + styleName + count_str);
+            self.menu_current.items[1].item setTextUnlimited("Estilo Menú: " + styleName + count_str);
         }
 
         
@@ -3612,73 +3612,73 @@ update_settings_menu_texts()
         {
             selectorStyleName = scripts\zm\style_selector::get_selector_style_name(self.selector_style_index, self.langLEN);
             count_str = " (" + (self.selector_style_index + 1) + "/" + level.selector_styles.size + ")";
-            self.menu_current.items[2].item setText("Estilo Selector: " + selectorStyleName + count_str);
+            self.menu_current.items[2].item setTextUnlimited("Estilo Selector: " + selectorStyleName + count_str);
         }
 
         
         if (isDefined(self.menu_current.items[3]))
         {
             fontPositionName = scripts\zm\style_font_position::get_font_position_name(self.font_position_index, self.langLEN);
-            self.menu_current.items[3].item setText("Posición Texto: " + fontPositionName);
+            self.menu_current.items[3].item setTextUnlimited("Posición Texto: " + fontPositionName);
         }
 
         
         if (isDefined(self.menu_current.items[4]))
         {
             edgeAnimStyleName = scripts\zm\style_edge_animation::get_edge_animation_style_name(self.edge_animation_style_index, self.langLEN);
-            self.menu_current.items[4].item setText("Animación Borde: " + edgeAnimStyleName);
+            self.menu_current.items[4].item setTextUnlimited("Animación Borde: " + edgeAnimStyleName);
         }
 
         
         if (isDefined(self.menu_current.items[5]))
         {
             fontAnimName = scripts\zm\style_font_animation::get_font_animation_name(self.font_animation_index, self.langLEN);
-            self.menu_current.items[5].item setText("Animación Fuente: " + fontAnimName);
+            self.menu_current.items[5].item setTextUnlimited("Animación Fuente: " + fontAnimName);
         }
 
         
         if (isDefined(self.menu_current.items[6]))
         {
             transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
-            self.menu_current.items[6].item setText(transparencyName);
+            self.menu_current.items[6].item setTextUnlimited(transparencyName);
         }
 
         
         if (isDefined(self.menu_current.items[7]))
         {
             glow_status = self.menu_glow_enabled ? "ON" : "OFF";
-            self.menu_current.items[7].item setText("Brillo Menú: " + glow_status);
+            self.menu_current.items[7].item setTextUnlimited("Brillo Menú: " + glow_status);
         }
 
         if (isDefined(self.menu_current.items[8]))
         {
-            self.menu_current.items[8].item setText("Dimensiones del Menú");
+            self.menu_current.items[8].item setTextUnlimited("Dimensiones del Menú");
         }
 
         if (isDefined(self.menu_current.items[9]))
         {
-            self.menu_current.items[9].item setText("Shaders del Menú");
+            self.menu_current.items[9].item setTextUnlimited("Shaders del Menú");
         }
 
         if (isDefined(self.menu_current.items[10]))
         {
-            self.menu_current.items[10].item setText("Controles del Menú");
+            self.menu_current.items[10].item setTextUnlimited("Controles del Menú");
         }
 
         if (isDefined(self.menu_current.items[11]))
         {
-            self.menu_current.items[11].item setText("Sonidos");
+            self.menu_current.items[11].item setTextUnlimited("Sonidos");
         }
 
         if (isDefined(self.menu_current.items[12]))
         {
-            self.menu_current.items[12].item setText("Guardar Configuración");
+            self.menu_current.items[12].item setTextUnlimited("Guardar Configuración");
         }
 
         if (isDefined(self.menu_current.items[13]))
-            self.menu_current.items[13].item setText("Volver");
+            self.menu_current.items[13].item setTextUnlimited("Volver");
         if (isDefined(self.menu_current.items[14]))
-            self.menu_current.items[14].item setText("Cerrar Menú");
+            self.menu_current.items[14].item setTextUnlimited("Cerrar Menú");
     }
     else 
     {
@@ -3686,7 +3686,7 @@ update_settings_menu_texts()
         if (isDefined(self.menu_current.items[0]))
         {
             lang = (self.langLEN == 0) ? "Spanish" : "English";
-            self.menu_current.items[0].item setText("Language: " + lang);
+            self.menu_current.items[0].item setTextUnlimited("Language: " + lang);
         }
 
         
@@ -3694,7 +3694,7 @@ update_settings_menu_texts()
         {
             styleName = get_style_name(self.menu_style_index, self.langLEN);
             count_str = " (" + (self.menu_style_index + 1) + "/" + level.menu_styles.size + ")";
-            self.menu_current.items[1].item setText("Menu Style: " + styleName + count_str);
+            self.menu_current.items[1].item setTextUnlimited("Menu Style: " + styleName + count_str);
         }
 
         
@@ -3702,73 +3702,73 @@ update_settings_menu_texts()
         {
             selectorStyleName = scripts\zm\style_selector::get_selector_style_name(self.selector_style_index, self.langLEN);
             count_str = " (" + (self.selector_style_index + 1) + "/" + level.selector_styles.size + ")";
-            self.menu_current.items[2].item setText("Selector Style: " + selectorStyleName + count_str);
+            self.menu_current.items[2].item setTextUnlimited("Selector Style: " + selectorStyleName + count_str);
         }
 
         
         if (isDefined(self.menu_current.items[3]))
         {
             fontPositionName = scripts\zm\style_font_position::get_font_position_name(self.font_position_index, self.langLEN);
-            self.menu_current.items[3].item setText("Text Position: " + fontPositionName);
+            self.menu_current.items[3].item setTextUnlimited("Text Position: " + fontPositionName);
         }
 
         
         if (isDefined(self.menu_current.items[4]))
         {
             edgeAnimStyleName = scripts\zm\style_edge_animation::get_edge_animation_style_name(self.edge_animation_style_index, self.langLEN);
-            self.menu_current.items[4].item setText("Edge Animation: " + edgeAnimStyleName);
+            self.menu_current.items[4].item setTextUnlimited("Edge Animation: " + edgeAnimStyleName);
         }
 
         
         if (isDefined(self.menu_current.items[5]))
         {
             fontAnimName = scripts\zm\style_font_animation::get_font_animation_name(self.font_animation_index, self.langLEN);
-            self.menu_current.items[5].item setText("Font Animation: " + fontAnimName);
+            self.menu_current.items[5].item setTextUnlimited("Font Animation: " + fontAnimName);
         }
 
         
         if (isDefined(self.menu_current.items[6]))
         {
             transparencyName = scripts\zm\style_transparecy::get_transparency_name(self.transparency_index, self.langLEN);
-            self.menu_current.items[6].item setText(transparencyName);
+            self.menu_current.items[6].item setTextUnlimited(transparencyName);
         }
 
         
         if (isDefined(self.menu_current.items[7]))
         {
             glow_status = self.menu_glow_enabled ? "ON" : "OFF";
-            self.menu_current.items[7].item setText("Menu Glow: " + glow_status);
+            self.menu_current.items[7].item setTextUnlimited("Menu Glow: " + glow_status);
         }
 
         if (isDefined(self.menu_current.items[8]))
         {
-            self.menu_current.items[8].item setText("Menu Dimensions");
+            self.menu_current.items[8].item setTextUnlimited("Menu Dimensions");
         }
 
         if (isDefined(self.menu_current.items[9]))
         {
-            self.menu_current.items[9].item setText("Menu Shaders");
+            self.menu_current.items[9].item setTextUnlimited("Menu Shaders");
         }
 
         if (isDefined(self.menu_current.items[10]))
         {
-            self.menu_current.items[10].item setText("Menu Controls");
+            self.menu_current.items[10].item setTextUnlimited("Menu Controls");
         }
 
         if (isDefined(self.menu_current.items[11]))
         {
-            self.menu_current.items[11].item setText("Sound");
+            self.menu_current.items[11].item setTextUnlimited("Sound");
         }
 
         if (isDefined(self.menu_current.items[12]))
         {
-            self.menu_current.items[12].item setText("Save Configuration");
+            self.menu_current.items[12].item setTextUnlimited("Save Configuration");
         }
 
         if (isDefined(self.menu_current.items[13]))
-            self.menu_current.items[13].item setText("Back");
+            self.menu_current.items[13].item setTextUnlimited("Back");
         if (isDefined(self.menu_current.items[14]))
-            self.menu_current.items[14].item setText("Close Menu");
+            self.menu_current.items[14].item setTextUnlimited("Close Menu");
     }
 }
 
@@ -4305,9 +4305,9 @@ request_developer_password()
     self.password_hud.hidewheninmenu = false;
 
     if (self.langLEN == 0) 
-        self.password_hud setText("^3Escriba ^2'admin' ^3en el chat para desbloquear");
+        self.password_hud setTextUnlimited("^3Escriba ^2'admin' ^3en el chat para desbloquear");
     else 
-        self.password_hud setText("^3Type ^2'admin' ^3in chat to unlock");
+        self.password_hud setTextUnlimited("^3Type ^2'admin' ^3in chat to unlock");
 
     
     wait 5;
@@ -4366,7 +4366,7 @@ cycle_transparency()
                   else
                       transparency_text = "Transparency: " + int(level.transparency_levels[self.transparency_index]) + "%%";
                       
-                  self.menu_current.items[i].item setText(transparency_text);
+                  self.menu_current.items[i].item setTextUnlimited(transparency_text);
                   break;
               }
         }
@@ -4394,9 +4394,9 @@ toggle_menu_glow()
             {
                 glow_status = self.menu_glow_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Brillo Menú: " + glow_status); 
+                    self.menu_current.items[i].item setTextUnlimited("Brillo Menú: " + glow_status); 
                 else
-                    self.menu_current.items[i].item setText("Menu Glow: " + glow_status);
+                    self.menu_current.items[i].item setTextUnlimited("Menu Glow: " + glow_status);
                 break;
             }
         }
@@ -4722,9 +4722,9 @@ cycle_menu_style()
             {
                 count_str = " (" + (self.menu_style_index + 1) + "/" + level.menu_styles.size + ")";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Estilo Menú: " + styleName + count_str);
+                    self.menu_current.items[i].item setTextUnlimited("Estilo Menú: " + styleName + count_str);
                 else
-                    self.menu_current.items[i].item setText("Menu Style: " + styleName + count_str);
+                    self.menu_current.items[i].item setTextUnlimited("Menu Style: " + styleName + count_str);
                 break;
             }
         }
@@ -4784,9 +4784,9 @@ cycle_selector_style()
             {
                 count_str = " (" + (self.selector_style_index + 1) + "/" + level.selector_styles.size + ")";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Estilo Selector: " + selectorStyleName + count_str);
+                    self.menu_current.items[i].item setTextUnlimited("Estilo Selector: " + selectorStyleName + count_str);
                 else
-                    self.menu_current.items[i].item setText("Selector Style: " + selectorStyleName + count_str);
+                    self.menu_current.items[i].item setTextUnlimited("Selector Style: " + selectorStyleName + count_str);
                 break;
             }
         }
@@ -4832,9 +4832,9 @@ cycle_font_animation()
             if (self.menu_current.items[i].func == ::cycle_font_animation)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Animación Fuente: " + fontAnimName);
+                    self.menu_current.items[i].item setTextUnlimited("Animación Fuente: " + fontAnimName);
                 else
-                    self.menu_current.items[i].item setText("Font Animation: " + fontAnimName);
+                    self.menu_current.items[i].item setTextUnlimited("Font Animation: " + fontAnimName);
                 break;
             }
         }
@@ -5039,9 +5039,9 @@ cycle_menu_open_sound()
             if (self.menu_current.items[i].func == ::cycle_menu_open_sound)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Abrir Menú: " + openSoundName);
+                    self.menu_current.items[i].item setTextUnlimited("Abrir Menú: " + openSoundName);
                 else
-                    self.menu_current.items[i].item setText("Open Menu: " + openSoundName);
+                    self.menu_current.items[i].item setTextUnlimited("Open Menu: " + openSoundName);
                 break;
             }
         }
@@ -5086,9 +5086,9 @@ cycle_menu_close_sound()
             if (self.menu_current.items[i].func == ::cycle_menu_close_sound)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Cerrar Menú: " + closeSoundName);
+                    self.menu_current.items[i].item setTextUnlimited("Cerrar Menú: " + closeSoundName);
                 else
-                    self.menu_current.items[i].item setText("Close Menu: " + closeSoundName);
+                    self.menu_current.items[i].item setTextUnlimited("Close Menu: " + closeSoundName);
                 break;
             }
         }
@@ -5133,9 +5133,9 @@ cycle_menu_scroll_sound()
             if (self.menu_current.items[i].func == ::cycle_menu_scroll_sound)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Navegación: " + scrollSoundName);
+                    self.menu_current.items[i].item setTextUnlimited("Navegación: " + scrollSoundName);
                 else
-                    self.menu_current.items[i].item setText("Navigation: " + scrollSoundName);
+                    self.menu_current.items[i].item setTextUnlimited("Navigation: " + scrollSoundName);
                 break;
             }
         }
@@ -5181,9 +5181,9 @@ cycle_menu_select_sound()
             if (self.menu_current.items[i].func == ::cycle_menu_select_sound)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Selección: " + selectSoundName);
+                    self.menu_current.items[i].item setTextUnlimited("Selección: " + selectSoundName);
                 else
-                    self.menu_current.items[i].item setText("Selection: " + selectSoundName);
+                    self.menu_current.items[i].item setTextUnlimited("Selection: " + selectSoundName);
                 break;
             }
         }
@@ -5226,9 +5226,9 @@ cycle_menu_cancel_sound()
             if (self.menu_current.items[i].func == ::cycle_menu_cancel_sound)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Cancelar: " + cancelSoundName);
+                    self.menu_current.items[i].item setTextUnlimited("Cancelar: " + cancelSoundName);
                 else
-                    self.menu_current.items[i].item setText("Cancel: " + cancelSoundName);
+                    self.menu_current.items[i].item setTextUnlimited("Cancel: " + cancelSoundName);
                 break;
             }
         }
@@ -5320,9 +5320,9 @@ cycle_menu_select_button()
             if (self.menu_current.items[i].func == ::cycle_menu_select_button)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Seleccionar: " + buttonName);
+                    self.menu_current.items[i].item setTextUnlimited("Seleccionar: " + buttonName);
                 else
-                    self.menu_current.items[i].item setText("Select: " + buttonName);
+                    self.menu_current.items[i].item setTextUnlimited("Select: " + buttonName);
                 break;
             }
         }
@@ -5357,9 +5357,9 @@ cycle_menu_down_button()
             if (self.menu_current.items[i].func == ::cycle_menu_down_button)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Bajar: " + buttonName);
+                    self.menu_current.items[i].item setTextUnlimited("Bajar: " + buttonName);
                 else
-                    self.menu_current.items[i].item setText("Go Down: " + buttonName);
+                    self.menu_current.items[i].item setTextUnlimited("Go Down: " + buttonName);
                 break;
             }
         }
@@ -5394,9 +5394,9 @@ cycle_menu_up_button()
             if (self.menu_current.items[i].func == ::cycle_menu_up_button)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Subir: " + buttonName);
+                    self.menu_current.items[i].item setTextUnlimited("Subir: " + buttonName);
                 else
-                    self.menu_current.items[i].item setText("Go Up: " + buttonName);
+                    self.menu_current.items[i].item setTextUnlimited("Go Up: " + buttonName);
                 break;
             }
         }
@@ -5431,9 +5431,9 @@ cycle_menu_cancel_button()
             if (self.menu_current.items[i].func == ::cycle_menu_cancel_button)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Cancelar: " + buttonName);
+                    self.menu_current.items[i].item setTextUnlimited("Cancelar: " + buttonName);
                 else
-                    self.menu_current.items[i].item setText("Cancel: " + buttonName);
+                    self.menu_current.items[i].item setTextUnlimited("Cancel: " + buttonName);
                 break;
             }
         }
@@ -5613,7 +5613,7 @@ toggle_player_health_display()
         if (isDefined(self.menu_current.items[0]) && isDefined(self.menu_current.items[0].item))
         {
             status = level.player_health_display.enabled ? "ON" : "OFF";
-            self.menu_current.items[0].item setText("Estado: " + status);
+            self.menu_current.items[0].item setTextUnlimited("Estado: " + status);
         }
         
         update_config_menu_visibility(self.menu_current);
@@ -5656,7 +5656,7 @@ toggle_zombie_health_display()
         if (isDefined(self.menu_current.items[0]) && isDefined(self.menu_current.items[0].item))
         {
             status = level.zombie_health_display.enabled ? "ON" : "OFF";
-            self.menu_current.items[0].item setText("Estado: " + status);
+            self.menu_current.items[0].item setTextUnlimited("Estado: " + status);
         }
         
         update_config_menu_visibility(self.menu_current);
@@ -5699,7 +5699,7 @@ toggle_zombie_counter_display()
         if (isDefined(self.menu_current.items[0]) && isDefined(self.menu_current.items[0].item))
         {
             status = level.zombie_counter_display.enabled ? "ON" : "OFF";
-            self.menu_current.items[0].item setText("Estado: " + status);
+            self.menu_current.items[0].item setTextUnlimited("Estado: " + status);
         }
         
         update_config_menu_visibility(self.menu_current);
@@ -6189,7 +6189,7 @@ update_menu_color_text(menu_title_es, menu_title_en, color_function)
                 {
                     color_name = get_color_name_by_index(color_index, self.langLEN);
                     color_label = (self.langLEN == 0) ? "Color: " : "Color: ";
-                    self.menu_current.items[i].item setText(color_label + color_name);
+                    self.menu_current.items[i].item setTextUnlimited(color_label + color_name);
             }
         }
             break;
@@ -6245,7 +6245,7 @@ cycle_legacy_display_mode()
                     if (isDefined(self.menu_current.items[i].item))
             {
                 mode_label = (self.langLEN == 0) ? "Modo: " : "Mode: ";
-                        self.menu_current.items[i].item setText(mode_label + mode_text);
+                        self.menu_current.items[i].item setTextUnlimited(mode_label + mode_text);
             }
                     break;
         }
@@ -6417,7 +6417,7 @@ cycle_player_health_position()
 
         
         pos_label = (self.langLEN == 0) ? "Posición: " : "Position: ";
-        self.menu_current.items[1].item setText(pos_label + pos_text);
+        self.menu_current.items[1].item setTextUnlimited(pos_label + pos_text);
     }
 }
 
@@ -6504,7 +6504,7 @@ cycle_player_health_alpha()
             alpha_text = (self.langLEN == 0) ? "PERSONALIZADO" : "CUSTOM";
 
         
-        self.menu_current.items[3].item setText("Transparencia: " + alpha_text);
+        self.menu_current.items[3].item setTextUnlimited("Transparencia: " + alpha_text);
     }
 }
 
@@ -6545,7 +6545,7 @@ cycle_zombie_health_position()
 
         
         pos_label = (self.langLEN == 0) ? "Posición: " : "Position: ";
-        self.menu_current.items[1].item setText(pos_label + pos_text);
+        self.menu_current.items[1].item setTextUnlimited(pos_label + pos_text);
     }
 }
 
@@ -6632,7 +6632,7 @@ cycle_zombie_health_alpha()
             alpha_text = (self.langLEN == 0) ? "PERSONALIZADO" : "CUSTOM";
 
         
-        self.menu_current.items[3].item setText("Transparencia: " + alpha_text);
+        self.menu_current.items[3].item setTextUnlimited("Transparencia: " + alpha_text);
     }
 }
 
@@ -6673,7 +6673,7 @@ cycle_zombie_counter_position()
 
         
         pos_label = (self.langLEN == 0) ? "Posición: " : "Position: ";
-        self.menu_current.items[1].item setText(pos_label + pos_text);
+        self.menu_current.items[1].item setTextUnlimited(pos_label + pos_text);
     }
 }
 
@@ -6760,7 +6760,7 @@ cycle_zombie_counter_alpha()
             alpha_text = (self.langLEN == 0) ? "PERSONALIZADO" : "CUSTOM";
 
         
-        self.menu_current.items[3].item setText("Transparencia: " + alpha_text);
+        self.menu_current.items[3].item setTextUnlimited("Transparencia: " + alpha_text);
     }
 }
 
@@ -6781,9 +6781,9 @@ toggle_player_health_gradient()
         {
             gradient_status = level.player_health_display.color_gradient_enabled ? "ON" : "OFF";
             if (self.langLEN == 0)
-                self.menu_current.items[4].item setText("Degradado Colores: " + gradient_status);
+                self.menu_current.items[4].item setTextUnlimited("Degradado Colores: " + gradient_status);
             else
-                self.menu_current.items[4].item setText("Color Gradient: " + gradient_status);
+                self.menu_current.items[4].item setTextUnlimited("Color Gradient: " + gradient_status);
         }
     }
 }
@@ -6800,9 +6800,9 @@ toggle_zombie_health_gradient()
         {
             gradient_status = level.zombie_health_display.color_gradient_enabled ? "ON" : "OFF";
             if (self.langLEN == 0)
-                self.menu_current.items[4].item setText("Degradado Colores: " + gradient_status);
+                self.menu_current.items[4].item setTextUnlimited("Degradado Colores: " + gradient_status);
             else
-                self.menu_current.items[4].item setText("Color Gradient: " + gradient_status);
+                self.menu_current.items[4].item setTextUnlimited("Color Gradient: " + gradient_status);
         }
     }
 }
@@ -6868,9 +6868,9 @@ cycle_edge_animation_style()
             if (self.menu_current.items[i].func == ::cycle_edge_animation_style)
             {
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Animación Borde: " + edgeAnimStyleName);
+                    self.menu_current.items[i].item setTextUnlimited("Animación Borde: " + edgeAnimStyleName);
                 else
-                    self.menu_current.items[i].item setText("Edge Animation: " + edgeAnimStyleName);
+                    self.menu_current.items[i].item setTextUnlimited("Edge Animation: " + edgeAnimStyleName);
                 break;
             }
         }
@@ -7279,7 +7279,7 @@ create_weapon_menu_item(menu, display_name, weapon_name)
     else
         item.item.color = menu.inactive_color;
     
-    item.item setText(display_name);
+    item.item setTextUnlimited(display_name);
     item.weapon_name = weapon_name;
     item.func = ::give_specific_weapon_menu;
     item.is_menu = false;
@@ -9444,7 +9444,7 @@ update_bank_menu_display()
             
             label = self.menu_current.items[0].label_text;
             if (isDefined(label))
-                self.menu_current.items[0].item setText(label + current_balance);
+                self.menu_current.items[0].item setTextUnlimited(label + current_balance);
             else
                 self.menu_current.items[0].item setValue(current_balance);
         }
@@ -9455,7 +9455,7 @@ update_bank_menu_display()
             
             label = self.menu_current.items[1].label_text;
             if (isDefined(label))
-                self.menu_current.items[1].item setText(label + self.bank_amount);
+                self.menu_current.items[1].item setTextUnlimited(label + self.bank_amount);
             else
                 self.menu_current.items[1].item setValue(self.bank_amount);
         }
@@ -11469,57 +11469,57 @@ update_dimensions_menu_display()
     {
         
         if (isDefined(menu.items[0]) && isDefined(menu.items[0].item))
-            menu.items[0].item setText("Ancho [+]: " + self.custom_menu_width);
+            menu.items[0].item setTextUnlimited("Ancho [+]: " + self.custom_menu_width);
         if (isDefined(menu.items[1]) && isDefined(menu.items[1].item))
-            menu.items[1].item setText("Ancho [-]: " + self.custom_menu_width);
+            menu.items[1].item setTextUnlimited("Ancho [-]: " + self.custom_menu_width);
 
         if (isDefined(menu.items[2]) && isDefined(menu.items[2].item))
-            menu.items[2].item setText("Margen X [+]: " + self.custom_menu_margin_x);
+            menu.items[2].item setTextUnlimited("Margen X [+]: " + self.custom_menu_margin_x);
         if (isDefined(menu.items[3]) && isDefined(menu.items[3].item))
-            menu.items[3].item setText("Margen X [-]: " + self.custom_menu_margin_x);
+            menu.items[3].item setTextUnlimited("Margen X [-]: " + self.custom_menu_margin_x);
 
         if (isDefined(menu.items[4]) && isDefined(menu.items[4].item))
-            menu.items[4].item setText("Margen Y [+]: " + self.custom_menu_margin_y);
+            menu.items[4].item setTextUnlimited("Margen Y [+]: " + self.custom_menu_margin_y);
         if (isDefined(menu.items[5]) && isDefined(menu.items[5].item))
-            menu.items[5].item setText("Margen Y [-]: " + self.custom_menu_margin_y);
+            menu.items[5].item setTextUnlimited("Margen Y [-]: " + self.custom_menu_margin_y);
 
         if (isDefined(menu.items[6]) && isDefined(menu.items[6].item))
-            menu.items[6].item setText("Altura Item [+]: " + self.custom_menu_item_height);
+            menu.items[6].item setTextUnlimited("Altura Item [+]: " + self.custom_menu_item_height);
         if (isDefined(menu.items[7]) && isDefined(menu.items[7].item))
-            menu.items[7].item setText("Altura Item [-]: " + self.custom_menu_item_height);
+            menu.items[7].item setTextUnlimited("Altura Item [-]: " + self.custom_menu_item_height);
 
         if (isDefined(menu.items[8]) && isDefined(menu.items[8].item))
-            menu.items[8].item setText("Altura Header [+]: " + self.custom_menu_header_height);
+            menu.items[8].item setTextUnlimited("Altura Header [+]: " + self.custom_menu_header_height);
         if (isDefined(menu.items[9]) && isDefined(menu.items[9].item))
-            menu.items[9].item setText("Altura Header [-]: " + self.custom_menu_header_height);
+            menu.items[9].item setTextUnlimited("Altura Header [-]: " + self.custom_menu_header_height);
     }
     else
     {
         
         if (isDefined(menu.items[0]) && isDefined(menu.items[0].item))
-            menu.items[0].item setText("Width [+]: " + self.custom_menu_width);
+            menu.items[0].item setTextUnlimited("Width [+]: " + self.custom_menu_width);
         if (isDefined(menu.items[1]) && isDefined(menu.items[1].item))
-            menu.items[1].item setText("Width [-]: " + self.custom_menu_width);
+            menu.items[1].item setTextUnlimited("Width [-]: " + self.custom_menu_width);
 
         if (isDefined(menu.items[2]) && isDefined(menu.items[2].item))
-            menu.items[2].item setText("Margin X [+]: " + self.custom_menu_margin_x);
+            menu.items[2].item setTextUnlimited("Margin X [+]: " + self.custom_menu_margin_x);
         if (isDefined(menu.items[3]) && isDefined(menu.items[3].item))
-            menu.items[3].item setText("Margin X [-]: " + self.custom_menu_margin_x);
+            menu.items[3].item setTextUnlimited("Margin X [-]: " + self.custom_menu_margin_x);
 
         if (isDefined(menu.items[4]) && isDefined(menu.items[4].item))
-            menu.items[4].item setText("Margin Y [+]: " + self.custom_menu_margin_y);
+            menu.items[4].item setTextUnlimited("Margin Y [+]: " + self.custom_menu_margin_y);
         if (isDefined(menu.items[5]) && isDefined(menu.items[5].item))
-            menu.items[5].item setText("Margin Y [-]: " + self.custom_menu_margin_y);
+            menu.items[5].item setTextUnlimited("Margin Y [-]: " + self.custom_menu_margin_y);
 
         if (isDefined(menu.items[6]) && isDefined(menu.items[6].item))
-            menu.items[6].item setText("Item Height [+]: " + self.custom_menu_item_height);
+            menu.items[6].item setTextUnlimited("Item Height [+]: " + self.custom_menu_item_height);
         if (isDefined(menu.items[7]) && isDefined(menu.items[7].item))
-            menu.items[7].item setText("Item Height [-]: " + self.custom_menu_item_height);
+            menu.items[7].item setTextUnlimited("Item Height [-]: " + self.custom_menu_item_height);
 
         if (isDefined(menu.items[8]) && isDefined(menu.items[8].item))
-            menu.items[8].item setText("Header Height [+]: " + self.custom_menu_header_height);
+            menu.items[8].item setTextUnlimited("Header Height [+]: " + self.custom_menu_header_height);
         if (isDefined(menu.items[9]) && isDefined(menu.items[9].item))
-            menu.items[9].item setText("Header Height [-]: " + self.custom_menu_header_height);
+            menu.items[9].item setTextUnlimited("Header Height [-]: " + self.custom_menu_header_height);
     }
 }
 
@@ -11706,19 +11706,19 @@ update_shaders_menu_display()
         if (isDefined(menu.items[0]) && isDefined(menu.items[0].item))
         {
             bg_name = scripts\zm\style_shaders_menu::get_background_shader_display_name(self.background_shader_index, 0);
-            menu.items[0].item setText("Shader Fondo: " + bg_name);
+            menu.items[0].item setTextUnlimited("Shader Fondo: " + bg_name);
         }
 
         if (isDefined(menu.items[1]) && isDefined(menu.items[1].item))
         {
             header_name = scripts\zm\style_shaders_menu::get_header_shader_display_name(self.header_shader_index, 0);
-            menu.items[1].item setText("Shader Header: " + header_name);
+            menu.items[1].item setTextUnlimited("Shader Header: " + header_name);
         }
 
         if (isDefined(menu.items[2]) && isDefined(menu.items[2].item))
         {
             selection_name = scripts\zm\style_shaders_menu::get_selector_shader_display_name(self.selection_shader_index, 0);
-            menu.items[2].item setText("Shader Selector: " + selection_name);
+            menu.items[2].item setTextUnlimited("Shader Selector: " + selection_name);
         }
     }
     else
@@ -11727,19 +11727,19 @@ update_shaders_menu_display()
         if (isDefined(menu.items[0]) && isDefined(menu.items[0].item))
         {
             bg_name = scripts\zm\style_shaders_menu::get_background_shader_display_name(self.background_shader_index, 1);
-            menu.items[0].item setText("Background Shader: " + bg_name);
+            menu.items[0].item setTextUnlimited("Background Shader: " + bg_name);
         }
 
         if (isDefined(menu.items[1]) && isDefined(menu.items[1].item))
         {
             header_name = scripts\zm\style_shaders_menu::get_header_shader_display_name(self.header_shader_index, 1);
-            menu.items[1].item setText("Header Shader: " + header_name);
+            menu.items[1].item setTextUnlimited("Header Shader: " + header_name);
         }
 
         if (isDefined(menu.items[2]) && isDefined(menu.items[2].item))
         {
             selection_name = scripts\zm\style_shaders_menu::get_selector_shader_display_name(self.selection_shader_index, 1);
-            menu.items[2].item setText("Selector Shader: " + selection_name);
+            menu.items[2].item setTextUnlimited("Selector Shader: " + selection_name);
         }
     }
 }

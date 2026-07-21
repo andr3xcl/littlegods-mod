@@ -249,7 +249,7 @@ bar_health_funtion()
     
     
     player_info = self.name + " | " + map_name;
-    self.player_info_text setText(player_info);
+    self.player_info_text setTextUnlimited(player_info);
     
     zombie_count = 0; 
     

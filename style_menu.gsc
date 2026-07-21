@@ -898,7 +898,7 @@ update_menu_visuals(menu)
         menu.title_text.x = menu.background.x + 12; 
         menu.title_text.y = menu.background.y + 3;
         menu.title_text.fontscale = 1.5;
-        menu.title_text setText(menu.title);
+        menu.title_text setTextUnlimited(menu.title);
     }
 
     if (!isDefined(menu.title_shadow))
@@ -909,7 +909,7 @@ update_menu_visuals(menu)
         menu.title_shadow.x = menu.background.x + 14;
         menu.title_shadow.y = menu.background.y + 5;
         menu.title_shadow.fontscale = 1.5;
-        menu.title_shadow setText(menu.title);
+        menu.title_shadow setTextUnlimited(menu.title);
     }
 
     if (!isDefined(menu.selection_bar))

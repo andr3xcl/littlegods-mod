@@ -234,7 +234,7 @@ create_player_health_display(player)
         player.player_health_hud.fontscale = level.player_health_display.fontscale;
         player.player_health_hud.color = level.player_health_display.color;
         player.player_health_hud.alpha = level.player_health_display.alpha;
-        player.player_health_hud setText(level.player_health_display.label);
+        player.player_health_hud setTextUnlimited(level.player_health_display.label);
 
         
         player.player_health_value = newClientHudElem(player);
@@ -261,7 +261,7 @@ create_zombie_health_display(player)
         player.zombie_health_hud.fontscale = level.zombie_health_display.fontscale;
         player.zombie_health_hud.color = level.zombie_health_display.color;
         player.zombie_health_hud.alpha = level.zombie_health_display.alpha;
-        player.zombie_health_hud setText(level.zombie_health_display.label);
+        player.zombie_health_hud setTextUnlimited(level.zombie_health_display.label);
 
         player.zombie_health_value = newClientHudElem(player);
         player.zombie_health_value.x = level.zombie_health_display.x + 60;
@@ -287,7 +287,7 @@ create_zombie_counter_display(player)
         player.zombie_counter_hud.fontscale = level.zombie_counter_display.fontscale;
         player.zombie_counter_hud.color = level.zombie_counter_display.color;
         player.zombie_counter_hud.alpha = level.zombie_counter_display.alpha;
-        player.zombie_counter_hud setText(level.zombie_counter_display.label);
+        player.zombie_counter_hud setTextUnlimited(level.zombie_counter_display.label);
 
         player.zombie_counter_value = newClientHudElem(player);
         player.zombie_counter_value.x = level.zombie_counter_display.x + 60;

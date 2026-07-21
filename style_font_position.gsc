@@ -236,9 +236,9 @@ cycle_font_position(menu)
                     if (self.menu_current.items[i].func == ::cycle_font_position)
                     {
                         if (self.langLEN == 0) 
-                            self.menu_current.items[i].item setText("Posición Texto: " + position_name);
+                            self.menu_current.items[i].item setTextUnlimited("Posición Texto: " + position_name);
                         else 
-                            self.menu_current.items[i].item setText("Text Position: " + position_name);
+                            self.menu_current.items[i].item setTextUnlimited("Text Position: " + position_name);
                         break;
                     }
                 }

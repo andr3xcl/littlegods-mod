@@ -117,9 +117,9 @@ toggle_godmode()
                 status = self.godmode_enabled ? "ON" : "OFF";
                 
                 if(self.langLEN == 0)
-                    self.menu_current.items[i].item setText("God Mode: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("God Mode: " + status);
                 else
-                    self.menu_current.items[i].item setText("God Mode: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("God Mode: " + status);
                     
                 break;
             }
@@ -151,9 +151,9 @@ show_godmode_indicator()
     
     
     if(self.langLEN == 0)
-        indicator setText("^3GOD MODE ACTIVO");
+        indicator setTextUnlimited("^3GOD MODE ACTIVO");
     else
-        indicator setText("^3GOD MODE ACTIVE");
+        indicator setTextUnlimited("^3GOD MODE ACTIVE");
     
     
     while(true)
@@ -378,9 +378,9 @@ update_round_menu_text()
             {
                 
                 if(self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Aplicar Ronda: " + self.target_round);
+                    self.menu_current.items[i].item setTextUnlimited("Aplicar Ronda: " + self.target_round);
                 else
-                    self.menu_current.items[i].item setText("Apply Round: " + self.target_round);
+                    self.menu_current.items[i].item setTextUnlimited("Apply Round: " + self.target_round);
                     
                 break;
             }
@@ -520,7 +520,7 @@ show_round_change_message(round_number)
     round_text.color = (1, 0.7, 0);
     round_text.alpha = 0;
     round_text.sort = 1001;
-    round_text setText("^3RONDA " + round_number);
+    round_text setTextUnlimited("^3RONDA " + round_number);
     
     
     round_text fadeOverTime(0.5);
@@ -592,7 +592,7 @@ toggle_perk_unlimite(menu)
             if (isDefined(self.menu_current.items[i].func) && self.menu_current.items[i].func == scripts\zm\funciones::toggle_perk_unlimite)
             {
                 status = self.perk_unlimite_active ? "ON" : "OFF";
-                self.menu_current.items[i].item setText("Perk Unlimited: " + status);
+                self.menu_current.items[i].item setTextUnlimited("Perk Unlimited: " + status);
                 break;
             }
         }
@@ -657,9 +657,9 @@ ThirdPerson()
             {
                 status = self.TPP ? "ON" : "OFF";
                 if (self.langLEN == 0) 
-                    self.menu_current.items[i].item setText("Tercera Persona: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Tercera Persona: " + status);
                 else 
-                    self.menu_current.items[i].item setText("Third Person: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Third Person: " + status);
                 break;
             }
         }
@@ -784,7 +784,7 @@ toggle_speed()
             if (isDefined(self.menu_current.items[i].func) && self.menu_current.items[i].func == ::toggle_speed)
             {
                 status = self.speed_boost_enabled ? "ON" : "OFF";
-                self.menu_current.items[i].item setText("Velocidad x2: " + status);
+                self.menu_current.items[i].item setTextUnlimited("Velocidad x2: " + status);
                 break;
             }
         }
@@ -1504,9 +1504,9 @@ toggle_zombie_freeze()
                 {
                     status = self.zombies_frozen ? "ON" : "OFF";
                     if (self.langLEN == 0)
-                        self.menu_current.items[i].item setText("Zombie Freeze: " + status);
+                        self.menu_current.items[i].item setTextUnlimited("Zombie Freeze: " + status);
                     else
-                        self.menu_current.items[i].item setText("Zombie Freeze: " + status);
+                        self.menu_current.items[i].item setTextUnlimited("Zombie Freeze: " + status);
                 }
             }
         }
@@ -1537,9 +1537,9 @@ toggle_zombie_freeze()
                 {
                     status = self.zombies_frozen ? "ON" : "OFF";
                     if (self.langLEN == 0)
-                        self.menu_current.items[i].item setText("Zombie Freeze: " + status);
+                        self.menu_current.items[i].item setTextUnlimited("Zombie Freeze: " + status);
                     else
-                        self.menu_current.items[i].item setText("Zombie Freeze: " + status);
+                        self.menu_current.items[i].item setTextUnlimited("Zombie Freeze: " + status);
                 }
             }
         }
@@ -1624,9 +1624,9 @@ toggle_unlimited_ammo()
                 {
                     status = self.unlimited_ammo ? "ON" : "OFF";
                     if (self.langLEN == 0)
-                        self.menu_current.items[i].item setText("Munición Infinita: " + status);
+                        self.menu_current.items[i].item setTextUnlimited("Munición Infinita: " + status);
                     else
-                        self.menu_current.items[i].item setText("Unlimited Ammo: " + status);
+                        self.menu_current.items[i].item setTextUnlimited("Unlimited Ammo: " + status);
                 }
             }
         }
@@ -1651,9 +1651,9 @@ toggle_unlimited_ammo()
                 {
                     status = self.unlimited_ammo ? "ON" : "OFF";
                     if (self.langLEN == 0)
-                        self.menu_current.items[i].item setText("Munición Infinita: " + status);
+                        self.menu_current.items[i].item setTextUnlimited("Munición Infinita: " + status);
                     else
-                        self.menu_current.items[i].item setText("Unlimited Ammo: " + status);
+                        self.menu_current.items[i].item setTextUnlimited("Unlimited Ammo: " + status);
                 }
             }
         }
@@ -1769,9 +1769,9 @@ toggle_ufo_mode()
                     if (self.menu_current.items[i].func == ::toggle_forge_mode)
                     {
                         if (self.langLEN == 0)
-                            self.menu_current.items[i].item setText("Forge Mode: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Forge Mode: OFF");
                         else
-                            self.menu_current.items[i].item setText("Forge Mode: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Forge Mode: OFF");
                         break;
                     }
                 }
@@ -1797,9 +1797,9 @@ toggle_ufo_mode()
                     if (self.menu_current.items[i].func == ::toggle_aimbot)
                     {
                         if (self.langLEN == 0)
-                            self.menu_current.items[i].item setText("Aimbot: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Aimbot: OFF");
                         else
-                            self.menu_current.items[i].item setText("Aimbot: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Aimbot: OFF");
                         break;
                     }
                 }
@@ -1864,9 +1864,9 @@ toggle_ufo_mode()
             {
                 status = self.ufo_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Modo UFO: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Modo UFO: " + status);
                 else
-                    self.menu_current.items[i].item setText("UFO Mode: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("UFO Mode: " + status);
             }
         }
     }
@@ -1979,9 +1979,9 @@ toggle_forge_mode()
                     if (self.menu_current.items[i].func == ::toggle_ufo_mode)
                     {
                         if (self.langLEN == 0)
-                            self.menu_current.items[i].item setText("Modo UFO: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Modo UFO: OFF");
                         else
-                            self.menu_current.items[i].item setText("UFO Mode: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("UFO Mode: OFF");
                         break;
                     }
                 }
@@ -2007,9 +2007,9 @@ toggle_forge_mode()
                     if (self.menu_current.items[i].func == ::toggle_aimbot)
                     {
                         if (self.langLEN == 0)
-                            self.menu_current.items[i].item setText("Aimbot: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Aimbot: OFF");
                         else
-                            self.menu_current.items[i].item setText("Aimbot: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Aimbot: OFF");
                         break;
                     }
                 }
@@ -2042,7 +2042,7 @@ toggle_forge_mode()
             if (item.func == ::toggle_forge_mode)
             {
                 status = self.forge_enabled ? "ON" : "OFF";
-                item.item setText("Forge Mode: " + status);
+                item.item setTextUnlimited("Forge Mode: " + status);
             }
         }
     }
@@ -2186,9 +2186,9 @@ toggle_jetpack()
             {
                 status = self.jetpack_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("JetPack: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("JetPack: " + status);
                 else
-                    self.menu_current.items[i].item setText("JetPack: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("JetPack: " + status);
             }
         }
     }
@@ -2286,9 +2286,9 @@ toggle_aimbot()
                     if (self.menu_current.items[i].func == ::toggle_teleport_zombies)
                     {
                         if (self.langLEN == 0)
-                            self.menu_current.items[i].item setText("Teleport Zombies: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Teleport Zombies: OFF");
                         else
-                            self.menu_current.items[i].item setText("Teleport Zombies: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Teleport Zombies: OFF");
                         break;
                     }
                 }
@@ -2335,9 +2335,9 @@ toggle_aimbot()
                     if (self.menu_current.items[i].func == ::toggle_ufo_mode)
                     {
                         if (self.langLEN == 0)
-                            self.menu_current.items[i].item setText("Modo UFO: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Modo UFO: OFF");
                         else
-                            self.menu_current.items[i].item setText("UFO Mode: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("UFO Mode: OFF");
                         break;
                     }
                 }
@@ -2363,9 +2363,9 @@ toggle_aimbot()
                     if (self.menu_current.items[i].func == ::toggle_forge_mode)
                     {
                         if (self.langLEN == 0)
-                            self.menu_current.items[i].item setText("Forge Mode: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Forge Mode: OFF");
                         else
-                            self.menu_current.items[i].item setText("Forge Mode: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Forge Mode: OFF");
                         break;
                     }
                 }
@@ -2402,9 +2402,9 @@ toggle_aimbot()
             {
                 status = self.aimbot_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Aimbot: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Aimbot: " + status);
                 else
-                    self.menu_current.items[i].item setText("Aimbot: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Aimbot: " + status);
             }
         }
     }
@@ -2509,9 +2509,9 @@ toggle_artillery()
             {
                 status = self.artillery_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Artillery: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Artillery: " + status);
                 else
-                    self.menu_current.items[i].item setText("Artillery: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Artillery: " + status);
             }
         }
     }
@@ -2588,9 +2588,9 @@ toggle_auto_revive()
             {
                 status = level.auto_revive_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Auto Revive: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Auto Revive: " + status);
                 else
-                    self.menu_current.items[i].item setText("Auto Revive: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Auto Revive: " + status);
             }
         }
     }
@@ -2651,9 +2651,9 @@ toggle_gore_mode()
             {
                 status = self.gore_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Gore Mode: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Gore Mode: " + status);
                 else
-                    self.menu_current.items[i].item setText("Gore Mode: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Gore Mode: " + status);
             }
         }
     }
@@ -2732,9 +2732,9 @@ toggle_super_jump()
             {
                 status = self.super_jump_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Super Jump: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Super Jump: " + status);
                 else
-                    self.menu_current.items[i].item setText("Super Jump: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Super Jump: " + status);
                 break;
             }
         }
@@ -2823,9 +2823,9 @@ Fr3ZzZoM()
             {
                 status = self.Fr3ZzZoM ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Zombie Freeze: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Zombie Freeze: " + status);
                 else
-                    self.menu_current.items[i].item setText("Zombie Freeze: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Zombie Freeze: " + status);
             }
         }
     }
@@ -2867,9 +2867,9 @@ toggle_teleport_zombies()
                     if (self.menu_current.items[i].func == ::toggle_forge_mode)
                     {
                         if (self.langLEN == 0)
-                            self.menu_current.items[i].item setText("Forge Mode: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Forge Mode: OFF");
                         else
-                            self.menu_current.items[i].item setText("Forge Mode: OFF");
+                            self.menu_current.items[i].item setTextUnlimited("Forge Mode: OFF");
                         break;
                     }
                 }
@@ -2908,9 +2908,9 @@ toggle_teleport_zombies()
             {
                 status = self.teleport_zombies_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Teleport Zombies: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Teleport Zombies: " + status);
                 else
-                    self.menu_current.items[i].item setText("Teleport Zombies: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Teleport Zombies: " + status);
             }
         }
     }
@@ -2979,9 +2979,9 @@ toggle_disable_zombies()
             {
                 status = self.disable_zombies_enabled ? "ON" : "OFF";
                 if (self.langLEN == 0)
-                    self.menu_current.items[i].item setText("Disable Zombies: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Disable Zombies: " + status);
                 else
-                    self.menu_current.items[i].item setText("Disable Zombies: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Disable Zombies: " + status);
             }
         }
     }
@@ -3396,9 +3396,9 @@ update_mystery_box_menu_display()
         if (self.menu_current.items.size > 0)
         {
             if (self.langLEN == 0)
-                self.menu_current.items[0].item setText("Precio Actual: " + current_price + " puntos");
+                self.menu_current.items[0].item setTextUnlimited("Precio Actual: " + current_price + " puntos");
             else
-                self.menu_current.items[0].item setText("Current Price: " + current_price + " points");
+                self.menu_current.items[0].item setTextUnlimited("Current Price: " + current_price + " points");
         }
 
         
@@ -3408,9 +3408,9 @@ update_mystery_box_menu_display()
                 self.box_price_change_amount = 50;
 
             if (self.langLEN == 0)
-                self.menu_current.items[1].item setText("Cambiar: " + self.box_price_change_amount + " puntos");
+                self.menu_current.items[1].item setTextUnlimited("Cambiar: " + self.box_price_change_amount + " puntos");
             else
-                self.menu_current.items[1].item setText("Change: " + self.box_price_change_amount + " points");
+                self.menu_current.items[1].item setTextUnlimited("Change: " + self.box_price_change_amount + " points");
         }
     }
 
@@ -3557,7 +3557,7 @@ toggle_insta_reload(menu)
             if (isDefined(self.menu_current.items[i].func) && self.menu_current.items[i].func == ::toggle_insta_reload)
             {
                 status = self.insta_reload_enabled ? "ON" : "OFF";
-                self.menu_current.items[i].item setText("Insta-Reload: " + status);
+                self.menu_current.items[i].item setTextUnlimited("Insta-Reload: " + status);
                 break;
             }
         }
@@ -3677,9 +3677,9 @@ toggle_coords()
             {
                 status = self.show_coords ? "ON" : "OFF";
                 if (self.langLEN == 0) 
-                    self.menu_current.items[i].item setText("Coordenadas Pantalla: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Coordenadas Pantalla: " + status);
                 else 
-                    self.menu_current.items[i].item setText("Screen Coordinates: " + status);
+                    self.menu_current.items[i].item setTextUnlimited("Screen Coordinates: " + status);
                 break;
             }
         }

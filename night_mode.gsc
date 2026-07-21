@@ -1540,9 +1540,9 @@ helpcommand()
         
         hud = create_simple_hud_element();hud.x = 0.1;hud.y = 0.1; hud.fontScale = 1; 
 
-        hud setText("^7Help command\n^3#^4night on ^7<-Active Night mode, default filter ^20\n^3#^4night d or disable ^7<- disable night\n^3#^4filter ^20^7 to ^235 ^7<- active filter\n^3#^4vanight ^7or ^3#^4valuenight ^24.5 ^7or ^210 ^7<-adjust dvar night");
+        hud setTextUnlimited("^7Help command\n^3#^4night on ^7<-Active Night mode, default filter ^20\n^3#^4night d or disable ^7<- disable night\n^3#^4filter ^20^7 to ^235 ^7<- active filter\n^3#^4vanight ^7or ^3#^4valuenight ^24.5 ^7or ^210 ^7<-adjust dvar night");
         wait(10); 
-        hud setText("^3#^4fog ^7<-desactive or active fog\n^3#^4bar top ^7<-Active bar health top\n^3#^4bar left ^7<-Active bar health left\n^3#^4bar off ^7<-desactive bar health");
+        hud setTextUnlimited("^3#^4fog ^7<-desactive or active fog\n^3#^4bar top ^7<-Active bar health top\n^3#^4bar left ^7<-Active bar health left\n^3#^4bar off ^7<-desactive bar health");
         wait(10);
         hud destroy();
         self.definido_comandos = 0;

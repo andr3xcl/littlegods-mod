@@ -256,7 +256,7 @@ apply_arrow_selector(menu)
     left_arrow.alpha = 0.9;
     
     left_arrow.fontscale = 1.4;
-    left_arrow setText(">");
+    left_arrow setTextUnlimited(">");
     
     
     right_arrow = newClientHudElem(menu.user);
@@ -268,7 +268,7 @@ apply_arrow_selector(menu)
     right_arrow.alpha = 0.9;
     
     right_arrow.fontscale = 1.4;
-    right_arrow setText("<");
+    right_arrow setTextUnlimited("<");
     
     
     menu.selector_elements[0] = left_arrow;
@@ -787,7 +787,7 @@ apply_double_arrow_selector(menu)
     left_arrow.alpha = 0.9;
     
     left_arrow.fontscale = 1.4;
-    left_arrow setText(">>");
+    left_arrow setTextUnlimited(">>");
     
     
     right_arrow = newClientHudElem(menu.user);
@@ -799,7 +799,7 @@ apply_double_arrow_selector(menu)
     right_arrow.alpha = 0.9;
     
     right_arrow.fontscale = 1.4;
-    right_arrow setText("<<");
+    right_arrow setTextUnlimited("<<");
     
     
     menu.selector_elements[0] = left_arrow;
@@ -864,7 +864,7 @@ apply_angle_brackets_selector(menu)
     left_bracket.color = menu.active_color;
     left_bracket.alpha = 0.9;
     left_bracket.fontscale = 1.8;
-    left_bracket setText("<");
+    left_bracket setTextUnlimited("<");
     
     
     right_bracket = newClientHudElem(menu.user);
@@ -875,7 +875,7 @@ apply_angle_brackets_selector(menu)
     right_bracket.color = menu.active_color;
     right_bracket.alpha = 0.9;
     right_bracket.fontscale = 1.8;
-    right_bracket setText(">");
+    right_bracket setTextUnlimited(">");
     
     
     menu.selector_elements[0] = left_bracket;
@@ -903,7 +903,7 @@ apply_dancing_arrows_selector(menu)
     left_arrow.alpha = 0.9;
     
     left_arrow.fontscale = 1.4;
-    left_arrow setText(">");
+    left_arrow setTextUnlimited(">");
     
     
     right_arrow = newClientHudElem(menu.user);
@@ -915,7 +915,7 @@ apply_dancing_arrows_selector(menu)
     right_arrow.alpha = 0.9;
     
     right_arrow.fontscale = 1.4;
-    right_arrow setText("<");
+    right_arrow setTextUnlimited("<");
     
     
     menu.selector_elements[0] = left_arrow;
@@ -981,7 +981,7 @@ apply_blinking_arrows_selector(menu)
     left_arrow.alpha = 0.9;
     
     left_arrow.fontscale = 1.4;
-    left_arrow setText(">");
+    left_arrow setTextUnlimited(">");
     
     
     right_arrow = newClientHudElem(menu.user);
@@ -993,7 +993,7 @@ apply_blinking_arrows_selector(menu)
     right_arrow.alpha = 0.9;
     
     right_arrow.fontscale = 1.4;
-    right_arrow setText("<");
+    right_arrow setTextUnlimited("<");
     
     
     menu.selector_elements[0] = left_arrow;
@@ -1064,7 +1064,7 @@ apply_triple_arrows_selector(menu)
     left_arrow1.color = menu.active_color;
     left_arrow1.alpha = 1;
     left_arrow1.fontscale = 1.5;
-    left_arrow1 setText(">");
+    left_arrow1 setTextUnlimited(">");
     
     
     left_arrow2 = newClientHudElem(menu.user);
@@ -1075,7 +1075,7 @@ apply_triple_arrows_selector(menu)
     left_arrow2.color = menu.active_color;
     left_arrow2.alpha = 1;
     left_arrow2.fontscale = 1.5;
-    left_arrow2 setText(">");
+    left_arrow2 setTextUnlimited(">");
     
     
     left_arrow3 = newClientHudElem(menu.user);
@@ -1086,7 +1086,7 @@ apply_triple_arrows_selector(menu)
     left_arrow3.color = menu.active_color;
     left_arrow3.alpha = 1;
     left_arrow3.fontscale = 1.5;
-    left_arrow3 setText(">");
+    left_arrow3 setTextUnlimited(">");
     
     
     right_arrow1 = newClientHudElem(menu.user);
@@ -1097,7 +1097,7 @@ apply_triple_arrows_selector(menu)
     right_arrow1.color = menu.active_color;
     right_arrow1.alpha = 1;
     right_arrow1.fontscale = 1.5;
-    right_arrow1 setText("<");
+    right_arrow1 setTextUnlimited("<");
     
     
     right_arrow2 = newClientHudElem(menu.user);
@@ -1108,7 +1108,7 @@ apply_triple_arrows_selector(menu)
     right_arrow2.color = menu.active_color;
     right_arrow2.alpha = 1;
     right_arrow2.fontscale = 1.5;
-    right_arrow2 setText("<");
+    right_arrow2 setTextUnlimited("<");
     
     
     right_arrow3 = newClientHudElem(menu.user);
@@ -1119,7 +1119,7 @@ apply_triple_arrows_selector(menu)
     right_arrow3.color = menu.active_color;
     right_arrow3.alpha = 1;
     right_arrow3.fontscale = 1.5;
-    right_arrow3 setText("<");
+    right_arrow3 setTextUnlimited("<");
     
     
     menu.selector_elements[0] = left_arrow1;
@@ -1204,7 +1204,7 @@ apply_rainbow_arrows_selector(menu)
     left_arrow.color = (1, 0, 0); 
     left_arrow.alpha = 0.9;
     left_arrow.fontscale = 1.4;
-    left_arrow setText(">");
+    left_arrow setTextUnlimited(">");
     
     
     right_arrow = newClientHudElem(menu.user);
@@ -1215,7 +1215,7 @@ apply_rainbow_arrows_selector(menu)
     right_arrow.color = (1, 0, 0); 
     right_arrow.alpha = 0.9;
     right_arrow.fontscale = 1.4;
-    right_arrow setText("<");
+    right_arrow setTextUnlimited("<");
     
     
     menu.selector_elements[0] = left_arrow;
@@ -1282,7 +1282,7 @@ apply_arrow_bar_selector(menu)
     left_arrow.color = menu.active_color;
     left_arrow.alpha = 0.9;
     left_arrow.fontscale = 1.4;
-    left_arrow setText(">");
+    left_arrow setTextUnlimited(">");
     
     
     right_arrow = newClientHudElem(menu.user);
@@ -1293,7 +1293,7 @@ apply_arrow_bar_selector(menu)
     right_arrow.color = menu.active_color;
     right_arrow.alpha = 0.9;
     right_arrow.fontscale = 1.4;
-    right_arrow setText("<");
+    right_arrow setTextUnlimited("<");
     
     
     menu.selector_elements[0] = left_arrow;
@@ -2318,7 +2318,7 @@ apply_clean_brackets_selector(menu)
     left_bracket.color = menu.active_color;
     left_bracket.alpha = 1;
     left_bracket.fontscale = 1.4;
-    left_bracket setText("[");
+    left_bracket setTextUnlimited("[");
 
     right_bracket = newClientHudElem(menu.user);
     right_bracket.vertalign = "top";
@@ -2328,7 +2328,7 @@ apply_clean_brackets_selector(menu)
     right_bracket.color = menu.active_color;
     right_bracket.alpha = 1;
     right_bracket.fontscale = 1.4;
-    right_bracket setText("]");
+    right_bracket setTextUnlimited("]");
 
     menu.selector_elements[0] = left_bracket;
     menu.selector_elements[1] = right_bracket;
@@ -2350,7 +2350,7 @@ apply_clean_braces_selector(menu)
     left_brace.color = menu.active_color;
     left_brace.alpha = 1;
     left_brace.fontscale = 1.4;
-    left_brace setText("{");
+    left_brace setTextUnlimited("{");
 
     right_brace = newClientHudElem(menu.user);
     right_brace.vertalign = "top";
@@ -2360,7 +2360,7 @@ apply_clean_braces_selector(menu)
     right_brace.color = menu.active_color;
     right_brace.alpha = 1;
     right_brace.fontscale = 1.4;
-    right_brace setText("}");
+    right_brace setTextUnlimited("}");
 
     menu.selector_elements[0] = left_brace;
     menu.selector_elements[1] = right_brace;
@@ -2382,7 +2382,7 @@ apply_clean_angles_selector(menu)
     left_angle.color = menu.active_color;
     left_angle.alpha = 1;
     left_angle.fontscale = 1.4;
-    left_angle setText("<");
+    left_angle setTextUnlimited("<");
 
     right_angle = newClientHudElem(menu.user);
     right_angle.vertalign = "top";
@@ -2392,7 +2392,7 @@ apply_clean_angles_selector(menu)
     right_angle.color = menu.active_color;
     right_angle.alpha = 1;
     right_angle.fontscale = 1.4;
-    right_angle setText(">");
+    right_angle setTextUnlimited(">");
 
     menu.selector_elements[0] = left_angle;
     menu.selector_elements[1] = right_angle;

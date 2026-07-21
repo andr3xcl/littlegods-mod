@@ -263,13 +263,13 @@ hud_show_zombie_health(entity, isDead)
             self.hud_zombie_health updatebar(0);
             if (self.langLEN == 0)
             {
-                self.hud_zombie_name_label setText("¡Está muerto!");
+                self.hud_zombie_name_label setTextUnlimited("¡Está muerto!");
                 self.hud_zombie_health_current_label.alpha = 0;
                 self.hud_zombie_health_max_label.alpha = 0;
             }
             else
             {
-                self.hud_zombie_name_label setText("He's dead!");
+                self.hud_zombie_name_label setTextUnlimited("He's dead!");
                 self.hud_zombie_health_current_label.alpha = 0;
                 self.hud_zombie_health_max_label.alpha = 0;
             }
@@ -291,7 +291,7 @@ hud_show_zombie_health(entity, isDead)
             if (self.zombieNAME)
             {
                 
-                self.hud_zombie_name_label setText(name_zombie + "  ");
+                self.hud_zombie_name_label setTextUnlimited(name_zombie + "  ");
                 self.hud_zombie_health_current_label.alpha = 1;
                 self.hud_zombie_health_max_label.alpha = 1;
                 self.hud_zombie_health_current_label setvalue(int(health));
@@ -300,7 +300,7 @@ hud_show_zombie_health(entity, isDead)
             else
             {
                 
-                self.hud_zombie_name_label setText("");
+                self.hud_zombie_name_label setTextUnlimited("");
                 self.hud_zombie_health_current_label.alpha = 1;
                 self.hud_zombie_health_max_label.alpha = 1;
                 self.hud_zombie_health_current_label setvalue(int(health));
@@ -360,13 +360,13 @@ hud_show_zombie_health(entity, isDead)
             self.hud_zombie_health updatebar(0);
             if (self.langLEN == 0)
             {
-                self.hud_zombie_name_label setText("¡Está muerto!");
+                self.hud_zombie_name_label setTextUnlimited("¡Está muerto!");
                 self.hud_zombie_health_current_label.alpha = 0;
                 self.hud_zombie_health_max_label.alpha = 0;
             }
             else
             {
-                self.hud_zombie_name_label setText("He's dead!");
+                self.hud_zombie_name_label setTextUnlimited("He's dead!");
                 self.hud_zombie_health_current_label.alpha = 0;
                 self.hud_zombie_health_max_label.alpha = 0;
             }
@@ -379,7 +379,7 @@ hud_show_zombie_health(entity, isDead)
             
             if (self.zombieNAME)
             {
-                self.hud_zombie_name_label setText(name_zombie + "   ");
+                self.hud_zombie_name_label setTextUnlimited(name_zombie + "   ");
                 self.hud_zombie_health_current_label.alpha = 1;
                 self.hud_zombie_health_max_label.alpha = 1;
                 self.hud_zombie_health_current_label setvalue(int(health));
@@ -387,7 +387,7 @@ hud_show_zombie_health(entity, isDead)
             }
             else
             {
-                self.hud_zombie_name_label setText("");
+                self.hud_zombie_name_label setTextUnlimited("");
                 self.hud_zombie_health_current_label.alpha = 1;
                 self.hud_zombie_health_max_label.alpha = 1;
                 self.hud_zombie_health_current_label setvalue(int(health));
@@ -798,22 +798,22 @@ helpcommand()
         
         if(self.langLEN == 1)
         {
-            hud setText("^1#^7barzm ^6color ^7<^30-21^7> <- Change color\n^1#^7barzm ^6sizew ^7<^350-105^7> <- Ancho\n^1#^7barzm ^6name ^7<^30-1^7> <- Zombie Nombre");
+            hud setTextUnlimited("^1#^7barzm ^6color ^7<^30-21^7> <- Change color\n^1#^7barzm ^6sizew ^7<^350-105^7> <- Ancho\n^1#^7barzm ^6name ^7<^30-1^7> <- Zombie Nombre");
         }
         else if(self.langLEN == 0)
         {
-            hud setText("^1#^7barzm ^6color ^7<^30-21^7> <- Cambia color\n^1#^7barzm ^6sizew ^7<^350-105^7> <- Ancho\n^1#^7barzm ^6name ^7<^30-1^7> <- Zombie Nombre");
+            hud setTextUnlimited("^1#^7barzm ^6color ^7<^30-21^7> <- Cambia color\n^1#^7barzm ^6sizew ^7<^350-105^7> <- Ancho\n^1#^7barzm ^6name ^7<^30-1^7> <- Zombie Nombre");
         }
         wait(10); 
 
         
         if(self.langLEN == 1)
         {
-            hud setText("^1#^7barzm ^6sizeh ^7<^32-4^7> <- Height\n^1#^7barzm ^6sizen ^7<^31-1.4^7> <- Font size\n^3^1#^7barzm ^6shader <^30-1> ^7<- Black shader");
+            hud setTextUnlimited("^1#^7barzm ^6sizeh ^7<^32-4^7> <- Height\n^1#^7barzm ^6sizen ^7<^31-1.4^7> <- Font size\n^3^1#^7barzm ^6shader <^30-1> ^7<- Black shader");
         }
         else if(self.langLEN == 0)
         {
-            hud setText("^1#^7barzm ^6sizeh ^7<^32-4^7> <- Altura\n^1#^7barzm ^6sizen ^7<^31-1.4^7> <- Tamaño de fuente\n^1#^4barzm ^6shader <^30-1> ^7<- Shader negro");
+            hud setTextUnlimited("^1#^7barzm ^6sizeh ^7<^32-4^7> <- Altura\n^1#^7barzm ^6sizen ^7<^31-1.4^7> <- Tamaño de fuente\n^1#^4barzm ^6shader <^30-1> ^7<- Shader negro");
         }
         wait(10); 
 
