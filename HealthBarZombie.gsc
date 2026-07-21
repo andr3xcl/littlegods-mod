@@ -255,145 +255,61 @@ hud_show_zombie_health(entity, isDead)
     percent = health / max_health;
     
     
-    if (isDefined(self.hud_zombie_health) && isDefined(self.hud_zombie_name_label) && isDefined(self.hud_zombie_health_current_label) && isDefined(self.hud_zombie_health_max_label))
+    if (isDefined(self.hud_zombie_name_label))
     {
-        
         if (isDefined(isDead) && isDead)
         {
-            self.hud_zombie_health updatebar(0);
-            if (self.langLEN == 0)
-            {
-                self.hud_zombie_name_label setTextUnlimited("¡Está muerto!");
-                self.hud_zombie_health_current_label.alpha = 0;
-                self.hud_zombie_health_max_label.alpha = 0;
-            }
-            else
-            {
-                self.hud_zombie_name_label setTextUnlimited("He's dead!");
-                self.hud_zombie_health_current_label.alpha = 0;
-                self.hud_zombie_health_max_label.alpha = 0;
-            }
+            if (isDefined(self.hud_zombie_health)) self.hud_zombie_health updatebar(0);
+            msg = (self.langLEN == 0) ? "¡Está muerto!" : "He's dead!";
+            self.hud_zombie_name_label setTextUnlimited(msg);
         }
         else
         {
-            
-            
-            if (!isDefined(self.colorcito))
-                self.colorcito = (1, 1, 1);
+            if (isDefined(self.hud_zombie_health))
+            {
+                if (isDefined(self.hud_zombie_health.bar) && self.hud_zombie_health.bar.color != self.colorcito)
+                    self.hud_zombie_health.bar.color = self.colorcito;
 
-            
-            if (isDefined(self.hud_zombie_health.bar) && self.hud_zombie_health.bar.color != self.colorcito)
-                self.hud_zombie_health.bar.color = self.colorcito;
+                self.hud_zombie_health updatebar(percent);
+            }
 
-            self.hud_zombie_health updatebar(percent);
-
-            
+            text_str = "";
             if (self.zombieNAME)
-            {
-                
-                self.hud_zombie_name_label setTextUnlimited(name_zombie + "  ");
-                self.hud_zombie_health_current_label.alpha = 1;
-                self.hud_zombie_health_max_label.alpha = 1;
-                self.hud_zombie_health_current_label setvalue(int(health));
-                self.hud_zombie_health_max_label setvalue(int(max_health));
-            }
+                text_str = name_zombie + " ^7| ^1" + int(health) + "^7/^1" + int(max_health);
             else
-            {
-                
-                self.hud_zombie_name_label setTextUnlimited("");
-                self.hud_zombie_health_current_label.alpha = 1;
-                self.hud_zombie_health_max_label.alpha = 1;
-                self.hud_zombie_health_current_label setvalue(int(health));
-                self.hud_zombie_health_max_label setvalue(int(max_health));
-            }
+                text_str = "^1" + int(health) + "^7/^1" + int(max_health);
+
+            self.hud_zombie_name_label setTextUnlimited(text_str);
         }
     }
     else
     {
-        
         self.hud_zombie_health = self createprimaryprogressbar();
-
-        
         self.hud_zombie_name_label = self createfontstring("Objective", 1);
-        self.hud_zombie_health_current_label = self createfontstring("Objective", 1);
-        self.hud_zombie_health_max_label = self createfontstring("Objective", 1);
-        
-        
-        self.hud_zombie_health setpoint("LEFT", "LEFT", 0, 90);
-
-        
         self.hud_zombie_name_label setpoint("LEFT", "LEFT", 0, 105);
-
-        
-        self.hud_zombie_health_current_label setpoint("LEFT", "LEFT", 35, 105);
-        self.hud_zombie_health_current_label.label = &"^7^3";
-        self.hud_zombie_health_current_label setvalue(int(health));
-
-        self.hud_zombie_health_max_label setpoint("LEFT", "LEFT", 53, 105);
-        self.hud_zombie_health_max_label.label = &"^7/^2";
-        self.hud_zombie_health_max_label setvalue(int(max_health));
-
-        
-        if (!isDefined(self.colorcito))
-            self.colorcito = (1, 1, 1);
-
-        
-        self.hud_zombie_health.bar.color = self.colorcito;
-        self.hud_zombie_health.hidewheninmenu = false;
         self.hud_zombie_name_label.hidewheninmenu = false;
-        self.hud_zombie_health_current_label.hidewheninmenu = false;
-        self.hud_zombie_health_max_label.hidewheninmenu = false;
+        self.hud_zombie_name_label.fontScale = self.sizeN;
+        self.hud_zombie_health setpoint("LEFT", "LEFT", 0, 90);
+        self.hud_zombie_health.hidewheninmenu = false;
         self.hud_zombie_health.alpha = self.shaderON;
-
-        
         self.hud_zombie_health.width = self.sizeW;
         self.hud_zombie_health.height = self.sizeH;
-        self.hud_zombie_name_label.fontScale = self.sizeN;
-        
-        
-        if(isDefined(self.hud_zombie_health.barframe))
-            self.hud_zombie_health.barframe.alpha = 0;
+        if(isDefined(self.hud_zombie_health.barframe)) self.hud_zombie_health.barframe.alpha = 0;
 
-        
+        text_str = "";
         if (isDefined(isDead) && isDead)
         {
-            self.hud_zombie_health updatebar(0);
-            if (self.langLEN == 0)
-            {
-                self.hud_zombie_name_label setTextUnlimited("¡Está muerto!");
-                self.hud_zombie_health_current_label.alpha = 0;
-                self.hud_zombie_health_max_label.alpha = 0;
-            }
-            else
-            {
-                self.hud_zombie_name_label setTextUnlimited("He's dead!");
-                self.hud_zombie_health_current_label.alpha = 0;
-                self.hud_zombie_health_max_label.alpha = 0;
-            }
+            text_str = (self.langLEN == 0) ? "¡Está muerto!" : "He's dead!";
         }
         else
         {
-            
-            self.hud_zombie_health updatebar(percent);
-
-            
             if (self.zombieNAME)
-            {
-                self.hud_zombie_name_label setTextUnlimited(name_zombie + "   ");
-                self.hud_zombie_health_current_label.alpha = 1;
-                self.hud_zombie_health_max_label.alpha = 1;
-                self.hud_zombie_health_current_label setvalue(int(health));
-                self.hud_zombie_health_max_label setvalue(int(max_health));
-            }
+                text_str = name_zombie + " ^7| ^1" + int(health) + "^7/^1" + int(max_health);
             else
-            {
-                self.hud_zombie_name_label setTextUnlimited("");
-                self.hud_zombie_health_current_label.alpha = 1;
-                self.hud_zombie_health_max_label.alpha = 1;
-                self.hud_zombie_health_current_label setvalue(int(health));
-                self.hud_zombie_health_max_label setvalue(int(max_health));
-            }
+                text_str = "^1" + int(health) + "^7/^1" + int(max_health);
         }
+
+        self.hud_zombie_name_label setTextUnlimited(text_str);
     }
     
     
