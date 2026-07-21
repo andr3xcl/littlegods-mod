@@ -453,6 +453,10 @@ onPlayerSpawned()
         
         
         self.healthbar_enabled = false;
+        if (!isDefined(self.healthbar_width)) self.healthbar_width = 100;
+        if (!isDefined(self.healthbar_height)) self.healthbar_height = 2;
+        if (!isDefined(self.healthbar_shader)) self.healthbar_shader = false;
+        if (!isDefined(self.healthbar_font_scale)) self.healthbar_font_scale = 1.1;
 
         
         if (self.godmode_enabled)
@@ -812,7 +816,19 @@ open_healthbar_menu()
             pos_text = "ARRIBA";
         pos_item = add_menu_item(menu, "Posición: " + pos_text, ::cycle_healthbar_position);
         pos_item.item.alpha = self.healthbar_enabled ? 1 : 0;
-        
+
+        shader_item = add_menu_item(menu, "Sombreado: " + (self.healthbar_shader ? "ON" : "OFF"), ::toggle_healthbar_shader);
+        shader_item.item.alpha = self.healthbar_enabled ? 1 : 0;
+
+        width_item = add_menu_item(menu, "Ancho: " + self.healthbar_width, ::cycle_healthbar_width);
+        width_item.item.alpha = self.healthbar_enabled ? 1 : 0;
+
+        height_item = add_menu_item(menu, "Alto: " + self.healthbar_height, ::cycle_healthbar_height);
+        height_item.item.alpha = self.healthbar_enabled ? 1 : 0;
+
+        font_item = add_menu_item(menu, "Fuente: " + self.healthbar_font_scale, ::cycle_healthbar_font_scale);
+        font_item.item.alpha = self.healthbar_enabled ? 1 : 0;
+
         add_menu_item(menu, "Volver", ::menu_go_back);
         add_menu_item(menu, "Cerrar Menú", ::close_all_menus);
     }
@@ -836,6 +852,18 @@ open_healthbar_menu()
             pos_text = "TOP";
         pos_item = add_menu_item(menu, "Position: " + pos_text, ::cycle_healthbar_position);
         pos_item.item.alpha = self.healthbar_enabled ? 1 : 0;
+
+        shader_item = add_menu_item(menu, "Shader: " + (self.healthbar_shader ? "ON" : "OFF"), ::toggle_healthbar_shader);
+        shader_item.item.alpha = self.healthbar_enabled ? 1 : 0;
+
+        width_item = add_menu_item(menu, "Width: " + self.healthbar_width, ::cycle_healthbar_width);
+        width_item.item.alpha = self.healthbar_enabled ? 1 : 0;
+
+        height_item = add_menu_item(menu, "Height: " + self.healthbar_height, ::cycle_healthbar_height);
+        height_item.item.alpha = self.healthbar_enabled ? 1 : 0;
+
+        font_item = add_menu_item(menu, "Font Scale: " + self.healthbar_font_scale, ::cycle_healthbar_font_scale);
+        font_item.item.alpha = self.healthbar_enabled ? 1 : 0;
 
         add_menu_item(menu, "Back", ::menu_go_back);
         add_menu_item(menu, "Close Menu", ::close_all_menus);
@@ -2780,10 +2808,12 @@ toggle_healthbar()
         
         for (i = 0; i < self.menu_current.items.size; i++)
         {
-            if (self.menu_current.items[i].func == ::cycle_healthbar_position)
+            if (self.menu_current.items[i].func == ::cycle_healthbar_position ||
+                self.menu_current.items[i].func == ::toggle_healthbar_shader || self.menu_current.items[i].func == ::cycle_healthbar_width || 
+                self.menu_current.items[i].func == ::cycle_healthbar_height || 
+                self.menu_current.items[i].func == ::cycle_healthbar_font_scale)
             {
                 self.menu_current.items[i].item.alpha = self.healthbar_enabled ? 1 : 0;
-                break;
             }
         }
     }
@@ -2880,6 +2910,104 @@ cycle_healthbar_position()
     wait 0.2;
 }
 
+cycle_healthbar_font_scale()
+{
+    if (!isDefined(self.healthbar_font_scale))
+        self.healthbar_font_scale = 1.1;
+
+    self.healthbar_font_scale += 0.1;
+    if (self.healthbar_font_scale > 1.35) 
+        self.healthbar_font_scale = 1.0;
+
+    if (self.healthbar_enabled)
+        self thread bar_funtion_and_toogle(0);
+
+    if (isDefined(self.menu_current))
+    {
+        for (i = 0; i < self.menu_current.items.size; i++)
+        {
+            if (self.menu_current.items[i].func == ::cycle_healthbar_font_scale)
+            {
+                self.menu_current.items[i].item setTextUnlimited((self.langLEN == 0 ? "Fuente: " : "Font Scale: ") + self.healthbar_font_scale);
+                break;
+            }
+        }
+    }
+}
+
+toggle_healthbar_shader()
+{
+    if (!isDefined(self.healthbar_shader))
+        self.healthbar_shader = false;
+
+    self.healthbar_shader = !self.healthbar_shader;
+    
+    if (self.healthbar_enabled)
+        self thread bar_funtion_and_toogle(0);
+    
+    if (isDefined(self.menu_current))
+    {
+        for (i = 0; i < self.menu_current.items.size; i++)
+        {
+            if (self.menu_current.items[i].func == ::toggle_healthbar_shader)
+            {
+                status = self.healthbar_shader ? "ON" : "OFF";
+                self.menu_current.items[i].item setTextUnlimited((self.langLEN == 0 ? "Sombreado: " : "Shader: ") + status);
+                break;
+            }
+        }
+    }
+}
+
+cycle_healthbar_width()
+{
+    if (!isDefined(self.healthbar_width))
+        self.healthbar_width = 100;
+
+    self.healthbar_width += 10;
+    if (self.healthbar_width > 120)
+        self.healthbar_width = 50;
+
+    if (self.healthbar_enabled)
+        self thread bar_funtion_and_toogle(0);
+
+    if (isDefined(self.menu_current))
+    {
+        for (i = 0; i < self.menu_current.items.size; i++)
+        {
+            if (self.menu_current.items[i].func == ::cycle_healthbar_width)
+            {
+                self.menu_current.items[i].item setTextUnlimited((self.langLEN == 0 ? "Ancho: " : "Width: ") + self.healthbar_width);
+                break;
+            }
+        }
+    }
+}
+
+cycle_healthbar_height()
+{
+    if (!isDefined(self.healthbar_height))
+        self.healthbar_height = 2;
+
+    self.healthbar_height += 1;
+    if (self.healthbar_height > 4)
+        self.healthbar_height = 1;
+
+    if (self.healthbar_enabled)
+        self thread bar_funtion_and_toogle(0);
+
+    if (isDefined(self.menu_current))
+    {
+        for (i = 0; i < self.menu_current.items.size; i++)
+        {
+            if (self.menu_current.items[i].func == ::cycle_healthbar_height)
+            {
+                self.menu_current.items[i].item setTextUnlimited((self.langLEN == 0 ? "Alto: " : "Height: ") + self.healthbar_height);
+                break;
+            }
+        }
+    }
+}
 
 toggle_fog()
 {
