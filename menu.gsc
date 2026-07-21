@@ -356,7 +356,7 @@ onPlayerSpawned()
             self.night_mode_darkness = 4.5; 
             self.fog_enabled = false; 
             self.healthbar_enabled = false; 
-            self.healthbar_position = "top"; 
+            self.healthbar_position = "left"; 
 
             
             self.healthbarzombie_enabled = false;
@@ -467,17 +467,18 @@ onPlayerSpawned()
             self.godmode_enabled = false;
         }
 
-        
-        
-        
-        
-        
-        if (isDefined(self.menu_style_index) && self.menu_style_index >= 0)
+        if (isDefined(self.noclip_enabled) && self.noclip_enabled)
         {
-            if (isDefined(level.apply_menu_style_func))
-            {
-                self thread [[level.apply_menu_style_func]](self.menu_style_index);
-            }
+            self notify("noclip_off");
+            self.noclip_enabled = false;
+        }
+
+        if (self.langLEN == 0)
+            self thread scripts\zm\style_font_position::load_font_position();
+
+        if (isDefined(self.saved_menu_style))
+        {
+            self thread scripts\zm\style_menu::apply_menu_style(self.saved_menu_style);
         }
 
         if (isDefined(self.transparency_index) && isDefined(level.apply_transparency_func))
@@ -488,16 +489,9 @@ onPlayerSpawned()
         
         if (self.healthbar_enabled) 
         {
-            
-            if (!isDefined(self.health_bar))
+            if (!isDefined(self.hb_bar))
             {
-                if (self.healthbar_position == "left")
-                    functions = 2;
-                else if (self.healthbar_position == "top_left")
-                    functions = 3;
-                else
-                    functions = 1; 
-                self thread bar_funtion_and_toogle(functions);
+                self thread bar_funtion_and_toogle(0);
             }
         }
     }
