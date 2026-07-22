@@ -183,9 +183,11 @@ start_clean_health_bar()
     self.hb_text_bottom.y = bottom_text_y;
     
     // Global HUD settings
-    self.hb_bar.hidewheninmenu = true;
-    self.hb_text_top.hidewheninmenu = true;
-    self.hb_text_bottom.hidewheninmenu = true;
+    self.hb_bar.hidewheninmenu = false;
+    self.hb_text_top.hidewheninmenu = false;
+    self.hb_text_bottom.hidewheninmenu = false;
+    if(isDefined(self.hb_bar.bar)) self.hb_bar.bar.hidewheninmenu = false;
+    if(isDefined(self.hb_bar.bg)) self.hb_bar.bg.hidewheninmenu = false;
     self.hb_bar.hidewheninscope = true;
     
     self.hb_bar.alpha = 0;

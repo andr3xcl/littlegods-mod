@@ -291,6 +291,8 @@ hud_show_zombie_health(entity, isDead)
         self.hud_zombie_name_label.fontScale = self.sizeN;
         self.hud_zombie_health setpoint("LEFT", "LEFT", 0, 90);
         self.hud_zombie_health.hidewheninmenu = false;
+        if(isDefined(self.hud_zombie_health.bar)) self.hud_zombie_health.bar.hidewheninmenu = false;
+        if(isDefined(self.hud_zombie_health.bg)) self.hud_zombie_health.bg.hidewheninmenu = false;
         self.hud_zombie_health.alpha = self.shaderON;
         self.hud_zombie_health.width = self.sizeW;
         self.hud_zombie_health.height = self.sizeH;
